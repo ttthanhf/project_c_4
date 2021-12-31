@@ -1,60 +1,67 @@
-#include <stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#include<conio.h>
+void printCalendar (int year)
+{
+  int mDays[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+  int t[]={0,3,2,5,0,3,5,1,4,6,2,4};
+  char* monthList[]={"January","February","March","April","May","June","July","August","September","October","November","December"};
+  printf("---------------");
+  printf("Calendar - %d",year);
+  printf("---------------\n");
+  int days;
+  int current;
 
-int dayOfMonth[] = {0,31,28,31,30,31,30,31,31,30,31,30,31}; // 0 để loại bỏ danh sách thứ 0
+  int y=year-1;
+  current=(y+y/4-y/100+y/400+1+t[0])%7;
 
-// void checkLeapYear(int year) { //tinh nam nhuan
-//     if ( ( (year % 4 == 0) && (year % 100 != 0) ) || (year % 400 == 0) ) {
-//         dayOfMonth[2] = 29; //nếu đúng là năm nhuận thì tháng 2 sẽ có 29 ngày
-//         //printf("%d",dayOfMonth[2]);
-//     }
-// }
-
-int dayNumber(int day, int month, int year) { // kiểm tra xem vào ngày , tháng , năm đó là thứ mấy
-    static int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
-    year -= month < 3;
-    return (( year + year/4 - year/100 + year/400 + t[month+1] + day ) % 7) - 2; //result là thứ của ngày và tháng trong năm (vd thứ 2 có giá trị là 1, t3 = 2,...,chủ nhật = 7)
+  for(int i=0;i<12;i++)
+  {
+    if(i==1)
+    {
+      if(year%400==0||(year%4==0&&year%100!=0))days=29;
+       else days=mDays[i];
+    }
+    else days=mDays[i];
+    
+    printf("\n --------------- %s-----------------\n",monthList[i]);
+    printf("  Sun  Mon  Tue  Wed  Thu  Fri  Sat \n");
+    int k;
+    for(k=0;k<current;k++) printf("     ");
+    for(int j=1;j<=days;j++)
+    {
+      k++;
+      if(j<10)
+      printf("    %d",j);
+      else printf("   %d",j);
+      if(k>6){k=0;printf("\n");}
+    }
+    if(k)printf("\n");
+    current=k;
+  }
+   return ;
 }
-
-void day(int day) {
-    switch (day) {
-	case 1:
-		printf("Monday");
-		break;
-	case 2:
-		printf("Tuesday");
-		break;
-	case 3:
-		printf("Wednesday");
-		break;
-	case 4:
-		printf("Thursday");
-		break;
-	case 5:
-		printf("Friday");
-		break;
-	case 6:
-		printf("Saturday");
-		break;
-	case 7:
-		printf("Sunday");
-		break;
-	}
-}
-
-
-void process(int year) {
-    int getDay;
-    getDay = dayNumber(1,1,year);
-    day(getDay);
-}
-
-int main() {
-    int year, check;
-    printf("Nhap nam:");
+int main()
+{
+  system("cls");
+  int year=2022;
+  int a=2;
+  do
+  {
+    system("cls");
+    printCalendar(year);
+    printf("\n\n");
+    printf("continue?");
+    int option;
+    char choose;
+    choose=_getwche();
+   if(choose=='n')return 0;
+    printf("\n input the year:");
     scanf("%d",&year);
-    // checkLeapYear(year);
-    // check = dayNumber(1,1,year);
-    // printf("%d",check);
-    process(year);
-    return 0;
+   
+  }while(a>0);
+  return 0;
 }
+    
+  
