@@ -2,22 +2,66 @@
 #include <stdio.h> //khai báo thư viện c
 
 static void load_css() {
-  GtkCssProvider *cssProvider = gtk_css_provider_new(); //khai báo css provider mới
+  GtkCssProvider *cssProvider = gtk_css_provider_new();
   gtk_css_provider_load_from_path(cssProvider, "theme.css", NULL); // đọc file css
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
 }
 
+static void login_dialog(GtkWidget *widget, gpointer data) {
+
+  GtkWidget *login_dialog;
+
+  login_dialog = gtk_dialog_new();
+
+  gtk_window_set_title(GTK_WINDOW(login_dialog),"Login"); 
+  gtk_window_set_position(GTK_WINDOW(login_dialog),GTK_WIN_POS_CENTER); 
+  gtk_window_set_default_size(GTK_WINDOW(login_dialog),640,410);
+  gtk_window_set_resizable(GTK_WINDOW(login_dialog),FALSE);
+  gtk_container_set_border_width(GTK_CONTAINER(login_dialog),10);
+
+  gtk_widget_show_all(login_dialog);
+}
+
+static void register_dialog(GtkWidget *widget, gpointer data) {
+
+  GtkWidget *register_dialog;
+
+  register_dialog = gtk_dialog_new();
+
+  gtk_window_set_title(GTK_WINDOW(register_dialog),"Register"); 
+  gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER); 
+  gtk_window_set_default_size(GTK_WINDOW(register_dialog),640,410); 
+  gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE); 
+  gtk_container_set_border_width(GTK_CONTAINER(register_dialog),10);
+
+  gtk_widget_show_all(register_dialog);
+}
+
+// void show_question(GtkWidget *widget, gpointer window) {
+
+//   GtkWidget *dialog;
+
+//   dialog = gtk_message_dialog_new(GTK_WINDOW(window),GTK_DIALOG_DESTROY_WITH_PARENT,GTK_MESSAGE_QUESTION,GTK_BUTTONS_YES_NO,"Are you sure to quit?");
+
+//   gtk_window_set_title(GTK_WINDOW(dialog), "Question");
+//   gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
+
+//   gtk_dialog_run(GTK_DIALOG(dialog));
+  
+//   gtk_widget_destroy(dialog);
+// }
+
 int main(int argc, char *argv[]) {
 
-  gtk_init(&argc, &argv); // khai báo  
+  gtk_init(&argc, &argv);
 
   //add biến
   GtkWidget *window, *fixed;
   GtkWidget *button_exit, *button_login, *button_register;
-  
+
   //set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
-  fixed = gtk_fixed_new(); // khai báo biến fixed mới
+  fixed = gtk_fixed_new();
 
   //
   gtk_window_set_title(GTK_WINDOW(window),"Lịch thiểu năng"); // title cho app
@@ -41,12 +85,14 @@ int main(int argc, char *argv[]) {
   gtk_widget_set_name(button_login,"button_login"); 
   gtk_widget_set_name(button_register,"button_register"); 
 
-  gtk_container_add(GTK_CONTAINER(window),fixed); // thêm phần window chứa fixed để hiển thị toàn bộ thành phần được put fixed
-
-  g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app sẽ tắt mọi thứ chạy chung bao gồm console và log
+  g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
   g_signal_connect(button_exit,"clicked",G_CALLBACK(gtk_main_quit),NULL);
+  g_signal_connect(button_login,"clicked",G_CALLBACK(login_dialog),NULL);
+  g_signal_connect(button_register,"clicked",G_CALLBACK(register_dialog),NULL);
 
-  gtk_widget_show_all(window); // hiển thị 
+  gtk_container_add(GTK_CONTAINER(window),fixed);
+
+  gtk_widget_show_all(window); 
 
   load_css();// gọi hàm load_css
 
