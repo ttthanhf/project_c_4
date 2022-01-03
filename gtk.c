@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
   gtk_window_set_default_size(GTK_WINDOW(window),1280,820); // kích thước app
   gtk_window_set_resizable(GTK_WINDOW(window),FALSE); // false sẽ làm cho app ko zoom out or in được
 
-  button1 = gtk_button_new_with_label("Nút thiểu năng");
+  button1 = gtk_button_new_with_label("Nút thiểu năng"); // tạo button
   button_exit = gtk_button_new_with_label("Thoát");
 
-  gtk_fixed_put(GTK_FIXED(fixed), button1, 50, 50);
+  gtk_fixed_put(GTK_FIXED(fixed), button1, 50, 50); // set vị trí cho button
   gtk_fixed_put(GTK_FIXED(fixed), button_exit, 50, 720);
 
   gtk_container_add(GTK_CONTAINER(window),fixed);
