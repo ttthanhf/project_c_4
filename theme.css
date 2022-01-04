@@ -1,24 +1,31 @@
 window {
     background: #f5f2e7;
+
 }
-button {
+#button_menu {
     background: #E8D0C0;
-    min-width: 120px;
+    min-width: 150px;
     min-height: 25px;
-    color: #C89674;
+    color: #916343;
     border: 0;
     font-size: 24px;
 }
-#button_exit {
-}
 
-#button_login {
-}
-
-#button_register {
-}
-
-button:hover {
+#button_menu:hover {
     color: red;
     background: #ddd0ab;
+}
+
+#authentication_label {
+    font-size: 24px;
+}
+
+#authentication_entry {
+    font-size: 22px;
+}
+
+#button_submit {
+    min-width: 150px;
+    min-height: 25px;
+    font-size: 24px;
 }
