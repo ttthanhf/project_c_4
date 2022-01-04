@@ -1,6 +1,7 @@
 #include <stdio.h>      
 #include <time.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // lập ra danh sách các tháng trong năm. lí do mình k chèn thêm phần tử nào đó khác lên đầu cho nó khớp tháng thứ i ở vị trí thứ i thì xíu kéo xuống dưới là hiểu//
 char* monthList[]={"January","February","March","April","May","June","July","August","September","October","November","December"};
@@ -19,6 +20,8 @@ struct tm * timeinfo;
    timeinfo->tm_wday: đây là số ngày đếm từ ngày chủ nhật. cái biến này giúp mình khớp cái thứ với ngày với nhau nè.nếu bình thường thì mình hay dùng (y+y/4-y/100+y/400+1+t[])%7;
    
 */
+
+int stop=1;
 
 //biến trung gian ngày tháng năm
 int year,month,day;
@@ -89,12 +92,14 @@ void PrintDecade()
 // main menu
 void menu()
 {
+	printf("Press 0:Exit\n");
 	printf("Press 1: next month\n");
 	printf("Press 2: last month\n");
 	printf("Press 3: next year\n");
 	printf("Press 4: last year\n");
 	printf("Press 5: find a specific day\n");
 	printf("Press 6: decade\n");
+	
 	//mấy này khỏi nói chắc cũng hiểu=v
 
 	//cái lựa chọn thứ 7 này khi cái lịch hiển thị tháng khác hoặc năm khác nó mới xuất hiện, còn cái lịch để ở tháng năm hiện tại thì k xuất hiện
@@ -250,6 +255,10 @@ void menu()
 		printFirsthead();
 		printCalendar();
 	}
+	else if(num==0)
+	{
+		stop=0;
+	}
 }
 int main ()
 {
@@ -265,22 +274,10 @@ int main ()
   
   printFirsthead();
   printCalendar();
-  while(2>1)
+  
+  do
   {
 	menu();
-	char decision;
-	do
-	{
-	printf("do you want to continue? (y/n):");
-	scanf(" %c",&decision);
-	if(decision=='n'){return 0;}
-	else if(decision=='y')continue;
-	else
-		{
-			printf("\nwrong input.Please type again!!!\n");
-		}
-	}while(decision!='y');
-	
-  } 
+  } while(stop==1);
   return 0;
 }
