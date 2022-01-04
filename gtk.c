@@ -7,6 +7,58 @@ static void load_css() {
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
 }
 
+void authentication_process() {
+
+}
+
+// void exit_process(int response) {
+//   switch (response) {
+//     case 1:
+//     gtk_main_quit();
+//     break;
+//     case 2:
+//     gtk_widget_destroy(GTK_WIDGET(exit_dialog));
+//     break;
+//     default: 
+//     break;
+//   }
+
+// }
+
+static void exit_screen() {
+
+  GtkWidget *exit_dialog, *container_exit;
+  GtkWidget *label_ask;
+  GtkWidget *fixed_exit;
+
+  exit_dialog = gtk_dialog_new();
+
+  label_ask = gtk_label_new("Are you sure you want to Quit?");
+
+  gtk_dialog_add_buttons(GTK_DIALOG(exit_dialog),"Yes",1,"No",2,NULL);
+
+  gtk_window_set_position(GTK_WINDOW(exit_dialog),GTK_WIN_POS_CENTER);
+
+  container_exit = gtk_dialog_get_content_area(GTK_DIALOG(exit_dialog));
+
+  gtk_container_add(GTK_CONTAINER(container_exit),label_ask);
+
+  gtk_widget_show_all(exit_dialog);
+
+  int response = gtk_dialog_run(GTK_DIALOG(exit_dialog));
+
+  switch (response) {
+    case 1:
+      gtk_main_quit();
+      break;
+    case 2:
+      gtk_widget_destroy(GTK_WIDGET(exit_dialog));
+      break;
+    default: 
+      break;
+  }
+}
+
 void login_dialog_screen(GtkWidget *widget, gpointer data) {
 
   GtkWidget *login_dialog, *container_login_dialog;
@@ -151,7 +203,7 @@ int main(int argc, char *argv[]) {
   gtk_widget_set_name(button_delete_event,"button_menu"); 
 
   g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
-  g_signal_connect(button_exit,"clicked",G_CALLBACK(gtk_main_quit),NULL);
+  g_signal_connect(button_exit,"clicked",G_CALLBACK(exit_screen),NULL);
   g_signal_connect(button_login,"clicked",G_CALLBACK(login_dialog_screen),NULL);
   g_signal_connect(button_register,"clicked",G_CALLBACK(register_dialog_screen),NULL);
 
