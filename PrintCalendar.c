@@ -1,5 +1,6 @@
 #include <stdio.h>      
 #include <time.h>
+#include <stdlib.h>
 
 // lập ra danh sách các tháng trong năm. lí do mình k chèn thêm phần tử nào đó khác lên đầu cho nó khớp tháng thứ i ở vị trí thứ i thì xíu kéo xuống dưới là hiểu//
 char* monthList[]={"January","February","March","April","May","June","July","August","September","October","November","December"};

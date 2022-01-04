@@ -13,7 +13,7 @@ static void login_dialog(GtkWidget *widget, gpointer data) {
 
   login_dialog = gtk_dialog_new();
 
-  gtk_window_set_title(GTK_WINDOW(login_dialog),"Login"); 
+  gtk_window_set_title(GTK_WINDOW(login_dialog),"Login");
   gtk_window_set_position(GTK_WINDOW(login_dialog),GTK_WIN_POS_CENTER); 
   gtk_window_set_default_size(GTK_WINDOW(login_dialog),640,410);
   gtk_window_set_resizable(GTK_WINDOW(login_dialog),FALSE);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
   fixed = gtk_fixed_new();
 
-  //
+  
   gtk_window_set_title(GTK_WINDOW(window),"Lịch thiểu năng"); // title cho app
   gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER); // canh app khi mở sẽ ở giữa màn hình
   gtk_window_set_default_size(GTK_WINDOW(window),1280,820); // kích thước app mặc định
