@@ -23,11 +23,27 @@ static void load_css() {
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
 }
 
-static void update_year(GtkButton *show_year, GtkLabel *label) {
+// lỗi  invalid cast from 'GtkButton' to 'GtkLabel' từ đây
+static void update_label_in_button_show(GtkLabel *sum, int num) {
+  gchar *display;
+  display = g_strdup_printf("%d", num); // chuyển số thành string 
+  gtk_button_set_label(GTK_BUTTON(sum), display);
+  g_free(display); 
+
 }
 
-static void update_month(GtkButton *show_month, GtkLabel *label) {
+void add_one(GtkButton *button, GtkLabel *sum) {
+  int add = atoi(gtk_button_get_label(GTK_BUTTON(sum)));
+  add += 1;
+  update_label_in_button_show(GTK_LABEL(sum),add);
 }
+
+void minus_one(GtkButton *button, GtkLabel *sum) {
+  int minus = atoi(gtk_button_get_label(GTK_BUTTON(sum)));
+  minus -= 1;
+  update_label_in_button_show(GTK_LABEL(sum),minus);
+}
+//đến đây
 
 void month_show() {
   GtkWidget *month_dialog, *container_month;
@@ -43,7 +59,7 @@ void month_show() {
 
   button_enter = gtk_button_new_with_label("Enter");
   
-  container_month = gtk_dialog_get_content_area(GTK_DIALOG(month_dialog));
+  container_month = gtk_dialog_get_content_area(GTK_DIALOG(month_dialog)); //đưa dialog vào xử lí tạo vùng để hiển thị
 
   gtk_window_set_position(GTK_WINDOW(month_dialog),GTK_WIN_POS_CENTER);
   
@@ -275,12 +291,18 @@ int main(int argc, char *argv[]) { //main
   gtk_widget_set_name(show_month,"show_month");
   gtk_widget_set_name(show_year,"show_year");
 
+//gọi hàm khi nhấn button
   g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
   g_signal_connect(button_exit,"clicked",G_CALLBACK(exit_screen),NULL);
   g_signal_connect(button_login,"clicked",G_CALLBACK(login_dialog_screen),NULL);
   g_signal_connect(button_register,"clicked",G_CALLBACK(register_dialog_screen),NULL);
   g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),NULL);
   g_signal_connect(show_year,"clicked",G_CALLBACK(year_show),NULL);
+
+  g_signal_connect(button_next_year,"clicked",G_CALLBACK(add_one),show_year);
+  g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one),show_year);
+  g_signal_connect(button_next_month,"clicked",G_CALLBACK(add_one),show_month);
+  g_signal_connect(button_previous_month,"clicked",G_CALLBACK(minus_one),show_month);
 
 
   gtk_container_add(GTK_CONTAINER(window),fixed);
@@ -290,6 +312,8 @@ int main(int argc, char *argv[]) { //main
   load_css();// gọi hàm load_css
 
   gtk_main(); //mainLoop
+
+//---------------------------------------//
 
   return 0;
 }
