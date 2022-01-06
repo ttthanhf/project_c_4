@@ -88,11 +88,57 @@ void PrintDecade()
 			if(i%4==0)printf("\n");
 		}
 }
+void findSpecificDay()
+{
+	printf("input year:");
+		scanf("%d",&year);
+		system("cls");
+		
+		//lưu vào trong biến year trong timeinfo thì year phải bớt 1900
+		timeinfo->tm_year=year-1900;
+
+		//in các tháng
+		printf("-----%d-----\n",year);
+		for(int i=1;i<=12;i++)
+		{
+			printf("%s  ",shortmonthList[i-1]);
+			if(i%4==0)printf("\n");
+		}
+
+		//nhập tháng
+		printf("input month:");
+		scanf("%d",&month);
+		system("cls");
+
+		//lưu vào mon trong timeinfo thì month-1
+		timeinfo->tm_mon=month-1;
+
+		//in các ngày trong tháng
+		printf("-----%d-----\n",year);
+		printf("-----%s-----\n",shortmonthList[month-1]);
+		for(int i=1;i<=mDays[timeinfo->tm_mon];i++)
+		{
+			if(i<10)printf("   %d",i);
+			else printf("  %d",i);
+			if(i%5==0)printf("\n");
+			else if(i==mDays[timeinfo->tm_mon])printf("\n");
+		}
+
+		//nhập ngày
+		printf("input day:");
+		scanf("%d",&day);
+		system("cls");
+		timeinfo->tm_mday=day;
+
+		mktime(timeinfo);//set lại wday cho timeinfo
+		printFirsthead();
+		printCalendar();
+}
 
 // main menu
 void menu()
 {
-	printf("Press 0:Exit\n");
+	printf("\nPress 0: Exit\n");
 	printf("Press 1: next month\n");
 	printf("Press 2: last month\n");
 	printf("Press 3: next year\n");
@@ -167,50 +213,7 @@ void menu()
 	//trường hợp bằng 5: chọn ngày bất kì
 	else if(num==5)
 	{
-		//nhập năm
-		printf("input year:");
-		scanf("%d",&year);
-		system("cls");
-		
-		//lưu vào trong biến year trong timeinfo thì year phải bớt 1900
-		timeinfo->tm_year=year-1900;
-
-		//in các tháng
-		printf("-----%d-----\n",year);
-		for(int i=1;i<=12;i++)
-		{
-			printf("%s  ",shortmonthList[i-1]);
-			if(i%4==0)printf("\n");
-		}
-
-		//nhập tháng
-		printf("input month:");
-		scanf("%d",&month);
-		system("cls");
-
-		//lưu vào mon trong timeinfo thì month-1
-		timeinfo->tm_mon=month-1;
-
-		//in các ngày trong tháng
-		printf("-----%d-----\n",year);
-		printf("-----%s-----\n",shortmonthList[month-1]);
-		for(int i=1;i<=mDays[timeinfo->tm_mon];i++)
-		{
-			if(i<10)printf("   %d",i);
-			else printf("  %d",i);
-			if(i%5==0)printf("\n");
-			else if(i==mDays[timeinfo->tm_mon])printf("\n");
-		}
-
-		//nhập ngày
-		printf("input day:");
-		scanf("%d",&day);
-		system("cls");
-		timeinfo->tm_mday=day;
-
-		mktime(timeinfo);//set lại wday cho timeinfo
-		printFirsthead();
-		printCalendar();
+		findSpecificDay();
 	}
 
 	//trường hợp bằng 6: thập kỉ
@@ -224,7 +227,8 @@ void menu()
 		{
 		printf("\nPress 1: next decade\n");
 		printf("Press 2: last decade\n");
-		printf("Press 3: back to main menu\n");
+		printf("Press 3: click a year\n");
+		printf("Press 4: back to main menu\n");
 		printf("Input your choice:");
 		scanf("%d",&choice);
 		if(choice==1)
@@ -238,6 +242,10 @@ void menu()
 			PrintDecade();
 		}
 		else if(choice==3)
+		{
+			findSpecificDay();
+		}
+		else if(choice==4)
 		{
 			printFirsthead();
  		    printCalendar();
