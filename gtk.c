@@ -1,31 +1,86 @@
-#include <gtk/gtk.h> // khai báo thứ viện gtk
-#include <stdio.h> //khai báo thư viện c
 
+
+
+//--------------------Thành------------------------//
+#include <gtk/gtk.h>
+//------------------Thọ--------------------//
+#include <time.h>
+#include <stdbool.h>
+//--------------------Hân----------------------//
+#include <string.h>
+//------------------ALL------------------//
+#include <stdio.h> 
+#include <stdlib.h>
+
+//-----------------------------------------Thọ---------Calendar----------------------------------------------//
+
+//------------------------------------------Hân---------Authentication---------------------------------------------//
+
+//-------------------------------------Thành-------GTK-----------------------------------------------------//
 static void load_css() {
   GtkCssProvider *cssProvider = gtk_css_provider_new();
   gtk_css_provider_load_from_path(cssProvider, "theme.css", NULL); // đọc file css
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
 }
 
-void authentication_process() {
-
+static void update_year(GtkButton *show_year, GtkLabel *label) {
 }
 
-// void exit_process(int response) {
-//   switch (response) {
-//     case 1:
-//     gtk_main_quit();
-//     break;
-//     case 2:
-//     gtk_widget_destroy(GTK_WIDGET(exit_dialog));
-//     break;
-//     default: 
-//     break;
-//   }
+static void update_month(GtkButton *show_month, GtkLabel *label) {
+}
 
-// }
+void month_show() {
+  GtkWidget *month_dialog, *container_month;
+  GtkWidget *label_month;
+  GtkWidget *entry_month;
+  GtkWidget *button_enter;
 
-static void exit_screen() {
+  month_dialog = gtk_dialog_new();
+
+  label_month = gtk_label_new("Input month:");
+
+  entry_month = gtk_entry_new();
+
+  button_enter = gtk_button_new_with_label("Enter");
+  
+  container_month = gtk_dialog_get_content_area(GTK_DIALOG(month_dialog));
+
+  gtk_window_set_position(GTK_WINDOW(month_dialog),GTK_WIN_POS_CENTER);
+  
+  gtk_container_add(GTK_CONTAINER(container_month),label_month);
+  gtk_container_add(GTK_CONTAINER(container_month),entry_month);
+  gtk_container_add(GTK_CONTAINER(container_month),button_enter);
+
+  gtk_widget_show_all(month_dialog);
+}
+
+void year_show() {
+  GtkWidget *year_dialog, *container_year;
+  GtkWidget *label_year;
+  GtkWidget *entry_year;
+  GtkWidget *button_enter;
+
+  year_dialog = gtk_dialog_new();
+
+  label_year = gtk_label_new("Input year:");
+
+  entry_year = gtk_entry_new();
+
+  button_enter = gtk_button_new_with_label("Enter");
+  
+  container_year = gtk_dialog_get_content_area(GTK_DIALOG(year_dialog));
+
+  gtk_window_set_position(GTK_WINDOW(year_dialog),GTK_WIN_POS_CENTER);
+  
+  gtk_container_add(GTK_CONTAINER(container_year),label_year);
+  gtk_container_add(GTK_CONTAINER(container_year),entry_year);
+  gtk_container_add(GTK_CONTAINER(container_year),button_enter);
+
+  gtk_widget_show_all(year_dialog);
+  
+}
+//void exit_screen(GtkWidget *widget, gpointer data)
+void exit_screen() {
 
   GtkWidget *exit_dialog, *container_exit;
   GtkWidget *label_ask;
@@ -33,9 +88,9 @@ static void exit_screen() {
 
   exit_dialog = gtk_dialog_new();
 
-  label_ask = gtk_label_new("Are you sure you want to Quit?");
+  label_ask = gtk_label_new("Are you want to Quit?");
 
-  gtk_dialog_add_buttons(GTK_DIALOG(exit_dialog),"Yes",1,"No",2,NULL);
+  gtk_dialog_add_buttons(GTK_DIALOG(exit_dialog),"Yes",1,"No",2,NULL); // yes = 1 , no = 2
 
   gtk_window_set_position(GTK_WINDOW(exit_dialog),GTK_WIN_POS_CENTER);
 
@@ -45,9 +100,9 @@ static void exit_screen() {
 
   gtk_widget_show_all(exit_dialog);
 
-  int response = gtk_dialog_run(GTK_DIALOG(exit_dialog));
+  gint response = gtk_dialog_run(GTK_DIALOG(exit_dialog)); //add gia tri khi bam button
 
-  switch (response) {
+  switch (response) { //thuc hien ham khi gia tri = nhau
     case 1:
       gtk_main_quit();
       break;
@@ -59,7 +114,8 @@ static void exit_screen() {
   }
 }
 
-void login_dialog_screen(GtkWidget *widget, gpointer data) {
+//void login_dialog_screen(GtkWidget *widget, gpointer data)
+void login_dialog_screen() { //màn hình login
 
   GtkWidget *login_dialog, *container_login_dialog;
   GtkWidget *username_label, *password_label;
@@ -105,7 +161,8 @@ void login_dialog_screen(GtkWidget *widget, gpointer data) {
   gtk_widget_show_all(login_dialog);
 }
 
-void register_dialog_screen(GtkWidget *widget, gpointer data) {
+//void register_dialog_screen(GtkWidget *widget, gpointer data)
+void register_dialog_screen() { //màn hình register
 
   GtkWidget *register_dialog, *container_register_dialog;
   GtkWidget *username_label, *password_label, *retypePassword_label;
@@ -157,9 +214,9 @@ void register_dialog_screen(GtkWidget *widget, gpointer data) {
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) { //main
 
-  gtk_init(&argc, &argv);
+  gtk_init(&argc,&argv);
 
   //add biến
   GtkWidget *window, *fixed;
@@ -170,7 +227,6 @@ int main(int argc, char *argv[]) {
   //set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
   fixed = gtk_fixed_new();
-
   
   gtk_window_set_title(GTK_WINDOW(window),"Lịch thiểu năng"); // title cho app
   gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER); // canh app khi mở sẽ ở giữa màn hình
@@ -185,7 +241,12 @@ int main(int argc, char *argv[]) {
   button_logout = gtk_button_new_with_label("Logout");
   button_add_event = gtk_button_new_with_label("Add Event");
   button_delete_event = gtk_button_new_with_label("Delete Event");
-
+  button_previous_month = gtk_button_new_with_label("Previous month");
+  button_next_month = gtk_button_new_with_label("Next month");
+  button_previous_year = gtk_button_new_with_label("Previous year");
+  button_next_year = gtk_button_new_with_label("Next year");
+  show_month = gtk_button_new_with_label("December");
+  show_year = gtk_button_new_with_label("2021");
 
   //tạo khả năng fixed cho từng thành phần và mặc định vị trí
   gtk_fixed_put(GTK_FIXED(fixed), button_exit, 1300, 760); 
@@ -193,6 +254,12 @@ int main(int argc, char *argv[]) {
   gtk_fixed_put(GTK_FIXED(fixed), button_add_event, 1300, 250);
   gtk_fixed_put(GTK_FIXED(fixed), button_delete_event, 1300, 300);
   gtk_fixed_put(GTK_FIXED(fixed), button_register, 1300, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), button_previous_month, 400, 250);
+  gtk_fixed_put(GTK_FIXED(fixed), button_next_month, 900, 250);
+  gtk_fixed_put(GTK_FIXED(fixed), button_previous_year, 400, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), button_next_year, 900, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), show_month, 680, 250);
+  gtk_fixed_put(GTK_FIXED(fixed), show_year, 680, 150);
 
   //set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit,"button_menu"); 
@@ -201,11 +268,20 @@ int main(int argc, char *argv[]) {
   gtk_widget_set_name(button_add_event,"button_menu");
   gtk_widget_set_name(button_register,"button_menu"); 
   gtk_widget_set_name(button_delete_event,"button_menu"); 
+  gtk_widget_set_name(button_previous_month,"button_main_left");
+  gtk_widget_set_name(button_next_month,"button_main_right");
+  gtk_widget_set_name(button_previous_year,"button_main_left");
+  gtk_widget_set_name(button_next_year,"button_main_right");
+  gtk_widget_set_name(show_month,"show_month");
+  gtk_widget_set_name(show_year,"show_year");
 
   g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
   g_signal_connect(button_exit,"clicked",G_CALLBACK(exit_screen),NULL);
   g_signal_connect(button_login,"clicked",G_CALLBACK(login_dialog_screen),NULL);
   g_signal_connect(button_register,"clicked",G_CALLBACK(register_dialog_screen),NULL);
+  g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),NULL);
+  g_signal_connect(show_year,"clicked",G_CALLBACK(year_show),NULL);
+
 
   gtk_container_add(GTK_CONTAINER(window),fixed);
 

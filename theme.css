@@ -29,3 +29,31 @@ window {
     min-height: 25px;
     font-size: 24px;
 }
+
+#button_main_left {
+    min-width: 150px;
+    min-height: 25px;
+
+}
+
+#button_main_right {
+    min-width: 150px;
+    min-height: 25px;
+
+}
+
+#show_month  {
+    border: 0;
+    min-width: 100px;
+    min-height: 25px;
+    font-size: 35px;
+
+}
+
+#show_year {
+    border: 0;
+    min-width: 100px;
+    min-height: 25px;   
+    font-size: 35px;
+
+}
