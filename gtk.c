@@ -22,27 +22,60 @@ static void load_css() {
   gtk_css_provider_load_from_path(cssProvider, "theme.css", NULL); // đọc file css
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
 }
-
+void change_year_input() {
+  
+}
 // lỗi  invalid cast from 'GtkButton' to 'GtkLabel' từ đây
-static void update_label_in_button_show(GtkLabel *sum, int num) {
+void update_label_in_button_show(GtkLabel *button, int value) {
   gchar *display;
-  display = g_strdup_printf("%d", num); // chuyển số thành string 
-  gtk_button_set_label(GTK_BUTTON(sum), display);
+  display = g_strdup_printf("%d", value); // chuyển int thành char
+  gtk_button_set_label(GTK_BUTTON(button), display);
   g_free(display); 
-
 }
 
-void add_one(GtkButton *button, GtkLabel *sum) {
-  int add = atoi(gtk_button_get_label(GTK_BUTTON(sum)));
+void add_one_year(GtkButton *button, GtkLabel *value) {
+  int add = atoi(gtk_button_get_label(GTK_BUTTON(value))); //atoi() biến char thành int
   add += 1;
-  update_label_in_button_show(GTK_LABEL(sum),add);
+  update_label_in_button_show(GTK_LABEL(value),add);
 }
 
-void minus_one(GtkButton *button, GtkLabel *sum) {
-  int minus = atoi(gtk_button_get_label(GTK_BUTTON(sum)));
+void minus_one_year(GtkButton *button, GtkLabel *value) {
+  int minus = atoi(gtk_button_get_label(GTK_BUTTON(value)));
   minus -= 1;
-  update_label_in_button_show(GTK_LABEL(sum),minus);
+  if (minus < 1){ // nếu value year < 1 thì year = 1
+    minus = 1; 
+    minus_one_year(button,value);
+    update_label_in_button_show(GTK_LABEL(value),minus);
+  }
+  else {
+    update_label_in_button_show(GTK_LABEL(value),minus);
+  }
 }
+
+void add_one_month(GtkButton *button, GtkLabel *value) {
+  int add = atoi(gtk_button_get_label(GTK_BUTTON(value))); //atoi() biến char thành int
+  add += 1;
+  if (add > 12){ // nếu value month > 12 thì month = 1
+    add = 1; 
+    update_label_in_button_show(GTK_LABEL(value),add);
+  }
+  else {
+    update_label_in_button_show(GTK_LABEL(value),add);
+  }
+}
+
+void minus_one_month(GtkButton *button, GtkLabel *value) {
+  int minus = atoi(gtk_button_get_label(GTK_BUTTON(value)));
+  minus -= 1;
+  if (minus < 1){ // nếu value month < 1 thì month = 1, year - 1
+    minus = 12; 
+    update_label_in_button_show(GTK_LABEL(value),minus);
+  }
+  else {
+    update_label_in_button_show(GTK_LABEL(value),minus);
+  }
+}
+
 //đến đây
 
 void month_show() {
@@ -261,7 +294,7 @@ int main(int argc, char *argv[]) { //main
   button_next_month = gtk_button_new_with_label("Next month");
   button_previous_year = gtk_button_new_with_label("Previous year");
   button_next_year = gtk_button_new_with_label("Next year");
-  show_month = gtk_button_new_with_label("December");
+  show_month = gtk_button_new_with_label("1");
   show_year = gtk_button_new_with_label("2021");
 
   //tạo khả năng fixed cho từng thành phần và mặc định vị trí
@@ -299,26 +332,28 @@ int main(int argc, char *argv[]) { //main
   g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),NULL);
   g_signal_connect(show_year,"clicked",G_CALLBACK(year_show),NULL);
 
-  g_signal_connect(button_next_year,"clicked",G_CALLBACK(add_one),show_year);
-  g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one),show_year);
-  g_signal_connect(button_next_month,"clicked",G_CALLBACK(add_one),show_month);
-  g_signal_connect(button_previous_month,"clicked",G_CALLBACK(minus_one),show_month);
+  g_signal_connect(button_next_year,"clicked",G_CALLBACK(add_one_year),show_year);
+  g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one_year),show_year);
+  g_signal_connect(button_next_month,"clicked",G_CALLBACK(add_one_month),show_month);
+  g_signal_connect(button_previous_month,"clicked",G_CALLBACK(minus_one_month),show_month);
 
 
   gtk_container_add(GTK_CONTAINER(window),fixed);
 
   gtk_widget_show_all(window); 
 
+//---------------------------load---fuction---------------------------------//
   load_css();// gọi hàm load_css
 
+//---------------------------C---------------------------------//
+
+//----------------------------------------------------/
   gtk_main(); //mainLoop
-
-//---------------------------------------//
-
-  return 0;
+//----------không viết gì dưới gtk_main() vì đây là điểm kết thúc-----------------------------//
 }
 
 // mở app msys2 64 bit
 // nhớ cd /c/thư mục chứ file 
 // gcc `pkg-config --cflags gtk+-3.0` -o app test.c `pkg-config --libs gtk+-3.0`
 // ./app
+
