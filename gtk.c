@@ -17,20 +17,52 @@
 //------------------------------------------Hân---------Authentication---------------------------------------------//
 
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
+
+// khai biến ở đây để tất cả các function đều truy cập được
+GtkWidget *entry_year, *entry_month; // in function month_show and year_show
+GtkWidget *month_dialog, *year_dialog;  // in function month_show and year_show
+
+//--------------------------------//
 static void load_css() {
   GtkCssProvider *cssProvider = gtk_css_provider_new();
   gtk_css_provider_load_from_path(cssProvider, "theme.css", NULL); // đọc file css
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
 }
-void change_year_input() {
-  
-}
+
 // lỗi  invalid cast from 'GtkButton' to 'GtkLabel' từ đây
-void update_label_in_button_show(GtkLabel *button, int value) {
+void update_label_in_button_show(GtkLabel *button, int value) { //cập nhật label trong button đươc3 trỏ tới
   gchar *display;
   display = g_strdup_printf("%d", value); // chuyển int thành char
   gtk_button_set_label(GTK_BUTTON(button), display);
-  g_free(display); 
+  // g_free(display); //
+}
+
+void add_year_input(GtkButton *button, GtkButton *button_input) { // lấy dữ liệu từ input year
+  int data = atoi(gtk_entry_get_text(GTK_ENTRY(entry_year))); 
+
+  if (data < 1){ //nếu year input < 1 thì year = 1
+    data = 1;
+    update_label_in_button_show(GTK_LABEL(button_input),data);
+  }
+  else {
+    update_label_in_button_show(GTK_LABEL(button_input),data);
+  }
+
+  gtk_widget_destroy(year_dialog);
+}
+
+void add_month_input(GtkButton *button, GtkButton *button_input) { // lấy dữ liệu từ input month
+  int data = atoi(gtk_entry_get_text(GTK_ENTRY(entry_month))); 
+
+  if (data < 1 || data > 12){ //nếu month input < 1 hoặc > 12 thì month = 1
+    data = 1;
+    update_label_in_button_show(GTK_LABEL(button_input),data);
+  }
+  else {
+    update_label_in_button_show(GTK_LABEL(button_input),data);
+  }
+
+  gtk_widget_destroy(month_dialog);
 }
 
 void add_one_year(GtkButton *button, GtkLabel *value) {
@@ -78,10 +110,9 @@ void minus_one_month(GtkButton *button, GtkLabel *value) {
 
 //đến đây
 
-void month_show() {
-  GtkWidget *month_dialog, *container_month;
+void month_show(GtkButton *button, GtkButton *button_main) {
+  GtkWidget *container_month;
   GtkWidget *label_month;
-  GtkWidget *entry_month;
   GtkWidget *button_enter;
 
   month_dialog = gtk_dialog_new();
@@ -100,13 +131,14 @@ void month_show() {
   gtk_container_add(GTK_CONTAINER(container_month),entry_month);
   gtk_container_add(GTK_CONTAINER(container_month),button_enter);
 
+  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_month_input),button_main);
+
   gtk_widget_show_all(month_dialog);
 }
 
-void year_show() {
-  GtkWidget *year_dialog, *container_year;
+void year_show(GtkButton *button, GtkButton *button_main) {
+  GtkWidget *container_year;
   GtkWidget *label_year;
-  GtkWidget *entry_year;
   GtkWidget *button_enter;
 
   year_dialog = gtk_dialog_new();
@@ -124,6 +156,8 @@ void year_show() {
   gtk_container_add(GTK_CONTAINER(container_year),label_year);
   gtk_container_add(GTK_CONTAINER(container_year),entry_year);
   gtk_container_add(GTK_CONTAINER(container_year),button_enter);
+
+  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_year_input),button_main);
 
   gtk_widget_show_all(year_dialog);
   
@@ -329,8 +363,9 @@ int main(int argc, char *argv[]) { //main
   g_signal_connect(button_exit,"clicked",G_CALLBACK(exit_screen),NULL);
   g_signal_connect(button_login,"clicked",G_CALLBACK(login_dialog_screen),NULL);
   g_signal_connect(button_register,"clicked",G_CALLBACK(register_dialog_screen),NULL);
-  g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),NULL);
-  g_signal_connect(show_year,"clicked",G_CALLBACK(year_show),NULL);
+  
+  g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),show_month);
+  g_signal_connect(show_year,"clicked",G_CALLBACK(year_show),show_year);
 
   g_signal_connect(button_next_year,"clicked",G_CALLBACK(add_one_year),show_year);
   g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one_year),show_year);
@@ -354,6 +389,6 @@ int main(int argc, char *argv[]) { //main
 
 // mở app msys2 64 bit
 // nhớ cd /c/thư mục chứ file 
-// gcc `pkg-config --cflags gtk+-3.0` -o app test.c `pkg-config --libs gtk+-3.0`
+// gcc `pkg-config --cflags gtk+-3.0` -o app gtk.c `pkg-config --libs gtk+-3.0`
 // ./app
 
