@@ -31,14 +31,17 @@ window {
 }
 
 #button_main_left {
-    min-width: 150px;
+    min-width: 75px;
     min-height: 25px;
-
+    border: 0;
+    font-size: 30px;
 }
 
 #button_main_right {
-    min-width: 150px;
+    min-width: 75px;
     min-height: 25px;
+    border: 0;
+    font-size: 30px;
 
 }
 
@@ -46,14 +49,31 @@ window {
     border: 0;
     min-width: 100px;
     min-height: 25px;
-    font-size: 35px;
-
+    font-size: 45px;
+    background: #f5f2e7;
+    box-shadow: none;
 }
 
+#show_month:focus {
+    border: none;
+    outline: none;
+}
+
+
 #show_year {
-    border: 0;
+    border: none;
+    box-shadow: none;
     min-width: 100px;
     min-height: 25px;   
-    font-size: 35px;
+    font-size: 78px;
+    background: #f5f2e7;
+}
 
+#show_year:focus {
+    border: none;
+    outline: none;
+}
+
+#dayOfWeek_label {
+    font-size: 28px;
 }

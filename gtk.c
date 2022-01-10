@@ -7,10 +7,10 @@
 #include <time.h>
 #include <stdbool.h>
 //--------------------Hân----------------------//
-#include <string.h>
 //------------------ALL------------------//
 #include <stdio.h> 
 #include <stdlib.h>
+#include <string.h>
 
 //-----------------------------------------Thọ---------Calendar----------------------------------------------//
 
@@ -21,6 +21,9 @@
 // khai biến ở đây để tất cả các function đều truy cập được
 GtkWidget *entry_year, *entry_month; // in function month_show and year_show
 GtkWidget *month_dialog, *year_dialog;  // in function month_show and year_show
+GtkWidget *show_month, *show_year; //in function main
+
+char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
 
 //--------------------------------//
 static void load_css() {
@@ -30,85 +33,99 @@ static void load_css() {
 }
 
 // lỗi  invalid cast from 'GtkButton' to 'GtkLabel' từ đây
-void update_label_in_button_show(GtkLabel *button, int value) { //cập nhật label trong button đươc3 trỏ tới
+void update_label_in_year_show(GtkButton *button, int value) { //cập nhật label trong button đươc3 trỏ tới
   gchar *display;
   display = g_strdup_printf("%d", value); // chuyển int thành char
-  gtk_button_set_label(GTK_BUTTON(button), display);
+  gtk_button_set_label(GTK_BUTTON(show_year), display); //vì set label phải chuyển thành char mớ nhận được
   // g_free(display); //
 }
 
-void add_year_input(GtkButton *button, GtkButton *button_input) { // lấy dữ liệu từ input year
+void update_label_in_month_show(GtkLabel *button, int value) { //cập nhật label trong button đươc3 trỏ tới
+  gtk_button_set_label(GTK_BUTTON(show_month), monthList[value]); //vì set label phải chuyển thành char mớ nhận được
+  // g_free(display); //
+}
+
+void add_year_input() { // lấy dữ liệu từ input year
   int data = atoi(gtk_entry_get_text(GTK_ENTRY(entry_year))); 
 
   if (data < 1){ //nếu year input < 1 thì year = 1
-    data = 1;
-    update_label_in_button_show(GTK_LABEL(button_input),data);
+    data = 1; 
+    update_label_in_year_show(GTK_BUTTON(show_year),data);
   }
   else {
-    update_label_in_button_show(GTK_LABEL(button_input),data);
+    update_label_in_year_show(GTK_BUTTON(show_year),data);
   }
-
   gtk_widget_destroy(year_dialog);
 }
 
-void add_month_input(GtkButton *button, GtkButton *button_input) { // lấy dữ liệu từ input month
+void add_month_input() { // lấy dữ liệu từ input month
   int data = atoi(gtk_entry_get_text(GTK_ENTRY(entry_month))); 
 
   if (data < 1 || data > 12){ //nếu month input < 1 hoặc > 12 thì month = 1
     data = 1;
-    update_label_in_button_show(GTK_LABEL(button_input),data);
+    update_label_in_month_show(NULL,data);
   }
   else {
-    update_label_in_button_show(GTK_LABEL(button_input),data);
+    update_label_in_month_show(NULL,data);
   }
 
   gtk_widget_destroy(month_dialog);
 }
 
-void add_one_year(GtkButton *button, GtkLabel *value) {
-  int add = atoi(gtk_button_get_label(GTK_BUTTON(value))); //atoi() biến char thành int
-  add += 1;
-  update_label_in_button_show(GTK_LABEL(value),add);
-}
+void add_one_month() {
+  gchar *get_charAdd1, *get_charAdd2;
+  for (int i = 1; i < 13; i++) {
+    get_charAdd1 = g_strdup_printf("%s",monthList[i]); // lấy chuỗi trong monthList
+    get_charAdd2 = g_strdup_printf("%s", gtk_button_get_label(GTK_BUTTON(show_month))); // lấy chuỗi của label month
+    if( strcmp(get_charAdd1, get_charAdd2) == 0) { // nếu hai chuỗi = nhau thì = 0 ==> chạy if
+      int add = i;
+      add += 1;
+      if (add > 12) { // nếu value month > 12 thì month = 1
+      add = 1; 
+      update_label_in_month_show(NULL,add);
 
-void minus_one_year(GtkButton *button, GtkLabel *value) {
-  int minus = atoi(gtk_button_get_label(GTK_BUTTON(value)));
-  minus -= 1;
-  if (minus < 1){ // nếu value year < 1 thì year = 1
-    minus = 1; 
-    minus_one_year(button,value);
-    update_label_in_button_show(GTK_LABEL(value),minus);
-  }
-  else {
-    update_label_in_button_show(GTK_LABEL(value),minus);
-  }
-}
+      // nếu hơn tháng 12 thì year + 1
+      int year = atoi(gtk_button_get_label(GTK_BUTTON(show_year))); 
+      year += 1;
+      update_label_in_year_show(GTK_BUTTON(show_year),year);
 
-void add_one_month(GtkButton *button, GtkLabel *value) {
-  int add = atoi(gtk_button_get_label(GTK_BUTTON(value))); //atoi() biến char thành int
-  add += 1;
-  if (add > 12){ // nếu value month > 12 thì month = 1
-    add = 1; 
-    update_label_in_button_show(GTK_LABEL(value),add);
-  }
-  else {
-    update_label_in_button_show(GTK_LABEL(value),add);
+      break; // dừng loop để trả đúng kết quả i
+      }
+
+      else {
+      update_label_in_month_show(NULL,add);
+      break;
+      }
+    }
   }
 }
 
-void minus_one_month(GtkButton *button, GtkLabel *value) {
-  int minus = atoi(gtk_button_get_label(GTK_BUTTON(value)));
-  minus -= 1;
-  if (minus < 1){ // nếu value month < 1 thì month = 1, year - 1
-    minus = 12; 
-    update_label_in_button_show(GTK_LABEL(value),minus);
-  }
-  else {
-    update_label_in_button_show(GTK_LABEL(value),minus);
+void minus_one_month() {
+  gchar *get_charMinus1, *get_charMinus2;
+  for (int i = 1; i < 13; i++) {
+    get_charMinus1 = g_strdup_printf("%s",monthList[i]);
+    get_charMinus2 = g_strdup_printf("%s", gtk_button_get_label(GTK_BUTTON(show_month)));
+    if(strcmp(get_charMinus1, get_charMinus2) == 0) {
+      int minus = i;
+      minus -= 1;
+      if (minus < 1) { // nếu value month > 12 thì month = 1
+      minus = 12; 
+      update_label_in_month_show(NULL,minus);
+
+      int year = atoi(gtk_button_get_label(GTK_BUTTON(show_year))); 
+      year -= 1;
+      update_label_in_year_show(GTK_BUTTON(show_year),year);
+
+      break;
+      }
+      
+      else {
+      update_label_in_month_show(NULL,minus);
+      break;
+      }
+    }
   }
 }
-
-//đến đây
 
 void month_show(GtkButton *button, GtkButton *button_main) {
   GtkWidget *container_month;
@@ -156,6 +173,8 @@ void year_show(GtkButton *button, GtkButton *button_main) {
   gtk_container_add(GTK_CONTAINER(container_year),label_year);
   gtk_container_add(GTK_CONTAINER(container_year),entry_year);
   gtk_container_add(GTK_CONTAINER(container_year),button_enter);
+
+  
 
   g_signal_connect(button_enter,"clicked",G_CALLBACK(add_year_input),button_main);
 
@@ -304,8 +323,8 @@ int main(int argc, char *argv[]) { //main
   //add biến
   GtkWidget *window, *fixed;
   GtkWidget *button_exit, *button_login, *button_register, *button_logout, *button_add_event, *button_delete_event;
-  GtkWidget *button_previous_month, *button_next_month, *button_previous_year,*button_next_year;
-  GtkWidget *show_month, *show_year;
+  GtkWidget *button_previous_month, *button_next_month;
+  GtkWidget *dayOfWeek_label; 
 
   //set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
@@ -324,12 +343,13 @@ int main(int argc, char *argv[]) { //main
   button_logout = gtk_button_new_with_label("Logout");
   button_add_event = gtk_button_new_with_label("Add Event");
   button_delete_event = gtk_button_new_with_label("Delete Event");
-  button_previous_month = gtk_button_new_with_label("Previous month");
-  button_next_month = gtk_button_new_with_label("Next month");
-  button_previous_year = gtk_button_new_with_label("Previous year");
-  button_next_year = gtk_button_new_with_label("Next year");
-  show_month = gtk_button_new_with_label("1");
+  button_previous_month = gtk_button_new_with_label("<<");
+  button_next_month = gtk_button_new_with_label(">>");
+  show_month = gtk_button_new_with_label("February");
   show_year = gtk_button_new_with_label("2021");
+
+  //tạo label
+  dayOfWeek_label = gtk_label_new("Sunday Monday Tuesday Wednesday Thursday Friday Saturday");
 
   //tạo khả năng fixed cho từng thành phần và mặc định vị trí
   gtk_fixed_put(GTK_FIXED(fixed), button_exit, 1300, 760); 
@@ -337,12 +357,11 @@ int main(int argc, char *argv[]) { //main
   gtk_fixed_put(GTK_FIXED(fixed), button_add_event, 1300, 250);
   gtk_fixed_put(GTK_FIXED(fixed), button_delete_event, 1300, 300);
   gtk_fixed_put(GTK_FIXED(fixed), button_register, 1300, 150);
-  gtk_fixed_put(GTK_FIXED(fixed), button_previous_month, 400, 250);
-  gtk_fixed_put(GTK_FIXED(fixed), button_next_month, 900, 250);
-  gtk_fixed_put(GTK_FIXED(fixed), button_previous_year, 400, 150);
-  gtk_fixed_put(GTK_FIXED(fixed), button_next_year, 900, 150);
-  gtk_fixed_put(GTK_FIXED(fixed), show_month, 680, 250);
-  gtk_fixed_put(GTK_FIXED(fixed), show_year, 680, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), button_previous_month, 400, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), button_next_month, 900, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), show_month, 680, 135);
+  gtk_fixed_put(GTK_FIXED(fixed), show_year, 650, 30);
+  gtk_fixed_put(GTK_FIXED(fixed), dayOfWeek_label, 300, 400);
 
   //set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit,"button_menu"); 
@@ -353,10 +372,9 @@ int main(int argc, char *argv[]) { //main
   gtk_widget_set_name(button_delete_event,"button_menu"); 
   gtk_widget_set_name(button_previous_month,"button_main_left");
   gtk_widget_set_name(button_next_month,"button_main_right");
-  gtk_widget_set_name(button_previous_year,"button_main_left");
-  gtk_widget_set_name(button_next_year,"button_main_right");
   gtk_widget_set_name(show_month,"show_month");
   gtk_widget_set_name(show_year,"show_year");
+  gtk_widget_set_name(dayOfWeek_label,"dayOfWeek_label");
 
 //gọi hàm khi nhấn button
   g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
@@ -367,11 +385,8 @@ int main(int argc, char *argv[]) { //main
   g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),show_month);
   g_signal_connect(show_year,"clicked",G_CALLBACK(year_show),show_year);
 
-  g_signal_connect(button_next_year,"clicked",G_CALLBACK(add_one_year),show_year);
-  g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one_year),show_year);
   g_signal_connect(button_next_month,"clicked",G_CALLBACK(add_one_month),show_month);
   g_signal_connect(button_previous_month,"clicked",G_CALLBACK(minus_one_month),show_month);
-
 
   gtk_container_add(GTK_CONTAINER(window),fixed);
 
