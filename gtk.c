@@ -33,14 +33,14 @@ static void load_css() {
 }
 
 // lỗi  invalid cast from 'GtkButton' to 'GtkLabel' từ đây
-void update_label_in_year_show(GtkButton *button, int value) { //cập nhật label trong button đươc3 trỏ tới
+void update_label_in_year_show(GtkButton *button, int value) { //cập nhật label trong button 
   gchar *display;
   display = g_strdup_printf("%d", value); // chuyển int thành char
   gtk_button_set_label(GTK_BUTTON(show_year), display); //vì set label phải chuyển thành char mớ nhận được
   // g_free(display); //
 }
 
-void update_label_in_month_show(GtkLabel *button, int value) { //cập nhật label trong button đươc3 trỏ tới
+void update_label_in_month_show(GtkLabel *button, int value) { //cập nhật label trong button 
   gtk_button_set_label(GTK_BUTTON(show_month), monthList[value]); //vì set label phải chuyển thành char mớ nhận được
   // g_free(display); //
 }
@@ -89,12 +89,12 @@ void add_one_month() {
       year += 1;
       update_label_in_year_show(GTK_BUTTON(show_year),year);
 
-      break; // dừng loop để trả đúng kết quả i
+        break; // dừng loop để trả đúng kết quả i
       }
 
       else {
       update_label_in_month_show(NULL,add);
-      break;
+        break;
       }
     }
   }
@@ -116,18 +116,23 @@ void minus_one_month() {
       year -= 1;
       update_label_in_year_show(GTK_BUTTON(show_year),year);
 
-      break;
+        break;
       }
       
       else {
       update_label_in_month_show(NULL,minus);
-      break;
+        break;
       }
     }
   }
 }
 
-void month_show(GtkButton *button, GtkButton *button_main) {
+void addEvent_show() {
+  GtkWidget *addEvent_dialog, *container_addEvent;
+  GtkWidget *name_event, *day_event, *month_event, *year_event, *note_event;
+}
+
+void month_show() {
   GtkWidget *container_month;
   GtkWidget *label_month;
   GtkWidget *button_enter;
@@ -148,12 +153,12 @@ void month_show(GtkButton *button, GtkButton *button_main) {
   gtk_container_add(GTK_CONTAINER(container_month),entry_month);
   gtk_container_add(GTK_CONTAINER(container_month),button_enter);
 
-  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_month_input),button_main);
+  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_month_input),NULL);
 
   gtk_widget_show_all(month_dialog);
 }
 
-void year_show(GtkButton *button, GtkButton *button_main) {
+void year_show() {
   GtkWidget *container_year;
   GtkWidget *label_year;
   GtkWidget *button_enter;
@@ -176,7 +181,7 @@ void year_show(GtkButton *button, GtkButton *button_main) {
 
   
 
-  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_year_input),button_main);
+  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_year_input),NULL);
 
   gtk_widget_show_all(year_dialog);
   
@@ -315,7 +320,6 @@ void register_dialog_screen() { //màn hình register
   gtk_widget_show_all(register_dialog);
 }
 
-
 int main(int argc, char *argv[]) { //main
 
   gtk_init(&argc,&argv);
@@ -358,9 +362,9 @@ int main(int argc, char *argv[]) { //main
   gtk_fixed_put(GTK_FIXED(fixed), button_delete_event, 1300, 300);
   gtk_fixed_put(GTK_FIXED(fixed), button_register, 1300, 150);
   gtk_fixed_put(GTK_FIXED(fixed), button_previous_month, 400, 150);
-  gtk_fixed_put(GTK_FIXED(fixed), button_next_month, 900, 150);
-  gtk_fixed_put(GTK_FIXED(fixed), show_month, 680, 135);
-  gtk_fixed_put(GTK_FIXED(fixed), show_year, 650, 30);
+  gtk_fixed_put(GTK_FIXED(fixed), button_next_month, 850, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), show_month, 580, 135);
+  gtk_fixed_put(GTK_FIXED(fixed), show_year, 580, 30);
   gtk_fixed_put(GTK_FIXED(fixed), dayOfWeek_label, 300, 400);
 
   //set biến thành id name để css có thể nhận dạng
