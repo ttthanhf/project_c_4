@@ -1,0 +1,108 @@
+window {
+    background: #f5f2e7;
+
+}
+#button_menu {
+    background: #E8D0C0;
+    min-width: 150px;
+    min-height: 25px;
+    color: #916343;
+    border: 0;
+    font-size: 24px;
+}
+
+#button_menu:hover {
+    color: red;
+    background: #ddd0ab;
+}
+
+#authentication_label {
+    font-size: 24px;
+}
+
+#authentication_entry {
+    font-size: 22px;
+}
+
+#button_submit {
+    min-width: 150px;
+    min-height: 25px;
+    font-size: 24px;
+}
+
+#button_main_left {
+    min-width: 75px;
+    min-height: 25px;
+    border: 0;
+    font-size: 30px;
+}
+
+#button_main_right {
+    min-width: 75px;
+    min-height: 25px;
+    border: 0;
+    font-size: 30px;
+
+}
+
+#show_month  {
+    border: 0;
+    min-width: 100px;
+    min-height: 25px;
+    font-size: 45px;
+    background: #f5f2e7;
+    box-shadow: none;
+}
+
+#show_month:focus {
+    border: none;
+    outline: none;
+}
+
+
+#show_year {
+    border: none;
+    box-shadow: none;
+    min-width: 100px;
+    min-height: 25px;   
+    font-size: 78px;
+    background: #f5f2e7;
+}
+
+#show_year:focus {
+    border: none;
+    outline: none;
+}
+
+#note_event_entry {
+    padding-bottom: 50px;
+    padding-top: 10px;
+    min-height: 0px; 
+    min-width: 300px;
+
+}
+
+#calendar {
+    padding: 15px 30px 5px 30px; /*top right bottom left*/
+    font-size: 28px;
+    background: #f5f2e7;
+    border: none;
+}
+
+#calendar:selected { /*button day select*/
+	background-color: #DDAAAA;
+}
+
+#calendar:focus {
+    border: none;
+    outline: none;
+}
+
+#calendar.highlight { /*day list label*/
+    color: black;
+
+}
+
+#calendar.header {
+    display: none;
+}
