@@ -6,19 +6,19 @@
 // #include <windows.h>
 #include <stdio.h> 
 #include <stdlib.h>
-
-//-----------------------------------------Thọ---------Calendar----------------------------------------------//
+// #include <time.h>
 
 //------------------------------------------Hân---------Authentication---------------------------------------------//
 
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
 
 // khai biến ở đây để tất cả các function đều truy cập được
-GtkWidget *entry_year, *entry_month; // in function month_show and year_show
+GtkWidget *entry_year, *entry_month; // in function month_show and next from year_show
 GtkWidget *show_month, *show_year; //in function main
 GtkWidget *calendar;  //in fuction main
 GtkWidget *goto_day_entry, *goto_month_entry, *goto_year_entry; // in function goto_day_show
-
+GtkWidget *goto_dialog, *year_dialog, *month_dialog; //in function goto_day_show and next from year_show and next from month_show
+ 
 char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
 
 guint year_today, month_today, day_today;// in function main
@@ -64,27 +64,27 @@ void update_day(int day) {
   gtk_calendar_select_day(GTK_CALENDAR(calendar),day);
 }
 
-void add_year_input() { // lấy dữ liệu từ input year
-  int data = atoi(gtk_entry_get_text(GTK_ENTRY(entry_year))); // atoi là biến chuỗi số thành giá trị số
+void add_year_input(gpointer *data, GtkWidget *error_label) { // lấy dữ liệu từ input year
+  int year = atoi(gtk_entry_get_text(GTK_ENTRY(entry_year))); // atoi là biến chuỗi số thành giá trị số
 
-  if (data < 1){ //nếu year input < 1 thì year = 1
-    data = 1; 
-    update_year(data);
+  if (year < 1 || year > 9999){ //nếu year input < 1 or > 9999 thì báo lỗi
+    gtk_widget_show(error_label);
   }
   else {
-    update_year(data);
+    update_year(year);
+    gtk_widget_destroy(year_dialog);
   }
 }
 
-void add_month_input() { // lấy dữ liệu từ input month
-  int data = atoi(gtk_entry_get_text(GTK_ENTRY(entry_month))); 
+void add_month_input(gpointer *data, GtkWidget *error_label) { // lấy dữ liệu từ input month
+  int month = atoi(gtk_entry_get_text(GTK_ENTRY(entry_month))); 
 
-  if (data < 1 || data > 12){ //nếu month input < 1 hoặc > 12 thì month = 1
-    data = 1;
-    update_month(data);
+  if (month < 1 || month > 12){ //nếu month input < 1 hoặc > 12 thì báo lỗi
+    gtk_widget_show(error_label);
   }
   else {
-    update_month(data);
+    update_month(month);
+    gtk_widget_destroy(month_dialog);
   }
 }
 
@@ -164,22 +164,80 @@ void minus_one_month() {
   }
 }
 
-void goto_activate() {
+void goto_activate(gpointer *data, GtkWidget *error_label) {
   int day = atoi(gtk_entry_get_text(GTK_ENTRY(goto_day_entry)));
   int month = atoi(gtk_entry_get_text(GTK_ENTRY(goto_month_entry)));
   int year = atoi(gtk_entry_get_text(GTK_ENTRY(goto_year_entry)));
-  update_month(month);
-  update_year(year);
-  update_day(day);
+  int error; //biến để kiểm tra có lỗi hay ko
+
+  if (year < 1 || year > 9999) { // nếu year > 9999 or < 1 thì thống báo lỗi
+    error = 1;
+  }
+  else {
+    if (month < 1 || month > 12) { // nếu month > 12 or < 1 thì thống báo lỗi
+      error = 1;
+    }
+    else {
+      if(month == 4 || month == 6 || month == 9 || month == 11 ) { // check tháng 4 6 9 11 
+        if(day < 1 || day > 30) { 
+          error = 1;
+        }
+        else {
+          error = 0;
+        }
+      }
+      else {
+        if (month == 2 ) {
+          if ((year%4==0) && ((year%400==0) || (year%100 != 0))) { // kiem tra xem co phai la nam nhuan
+            if (day < 1 || day > 29) { // neu nam nhuan thi thang 2 có 29 ngày
+              error = 1;
+            }
+            else {
+              error = 0;
+            }
+          }
+          else {
+            if (day < 1 || day > 28) { // nam ko nhuan thi thang 2 co 28 ngay
+              error = 1;
+            }
+            else {
+              error = 0;
+            }
+          }
+        }
+        else { // tháng còn lại
+          if (day < 1 || day > 31) {
+            error = 1;
+          }
+          else {
+            error = 0;
+          }
+        }
+      }
+    }
+  }
+
+  switch (error) {
+  case 0: // error = 0 = ko có lỗi
+    update_day(day);
+    update_month(month);
+    update_year(year);
+    gtk_widget_destroy(goto_dialog);
+    break;
+  case 1: // error = 1 = có lỗi
+    gtk_widget_show(error_label);
+    break;
+  }
 }
 
 void goto_day_show() {
-  GtkWidget *dialog, *container;
+  GtkWidget *container;
   GtkWidget *day_label, *month_label, *year_label;
   GtkWidget *fixed;
   GtkWidget *button;
+  GtkWidget *error_label;
 
-  dialog = gtk_dialog_new();
+  goto_dialog = gtk_dialog_new();
   fixed = gtk_fixed_new();
 
   goto_day_entry = gtk_entry_new();
@@ -189,6 +247,7 @@ void goto_day_show() {
   day_label = gtk_label_new("Day:");
   month_label = gtk_label_new("Month:");
   year_label = gtk_label_new("Year:");
+  error_label = gtk_label_new("Invalid number. Try again !");
 
   button = gtk_button_new_with_label("Go to");
 
@@ -198,23 +257,25 @@ void goto_day_show() {
   gtk_fixed_put(GTK_FIXED(fixed), day_label, 10, 20);
   gtk_fixed_put(GTK_FIXED(fixed), month_label, 10, 60);
   gtk_fixed_put(GTK_FIXED(fixed), year_label, 10, 100);
-  gtk_fixed_put(GTK_FIXED(fixed), button, 90, 150);
+  gtk_fixed_put(GTK_FIXED(fixed), button, 85, 170);
+  gtk_fixed_put(GTK_FIXED(fixed), error_label, 32, 132);
 
   gtk_widget_set_name(goto_day_entry,"goto_entry");
   gtk_widget_set_name(goto_month_entry,"goto_entry");
   gtk_widget_set_name(goto_year_entry,"goto_entry");
+  gtk_widget_set_name(error_label,"error_label");
 
-  gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
+  gtk_window_set_position(GTK_WINDOW(goto_dialog),GTK_WIN_POS_CENTER);
 
-  g_signal_connect(button,"clicked",G_CALLBACK(goto_activate),NULL);
-  g_signal_connect(button,"clicked",G_CALLBACK(destroy),dialog);
+  g_signal_connect(button,"clicked",G_CALLBACK(goto_activate),error_label);
 
-
-  container = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+  container = gtk_dialog_get_content_area(GTK_DIALOG(goto_dialog));
 
   gtk_container_add(GTK_CONTAINER(container),fixed);
 
-  gtk_widget_show_all(dialog);
+  gtk_widget_show_all(goto_dialog);
+
+  gtk_widget_hide(error_label);
 
 }
 
@@ -281,59 +342,69 @@ void addEvent_show_double_click() {
 }
 
 void month_show() {
-  GtkWidget *dialog;
   GtkWidget *container_month;
   GtkWidget *label_month;
   GtkWidget *button_enter;
+  GtkWidget *error_label;
 
-  dialog = gtk_dialog_new();
+  month_dialog = gtk_dialog_new();
 
   label_month = gtk_label_new("Input month:");
+  error_label = gtk_label_new("Invalid number. Try from 1 to 12 !");
 
   entry_month = gtk_entry_new();
 
   button_enter = gtk_button_new_with_label("Enter");
   
-  container_month = gtk_dialog_get_content_area(GTK_DIALOG(dialog)); //đưa dialog vào xử lí tạo vùng để hiển thị
+  container_month = gtk_dialog_get_content_area(GTK_DIALOG(month_dialog)); //đưa dialog vào xử lí tạo vùng để hiển thị
 
-  gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
+  gtk_window_set_position(GTK_WINDOW(month_dialog),GTK_WIN_POS_CENTER);
   
   gtk_container_add(GTK_CONTAINER(container_month),label_month);
   gtk_container_add(GTK_CONTAINER(container_month),entry_month);
+  gtk_container_add(GTK_CONTAINER(container_month),error_label);
   gtk_container_add(GTK_CONTAINER(container_month),button_enter);
 
-  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_month_input),NULL);
-  g_signal_connect(button_enter,"clicked",G_CALLBACK(destroy),dialog);
+  gtk_widget_set_name(error_label,"error_label");
 
-  gtk_widget_show_all(dialog);
+  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_month_input),error_label);
+
+  gtk_widget_show_all(month_dialog);
+
+  gtk_widget_hide(error_label);
 }
 
 void year_show() {
-  GtkWidget *dialog;
   GtkWidget *container_year;
   GtkWidget *label_year;
   GtkWidget *button_enter;
+  GtkWidget *error_label;
 
-  dialog = gtk_dialog_new();
+  year_dialog = gtk_dialog_new();
 
   label_year = gtk_label_new("Input year:");
+  error_label = gtk_label_new("Invalid number. Try from 1 to 9999 !");
 
   entry_year = gtk_entry_new();
 
   button_enter = gtk_button_new_with_label("Enter");
   
-  container_year = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+  container_year = gtk_dialog_get_content_area(GTK_DIALOG(year_dialog));
 
-  gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
+  gtk_window_set_position(GTK_WINDOW(year_dialog),GTK_WIN_POS_CENTER);
   
   gtk_container_add(GTK_CONTAINER(container_year),label_year);
   gtk_container_add(GTK_CONTAINER(container_year),entry_year);
+  gtk_container_add(GTK_CONTAINER(container_year),error_label);
   gtk_container_add(GTK_CONTAINER(container_year),button_enter);
 
-  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_year_input),NULL);
-  g_signal_connect(button_enter,"clicked",G_CALLBACK(destroy),dialog);
+  gtk_widget_set_name(error_label,"error_label");
+  
+  g_signal_connect(button_enter,"clicked",G_CALLBACK(add_year_input),error_label);
 
-  gtk_widget_show_all(dialog);
+  gtk_widget_show_all(year_dialog);
+
+  gtk_widget_hide(error_label);
   
 }
 
@@ -475,12 +546,6 @@ void register_dialog_screen() { //màn hình register
 }
 
 int main(int argc, char *argv[]) { //main
-
-//----------time.h--------------//
-
-// printf("now: %02d:%02d:%02d ",tm.tm_hour, tm.tm_min, tm.tm_sec);
-
-//----------gtk--------------//
 
   gtk_init(&argc,&argv);
 

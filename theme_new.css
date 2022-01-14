@@ -100,6 +100,9 @@ window {
 
 }
 
+#error_label {
+    color: red;
+}
 #calendar {
     padding: 15px 30px 10px 30px; /*top right bottom left*/
     font-size: 28px;
