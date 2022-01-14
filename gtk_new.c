@@ -67,24 +67,24 @@ void update_day(int day) {
 void add_year_input(gpointer *data, GtkWidget *error_label) { // lấy dữ liệu từ input year
   int year = atoi(gtk_entry_get_text(GTK_ENTRY(entry_year))); // atoi là biến chuỗi số thành giá trị số
 
-  if (year < 1 || year > 9999){ //nếu year input < 1 or > 9999 thì báo lỗi
-    gtk_widget_show(error_label);
-  }
-  else {
+  if (year >= 1 && year <= 9999){ //nếu year input < 1 or > 9999 thì báo lỗi
     update_year(year);
     gtk_widget_destroy(year_dialog);
+  }
+  else {
+    gtk_widget_show(error_label);
   }
 }
 
 void add_month_input(gpointer *data, GtkWidget *error_label) { // lấy dữ liệu từ input month
   int month = atoi(gtk_entry_get_text(GTK_ENTRY(entry_month))); 
 
-  if (month < 1 || month > 12){ //nếu month input < 1 hoặc > 12 thì báo lỗi
-    gtk_widget_show(error_label);
-  }
-  else {
+  if (month >= 1 && month <= 12){ //nếu month input < 1 hoặc > 12 thì báo lỗi
     update_month(month);
     gtk_widget_destroy(month_dialog);
+  }
+  else {
+    gtk_widget_show(error_label);
   }
 }
 
@@ -170,51 +170,51 @@ void goto_activate(gpointer *data, GtkWidget *error_label) {
   int year = atoi(gtk_entry_get_text(GTK_ENTRY(goto_year_entry)));
   int error; //biến để kiểm tra có lỗi hay ko
 
-  if (year < 1 || year > 9999) { // nếu year > 9999 or < 1 thì thống báo lỗi
-    error = 1;
-  }
-  else {
-    if (month < 1 || month > 12) { // nếu month > 12 or < 1 thì thống báo lỗi
-      error = 1;
-    }
-    else {
+  if (year >= 1 && year <= 9999) { // year = 1:9999
+    if (month >= 1 && month <= 12) { // nếu month > 12 or < 1 thì thống báo lỗi
       if(month == 4 || month == 6 || month == 9 || month == 11 ) { // check tháng 4 6 9 11 
-        if(day < 1 || day > 30) { 
-          error = 1;
+        if(day >= 1 && day <= 30) { 
+          error = 0;
         }
         else {
-          error = 0;
+          error = 1;
         }
       }
       else {
-        if (month == 2 ) {
+        if (month == 2) {
           if ((year%4==0) && ((year%400==0) || (year%100 != 0))) { // kiem tra xem co phai la nam nhuan
-            if (day < 1 || day > 29) { // neu nam nhuan thi thang 2 có 29 ngày
-              error = 1;
+            if (day >= 1 && day <= 29) { // neu nam nhuan thi thang 2 có 29 ngày
+              error = 0;
             }
             else {
-              error = 0;
+              error = 1;
             }
           }
           else {
-            if (day < 1 || day > 28) { // nam ko nhuan thi thang 2 co 28 ngay
-              error = 1;
+            if (day >= 1 && day <= 28) { // nam ko nhuan thi thang 2 co 28 ngay
+              error = 0;
             }
             else {
-              error = 0;
+              error = 1;
             }
           }
         }
         else { // tháng còn lại
-          if (day < 1 || day > 31) {
-            error = 1;
+          if (day >= 1 && day <= 31) {
+            error = 0;
           }
           else {
-            error = 0;
+            error = 1;
           }
         }
       }
     }
+    else {
+      error = 1;
+    }
+  }
+  else {
+    error = 1;
   }
 
   switch (error) {
@@ -258,7 +258,7 @@ void goto_day_show() {
   gtk_fixed_put(GTK_FIXED(fixed), month_label, 10, 60);
   gtk_fixed_put(GTK_FIXED(fixed), year_label, 10, 100);
   gtk_fixed_put(GTK_FIXED(fixed), button, 85, 170);
-  gtk_fixed_put(GTK_FIXED(fixed), error_label, 32, 132);
+  gtk_fixed_put(GTK_FIXED(fixed), error_label, 32, 135);
 
   gtk_widget_set_name(goto_day_entry,"goto_entry");
   gtk_widget_set_name(goto_month_entry,"goto_entry");
@@ -339,6 +339,11 @@ void addEvent_show_double_click() {
       gtk_widget_destroy(GTK_WIDGET(dialog));
       break;
   }
+}
+
+void eventList_show() {
+
+
 }
 
 void month_show() {
