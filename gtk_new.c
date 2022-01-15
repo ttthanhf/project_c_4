@@ -4,7 +4,7 @@
 //--------------------Thành------------------------//
 #include <gtk/gtk.h>
 // #include <windows.h>
-#include <stdio.h> 
+// #include <stdio.h> 
 #include <stdlib.h>
 // #include <time.h>
 
@@ -31,11 +31,25 @@ static void load_css() {
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
 }
 
-void update_time(GtkLabel *label_data) {
+gboolean update_time(gpointer label) {
   time_t t = time(NULL);
   struct tm tm = *localtime(&t);
-  gchar *display = g_strdup_printf("Opened at:\t%02d : %02d : %02d",tm.tm_hour, tm.tm_min, tm.tm_sec);
-  gtk_label_set_text(GTK_LABEL(label_data),display);  
+  gchar *display = g_strdup_printf("Clock:\t\t%02d : %02d : %02d (hh/mm/ss)",tm.tm_hour, tm.tm_min, tm.tm_sec);
+  gtk_label_set_text(GTK_LABEL(label),display);  
+
+  // return G_SOURCE_CONTINUE;
+}
+
+void update_today(gpointer label) {
+  gchar *display = g_strdup_printf("Today:\t\t%02d/%02d/%d (dd/mm/yyyy)",day_today,month_today + 1,year_today);
+  gtk_label_set_text(GTK_LABEL(label),display);  
+}
+
+gboolean update_choose(gpointer label) {
+  guint year_select, month_select, day_select;
+  gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_select, &month_select, &day_select); //chọn ngày đã được chọn lưu vào []_select
+  gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)",day_select,month_select + 1,year_select);
+  gtk_label_set_text(GTK_LABEL(label),display);  
 }
 
 void destroy(gpointer *data, GtkWidget *widget) {
@@ -251,21 +265,27 @@ void goto_day_show() {
 
   button = gtk_button_new_with_label("Go to");
 
-  gtk_fixed_put(GTK_FIXED(fixed), goto_day_entry, 70, 20);
-  gtk_fixed_put(GTK_FIXED(fixed), goto_month_entry, 70, 60);
-  gtk_fixed_put(GTK_FIXED(fixed), goto_year_entry, 70, 100);
-  gtk_fixed_put(GTK_FIXED(fixed), day_label, 10, 20);
-  gtk_fixed_put(GTK_FIXED(fixed), month_label, 10, 60);
-  gtk_fixed_put(GTK_FIXED(fixed), year_label, 10, 100);
-  gtk_fixed_put(GTK_FIXED(fixed), button, 85, 170);
-  gtk_fixed_put(GTK_FIXED(fixed), error_label, 32, 135);
+  gtk_entry_set_width_chars(GTK_ENTRY(goto_day_entry),3); // chỉnh kích thước entry theo số lượng chữ
+  gtk_entry_set_width_chars(GTK_ENTRY(goto_month_entry),3); // chỉnh kích thước entry theo số lượng chữ
+  gtk_entry_set_width_chars(GTK_ENTRY(goto_year_entry),5); // chỉnh kích thước entry theo số lượng chữ
+  
+  gtk_fixed_put(GTK_FIXED(fixed), goto_day_entry, 40, 18);
+  gtk_fixed_put(GTK_FIXED(fixed), goto_month_entry, 140, 18);
+  gtk_fixed_put(GTK_FIXED(fixed), goto_year_entry, 225, 16);
+  gtk_fixed_put(GTK_FIXED(fixed), day_label, 5, 20);
+  gtk_fixed_put(GTK_FIXED(fixed), month_label, 85, 20);
+  gtk_fixed_put(GTK_FIXED(fixed), year_label, 185, 20);
+  gtk_fixed_put(GTK_FIXED(fixed), button, 105, 90);
+  gtk_fixed_put(GTK_FIXED(fixed), error_label, 55, 55);
 
   gtk_widget_set_name(goto_day_entry,"goto_entry");
   gtk_widget_set_name(goto_month_entry,"goto_entry");
   gtk_widget_set_name(goto_year_entry,"goto_entry");
   gtk_widget_set_name(error_label,"error_label");
 
+  gtk_window_set_title(GTK_WINDOW(goto_dialog),"Choose date");
   gtk_window_set_position(GTK_WINDOW(goto_dialog),GTK_WIN_POS_CENTER);
+  gtk_container_set_border_width(GTK_CONTAINER(goto_dialog),10);
 
   g_signal_connect(button,"clicked",G_CALLBACK(goto_activate),error_label);
 
@@ -280,9 +300,19 @@ void goto_day_show() {
 }
 
 void addEvent_show() {
-  GtkWidget *addEvent_dialog, *container_addEvent;
-  GtkWidget *name_label, *day_label, *month_event, *year_event, *note_event;
-  GtkWidget *name_entry;
+  GtkWidget *dialog, *container, *fixed;
+  GtkWidget *name_label, *day_label, *month_label, *year_label, *note_label;
+  GtkWidget *name_entry, *day_entry, *month_entry, *year_entry, *note_entry;
+  GtkWidget *button;
+
+  dialog = gtk_dialog_new();
+  fixed = gtk_fixed_new();
+
+  name_label = gtk_label_new("Name:");
+  day_label = gtk_label_new("Day:");
+  month_label = gtk_label_new("Month:");
+  year_label = gtk_label_new("Year:");
+  note_label = gtk_label_new("Note:");
 }
 
 void addEvent_show_double_click() {
@@ -323,6 +353,7 @@ void addEvent_show_double_click() {
 
   gtk_window_set_position(GTK_WINDOW(dialog),GTK_WIN_POS_CENTER);
   gtk_window_set_title(GTK_WINDOW(dialog),"Add event");
+  gtk_container_set_border_width(GTK_CONTAINER(dialog),10);
 
   container = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
 
@@ -417,6 +448,7 @@ void today_set() {
   update_month(month_today + 1);
   update_year(year_today);
   update_day(day_today);
+
 }
 
 void exit_screen() {
@@ -432,6 +464,7 @@ void exit_screen() {
   gtk_dialog_add_buttons(GTK_DIALOG(exit_dialog),"Yes",1,"No",2,NULL); // yes = 1 , no = 2
 
   gtk_window_set_position(GTK_WINDOW(exit_dialog),GTK_WIN_POS_CENTER);
+  gtk_container_set_border_width(GTK_CONTAINER(exit_dialog),10);
 
   container_exit = gtk_dialog_get_content_area(GTK_DIALOG(exit_dialog));
 
@@ -561,6 +594,8 @@ int main(int argc, char *argv[]) { //main
   GtkWidget *button_previous_month, *button_next_month, *button_previous_year, *button_next_year;
   GtkWidget *button_goto_day, *button_today;
   GtkWidget *time_label;
+  GtkWidget *today_label, *choose_label;
+  GtkWidget *box_info;
 
   //set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
@@ -591,11 +626,15 @@ int main(int argc, char *argv[]) { //main
   show_month = gtk_button_new_with_label("");
   show_year = gtk_button_new_with_label("");
 
+  //----tạo box----
+  box_info = gtk_button_new();
+
   //tạo label
   time_label = gtk_label_new("");
+  today_label = gtk_label_new("");
+  choose_label = gtk_label_new("");
 
   //-----set label show show today--------//
-
   gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_today, &month_today, &day_today);
   update_month(month_today + 1);
   update_year(year_today);
@@ -616,8 +655,11 @@ int main(int argc, char *argv[]) { //main
   gtk_fixed_put(GTK_FIXED(fixed), show_month, 600, 135);
   gtk_fixed_put(GTK_FIXED(fixed), show_year, 600, 30);
   gtk_fixed_put(GTK_FIXED(fixed), calendar, 270, 210);
-  gtk_fixed_put(GTK_FIXED(fixed), time_label, 1310, 50);
-
+  gtk_fixed_put(GTK_FIXED(fixed), box_info, 10, 50);
+  gtk_fixed_put(GTK_FIXED(fixed), time_label, 20, 60);
+  gtk_fixed_put(GTK_FIXED(fixed), today_label, 20, 90);
+  gtk_fixed_put(GTK_FIXED(fixed), choose_label, 20, 120);
+  
   //set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit,"button_menu"); 
   gtk_widget_set_name(button_login,"button_menu"); 
@@ -626,15 +668,20 @@ int main(int argc, char *argv[]) { //main
   gtk_widget_set_name(button_register,"button_menu"); 
   gtk_widget_set_name(button_delete_event,"button_menu"); 
   gtk_widget_set_name(button_event_list,"button_menu"); 
+
   gtk_widget_set_name(button_previous_month,"button_main");
   gtk_widget_set_name(button_next_month,"button_main");
   gtk_widget_set_name(button_previous_year,"button_main");
   gtk_widget_set_name(button_next_year,"button_main");
+
   gtk_widget_set_name(button_goto_day,"goto_day");
   gtk_widget_set_name(button_today,"goto_day");
+
   gtk_widget_set_name(show_month,"show_month");
   gtk_widget_set_name(show_year,"show_year");
   gtk_widget_set_name(calendar,"calendar");
+  gtk_widget_set_name(box_info,"box_info");
+
 
 //gọi hàm khi nhấn button
   g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
@@ -662,13 +709,19 @@ int main(int argc, char *argv[]) { //main
 
 //---------------------------load---fuction---------------------------------//
   load_css();// gọi hàm load_css
-  
-  update_time(GTK_LABEL(time_label));
 
+  update_time(time_label);
+
+  update_today(today_label);
+  
+//-----------loop-----------//
+  g_timeout_add (1000, update_time,time_label);
+  g_timeout_add (100, update_choose,choose_label);
+  
 //---------------------------C---------------------------------//
 //-----------------------------test------------------//
 //----------------------------------------------------/
-  gtk_main(); //mainLoop
+  gtk_main(); 
 //----------không viết gì dưới gtk_main() vì đây là điểm kết thúc-----------------------------//
 }
 
