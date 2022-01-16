@@ -21,6 +21,8 @@ GtkWidget *show_month, *show_year; //in function main
 GtkWidget *calendar;  //in fuction main
 GtkWidget *goto_day_entry, *goto_month_entry, *goto_year_entry; // in function goto_day_show
 GtkWidget *goto_dialog, *year_dialog, *month_dialog; //in function goto_day_show and next from year_show and next from month_show
+GtkWidget *username_login_entry, *password_login_entry; //in function login_dialog_show 
+GtkWidget *login_dialog, *register_dialog; //in function login_dialog_show  and next from register_dialog_show
  
 char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
 
@@ -58,6 +60,8 @@ gboolean update_choose(gpointer label) {
 void destroy(gpointer *data, GtkWidget *widget) {
   gtk_widget_destroy(widget);
 }
+
+
 
 void update_year(int year) { //cập nhật label trong button 
   gchar *display;
@@ -476,9 +480,9 @@ void exit_screen() {
 
 void register_dialog_screen() { //màn hình register
 
-  GtkWidget *register_dialog, *container_register_dialog;
-  GtkWidget *username_label, *password_label, *retypePassword_label;
-  GtkWidget *username_entry, *password_entry, *retypePassword_entry;
+  GtkWidget *container_register_dialog;
+  GtkWidget *username_label, *password_label, *retypePassword_label, *fullname_label;
+  GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_entry;
   GtkWidget *button_submit;
   GtkWidget *fixed_register;
   GtkWidget *register_label;
@@ -488,11 +492,13 @@ void register_dialog_screen() { //màn hình register
 
   button_submit = gtk_button_new_with_label("Register");
   
+  fullname_label = gtk_label_new("Your full name");  
   username_label = gtk_label_new("Username");   
   password_label = gtk_label_new("Password");
   retypePassword_label = gtk_label_new("Re-type password");
   register_label = gtk_label_new("Register");
 
+  fullname_entry = gtk_entry_new();
   username_entry = gtk_entry_new();
   password_entry = gtk_entry_new();
   retypePassword_entry = gtk_entry_new();
@@ -503,15 +509,19 @@ void register_dialog_screen() { //màn hình register
   gtk_entry_set_width_chars(GTK_ENTRY(username_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30); 
   gtk_entry_set_width_chars(GTK_ENTRY(retypePassword_entry),30);
+  gtk_entry_set_width_chars(GTK_ENTRY(fullname_entry),30);
 
   gtk_fixed_put(GTK_FIXED(fixed_register), username_label, 50, 222); 
   gtk_fixed_put(GTK_FIXED(fixed_register), password_label, 50, 302);
+  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_label, 50, 142);
+  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_entry, 50, 170);
   gtk_fixed_put(GTK_FIXED(fixed_register), username_entry, 50, 250);
   gtk_fixed_put(GTK_FIXED(fixed_register), password_entry, 50, 330);
   gtk_fixed_put(GTK_FIXED(fixed_register), button_submit, 90, 500);
   gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_label, 50, 382);
   gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_entry, 50, 410);
-  gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 90, 100);
+  gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 90, 50);
+
 
   gtk_window_set_title(GTK_WINDOW(register_dialog),"Register"); 
   gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER); 
@@ -652,16 +662,35 @@ void main_calendar() {
   g_timeout_add (100, update_choose, choose_label);
 }
 
-void login_dialog_screen() { //màn hình login
+void check_user(GtkButton *button, gpointer data) {
+  const char *username = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
+  const char *password = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
+  char *test_username = "admin";
+  char *test_password = "root";
 
-  GtkWidget *login_dialog, *container_login_dialog;
+  if(strcmp(username,test_username) == 0) {
+    if(strcmp(password, test_password) == 0) {
+      main_calendar();
+      gtk_widget_hide(login_dialog);
+    }
+    else {
+      gtk_widget_show(data);
+    }
+  }
+  else {
+    gtk_widget_show(data);
+  }
+}
+
+void login_dialog_screen() { //màn hình login
+  GtkWidget *container_login_dialog;
   GtkWidget *username_label, *password_label;
-  GtkWidget *username_entry, *password_entry; 
   GtkWidget *button_submit;
   GtkWidget *fixed_login;
   GtkWidget *register_button, *forgot_button;
   GtkWidget *register_label;
   GtkWidget *login_label;
+  GtkWidget *login_error_label;
 
   login_dialog = gtk_dialog_new();
 
@@ -673,31 +702,34 @@ void login_dialog_screen() { //màn hình login
   username_label = gtk_label_new("Username");   
   password_label = gtk_label_new("Password");
   register_label = gtk_label_new("Don't have an account ?");
+  login_error_label = gtk_label_new("Invaild Username or Password ! Try again !");
 
-  username_entry = gtk_entry_new();
-  password_entry = gtk_entry_new();
+  username_login_entry = gtk_entry_new();
+  password_login_entry = gtk_entry_new();
 
   register_button = gtk_button_new_with_label("Register now");
   forgot_button = gtk_button_new_with_label("Forgot Password ?");
 
-  gtk_entry_set_width_chars(GTK_ENTRY(username_entry),30); // chỉnh kích thước entry theo số lượng chữ
-  gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30); // chỉnh kích thước entry theo số lượng chữ
+  gtk_entry_set_width_chars(GTK_ENTRY(username_login_entry),30); // chỉnh kích thước entry theo số lượng chữ
+  gtk_entry_set_width_chars(GTK_ENTRY(password_login_entry),30); // chỉnh kích thước entry theo số lượng chữ
 
   gtk_widget_set_name(button_submit,"button_submit"); 
   gtk_widget_set_name(login_dialog,"login_dialog"); 
   gtk_widget_set_name(register_button,"register_button"); 
   gtk_widget_set_name(forgot_button,"forgot_button"); 
   gtk_widget_set_name(login_label,"login_register_label"); 
+  gtk_widget_set_name(login_error_label,"error_label"); 
 
   gtk_fixed_put(GTK_FIXED(fixed_login), username_label, 50, 272); 
   gtk_fixed_put(GTK_FIXED(fixed_login), password_label, 50, 352);
-  gtk_fixed_put(GTK_FIXED(fixed_login), username_entry, 50, 300);
-  gtk_fixed_put(GTK_FIXED(fixed_login), password_entry, 50, 380);
+  gtk_fixed_put(GTK_FIXED(fixed_login), username_login_entry, 50, 300);
+  gtk_fixed_put(GTK_FIXED(fixed_login), password_login_entry, 50, 380);
   gtk_fixed_put(GTK_FIXED(fixed_login), button_submit, 90, 480);
   gtk_fixed_put(GTK_FIXED(fixed_login), register_button, 200, 545);
   gtk_fixed_put(GTK_FIXED(fixed_login), forgot_button, 165, 420);
   gtk_fixed_put(GTK_FIXED(fixed_login), register_label, 50, 550);
   gtk_fixed_put(GTK_FIXED(fixed_login), login_label, 110, 150);
+  gtk_fixed_put(GTK_FIXED(fixed_login), login_error_label, 40, 450);
 
   gtk_window_set_title(GTK_WINDOW(login_dialog),"Login"); 
   gtk_window_set_position(GTK_WINDOW(login_dialog),GTK_WIN_POS_CENTER); 
@@ -708,12 +740,15 @@ void login_dialog_screen() { //màn hình login
   g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
   g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
+  g_signal_connect(button_submit,"clicked",G_CALLBACK(check_user),login_error_label);
 
   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
 
   gtk_container_add(GTK_CONTAINER(container_login_dialog),fixed_login);
 
   gtk_widget_show_all(login_dialog);
+
+  gtk_widget_hide(login_error_label);
 } 
 
 int main(int argc, char *argv[]) { //mainde03x
