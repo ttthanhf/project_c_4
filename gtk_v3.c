@@ -23,6 +23,8 @@ GtkWidget *goto_day_entry, *goto_month_entry, *goto_year_entry; // in function g
 GtkWidget *goto_dialog, *year_dialog, *month_dialog; //in function goto_day_show and next from year_show and next from month_show
 GtkWidget *username_login_entry, *password_login_entry; //in function login_dialog_show 
 GtkWidget *login_dialog, *register_dialog; //in function login_dialog_show  and next from register_dialog_show
+
+const char *username; // in function check_user
  
 char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
 
@@ -61,7 +63,10 @@ void destroy(gpointer *data, GtkWidget *widget) {
   gtk_widget_destroy(widget);
 }
 
-
+void update_hello(GtkWidget *label) {
+  gchar *display = g_strdup_printf("Hello, %s !",username);
+  gtk_label_set_text(GTK_LABEL(label),display); 
+}
 
 void update_year(int year) { //cập nhật label trong button 
   gchar *display;
@@ -522,6 +527,8 @@ void register_dialog_screen() { //màn hình register
   gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_entry, 50, 410);
   gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 90, 50);
 
+  gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
+  gtk_entry_set_visibility(GTK_ENTRY(retypePassword_entry), FALSE);
 
   gtk_window_set_title(GTK_WINDOW(register_dialog),"Register"); 
   gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER); 
@@ -546,6 +553,7 @@ void main_calendar() {
   GtkWidget *today_label, *choose_label;
   GtkWidget *box_info;
   GtkWidget *event_show;
+  GtkWidget *hello_label;
 
   //set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
@@ -581,6 +589,7 @@ void main_calendar() {
   time_label = gtk_label_new("");
   today_label = gtk_label_new("");
   choose_label = gtk_label_new("");
+  hello_label = gtk_label_new("");
 
   //-----set label show show today--------//
   gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_today, &month_today, &day_today);
@@ -589,6 +598,7 @@ void main_calendar() {
 
   //tạo khả năng fixed cho từng thành phần và mặc định vị trí
   gtk_fixed_put(GTK_FIXED(fixed), button_exit, 1300, 760); 
+  gtk_fixed_put(GTK_FIXED(fixed), button_logout, 1300, 150);
   gtk_fixed_put(GTK_FIXED(fixed), button_add_event, 1300, 250);
   gtk_fixed_put(GTK_FIXED(fixed), button_delete_event, 1300, 300);
   gtk_fixed_put(GTK_FIXED(fixed), button_event_list, 1300, 350);
@@ -605,6 +615,7 @@ void main_calendar() {
   gtk_fixed_put(GTK_FIXED(fixed), time_label, 20, 60);
   gtk_fixed_put(GTK_FIXED(fixed), today_label, 20, 90);
   gtk_fixed_put(GTK_FIXED(fixed), choose_label, 20, 120);
+  gtk_fixed_put(GTK_FIXED(fixed), hello_label, 1300, 100);
   
   //set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit,"button_menu"); 
@@ -656,6 +667,8 @@ void main_calendar() {
   update_today(today_label);
 
   update_choose(choose_label);
+
+  update_hello(hello_label);
   
 //-----------loop-----------//
   g_timeout_add (100, update_time, time_label);
@@ -663,7 +676,7 @@ void main_calendar() {
 }
 
 void check_user(GtkButton *button, gpointer data) {
-  const char *username = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
+  username = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
   const char *password = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
   char *test_username = "admin";
   char *test_password = "root";
@@ -737,6 +750,8 @@ void login_dialog_screen() { //màn hình login
   gtk_window_set_resizable(GTK_WINDOW(login_dialog),FALSE); 
   gtk_container_set_border_width(GTK_CONTAINER(login_dialog),10);
 
+  gtk_entry_set_visibility(GTK_ENTRY(password_login_entry), FALSE); //che lại khi nhập mật khẩu
+
   g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
   g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
@@ -766,6 +781,6 @@ int main(int argc, char *argv[]) { //mainde03x
 
 // mở app msys2 64 bit
 // nhớ cd /c/thư mục chứ file 
-// gcc `pkg-config --cflags gtk+-3.0` -o app gtk_new.c `pkg-config --libs gtk+-3.0`
+// gcc `pkg-config --cflags gtk+-3.0` -o app gtk_v3.c `pkg-config --libs gtk+-3.0`
 // ./app
 
