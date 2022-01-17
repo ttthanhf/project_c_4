@@ -10,8 +10,8 @@ char listUser[MAX_USER][3][MAX_LETTER] ; // listUser[STT][full name/user name/pa
 int countUser;                           //                    0  /     1   /   2
 
 FILE *file;
-char fileTmp[] = "Data.txt"; // tạo đuôi cho file ghi lịch sử người dùng
-char fileTmp2[] = "Log.txt"; // tạo đuôi cho file ghi lịch sử hoạt động
+char fileTmp[] = "Data.txt";
+char fileTmp2[] = "Log.txt";
 char tmpAddress[256];
 
 
@@ -26,8 +26,8 @@ void creatFolder()
     strcat(cmmnd, listUser[countUser][1]);
     status=system (cmmnd); // hàm tạo folder
     strcat(address, "\\");
-    strcat(address, listUser[countUser][1]); // dùng để dẫn path vào folder mới tạo
-    int ch = chdir(address); // hàm dùng để chuyển path vào folder
+    strcat(address, listUser[countUser][1]);
+    int ch = chdir(address);
     printf("%s", address);
 
 
@@ -189,59 +189,39 @@ int checkPasswordLogin( char passwordTmp[])
     }
     return 0;
 }
-
-
-
-int login()
-{
     char userNameTmp[MAX_LETTER] ;
     char passwordTmp[MAX_LETTER] ;
     char userNameFile[MAX_LETTER] ;
     char passwordFile[MAX_LETTER] ;
     char line[256];
     int check = 0;
-
-
+void findNamePass()
+{
     file = fopen("acc2.txt","r");
-
     printf(" Username : ");
     scanf("%s", &userNameTmp);
     printf(" Password : ");
     scanf("%s", &passwordTmp);
-    while (fgets(line, sizeof(line), file))
+     while (fgets(line, sizeof(line), file)!=NULL)
     {
         fscanf(file,"Name: %s", &userNameFile);
         fscanf(file,"Pass: %s", &passwordFile);
 
         if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
         {
-            check = 1;
+           check=1;printf(" Login successfully. \n") ;fclose(file);system("pause"); break;
         }
     }
-    fclose(file);
-
-    if (check == 1) {
-        printf("dang nhap thanh cong");
-         system("pause");
-        return 1;
+}
+int login()
+{
+    
+    while(check==0)
+    {
+        findNamePass();
+        printf(" The user name or password that you have entered is incorrect.\n ");
     }
-    else
-     {
-          while( check == 0)
-        {
-            printf(" The user name or password that you have entered is incorrect.\n ");
-            printf(" Username : ");
-            scanf("%s", &userNameTmp);
-            printf(" Password : ");
-            scanf("%s", &passwordTmp);
-            if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
-        {
-            check = 1;
-        }
-        }
-            printf(" Login successfully. \n") ;
-            return 1;
-      }
+    return 1;
   /*  if(checkUserName(userNameTmp) == 0 && checkPasswordLogin(passwordTmp) == 1) // check cả 2 cái nếu 1 trong 2 sai -> sai
     {
           printf(" Login successfully. \n") ;
