@@ -54,7 +54,7 @@ void register_show() {
     scanf("%s",&retypePassword);
 
     if(strcmp(password, retypePassword) == 0) {
-        fprintf(file,"Fullname: %s\nName: %s\nPass: %s\n\n",fullname, username, password);
+        fprintf(file,"Fullname: %s\nName: %s\nPass: %s\n",fullname, username, password);
         printf("dang ky thanh cong");
         fclose(file);
     }
