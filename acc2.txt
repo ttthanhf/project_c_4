@@ -6,3 +6,6 @@ Pass: Ha123456
 Fullname: 1
 Name: ngochan
 Pass: Ha123456
+Fullname: 1
+Name: ha1
+Pass: Ha123456

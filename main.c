@@ -10,8 +10,8 @@ char listUser[MAX_USER][3][MAX_LETTER] ; // listUser[STT][full name/user name/pa
 int countUser;                           //                    0  /     1   /   2
 
 FILE *file;
-char fileTmp[] = "Data.txt";
-char fileTmp2[] = "Log.txt";
+char fileTmp[] = "Data.txt"; // tạo đuôi cho file ghi lịch sử người dùng
+char fileTmp2[] = "Log.txt"; // tạo đuôi cho file ghi lịch sử hoạt động
 char tmpAddress[256];
 
 
@@ -26,8 +26,8 @@ void creatFolder()
     strcat(cmmnd, listUser[countUser][1]);
     status=system (cmmnd); // hàm tạo folder
     strcat(address, "\\");
-    strcat(address, listUser[countUser][1]);
-    int ch = chdir(address);
+    strcat(address, listUser[countUser][1]); // dùng để dẫn path vào folder mới tạo
+    int ch = chdir(address); // hàm dùng để chuyển path vào folder
     printf("%s", address);
 
 
