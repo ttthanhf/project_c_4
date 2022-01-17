@@ -8,7 +8,10 @@
 #include <stdlib.h>
 // #include <time.h>
 
+//---------------Hân--------//
+
 //------------------------------------------Hân---------Authentication---------------------------------------------//
+
 
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
 
@@ -41,15 +44,15 @@ gboolean update_time(gpointer label) {
 }
 
 void update_today(gpointer label) {
-  gchar *display = g_strdup_printf("Today:\t\t%02d/%02d/%d (dd/mm/yyyy)",day_today,month_today + 1,year_today);
+  gchar *display = g_strdup_printf("Today:\t\t%02d/%02d/%d (dd/mm/yyyy)",day_today, month_today + 1, year_today);
   gtk_label_set_text(GTK_LABEL(label),display);  
 }
 
 gboolean update_choose(gpointer label) {
   guint year_select, month_select, day_select;
-  gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_select, &month_select, &day_select); //chọn ngày đã được chọn lưu vào []_select
-  gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)",day_select,month_select + 1,year_select);
-  gtk_label_set_text(GTK_LABEL(label),display);  
+  gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_select, &month_select, &day_select); //chọn ngày đã được chọn lưu vào []_select 
+  gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)",day_select, month_select + 1,year_select);
+  gtk_label_set_text(GTK_LABEL(label),display); 
 }
 
 void destroy(gpointer *data, GtkWidget *widget) {
@@ -182,7 +185,7 @@ void goto_activate(gpointer *data, GtkWidget *error_label) {
   int day = atoi(gtk_entry_get_text(GTK_ENTRY(goto_day_entry)));
   int month = atoi(gtk_entry_get_text(GTK_ENTRY(goto_month_entry)));
   int year = atoi(gtk_entry_get_text(GTK_ENTRY(goto_year_entry)));
-  int error; //biến để kiểm tra có lỗi hay ko
+  int error; //biến để kiểm tra có lỗi hay ko 
 
   if (year >= 1 && year <= 9999) { // year = 1:9999
     if (month >= 1 && month <= 12) { // nếu month > 12 or < 1 thì thống báo lỗi
@@ -300,19 +303,6 @@ void goto_day_show() {
 }
 
 void addEvent_show() {
-  GtkWidget *dialog, *container, *fixed;
-  GtkWidget *name_label, *day_label, *month_label, *year_label, *note_label;
-  GtkWidget *name_entry, *day_entry, *month_entry, *year_entry, *note_entry;
-  GtkWidget *button;
-
-  dialog = gtk_dialog_new();
-  fixed = gtk_fixed_new();
-
-  name_label = gtk_label_new("Name:");
-  day_label = gtk_label_new("Day:");
-  month_label = gtk_label_new("Month:");
-  year_label = gtk_label_new("Year:");
-  note_label = gtk_label_new("Note:");
 }
 
 void addEvent_show_double_click() {
@@ -337,7 +327,7 @@ void addEvent_show_double_click() {
   note_event_label = gtk_label_new("Note:");
   show_day_label = gtk_label_new("");
 
-  display_update = g_strdup_printf("Date:\t%02d/%02d/%02d (dd/mm/yyyy)", day_select, month_select + 1 , year_select); 
+  display_update = g_strdup_printf("Date:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1 , year_select); 
 
   gtk_label_set_text (GTK_LABEL(show_day_label), display_update);
 
@@ -373,8 +363,6 @@ void addEvent_show_double_click() {
 }
 
 void eventList_show() {
-
-
 }
 
 void month_show() {
@@ -583,7 +571,7 @@ void register_dialog_screen() { //màn hình register
   gtk_widget_show_all(register_dialog);
 }
 
-int main(int argc, char *argv[]) { //main
+int main(int argc, char *argv[]) { //mainde03x
 
   gtk_init(&argc,&argv);
 
@@ -596,6 +584,7 @@ int main(int argc, char *argv[]) { //main
   GtkWidget *time_label;
   GtkWidget *today_label, *choose_label;
   GtkWidget *box_info;
+  GtkWidget *event_show;
 
   //set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
@@ -715,8 +704,8 @@ int main(int argc, char *argv[]) { //main
   update_today(today_label);
   
 //-----------loop-----------//
-  g_timeout_add (1000, update_time,time_label);
-  g_timeout_add (100, update_choose,choose_label);
+  g_timeout_add (100, update_time, time_label);
+  g_timeout_add (100, update_choose, choose_label);
   
 //---------------------------C---------------------------------//
 //-----------------------------test------------------//
