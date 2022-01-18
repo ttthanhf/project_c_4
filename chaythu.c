@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 void read_day_note()
 {
   FILE *f;
@@ -9,14 +10,16 @@ void read_day_note()
   //guint year_select, month_select, day_select;
   //gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
  if( f!= NULL)
-  while (fscanf(f, "%d/%d/%s", &day, &month, &data)> 0)
+  while (fscanf(f, "%d/%d/%s", &day, &month, &data) > 0)
   {
       fgets(s,50,f);
       fgets(data,100,f);
   //  if (day == day_select && month == month_select)
     printf("%d %d %s", day, month, data);
-    // in data vào khung event
+    break;
+    // in data vï¿½o khung event
   }
+  
   fclose(f);
   f = fopen("./abc/abcData.txt", "r");
   if( f!= NULL)
@@ -24,7 +27,7 @@ void read_day_note()
   {
 
    // if (day == day_select && month == month_select && year == year_select)
-    // in data vào khung note
+    // in data vï¿½o khung note
      printf("%d %d % %s", day, month, year, data);
   }
   fclose(f);

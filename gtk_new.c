@@ -7,6 +7,8 @@
 #include <stdlib.h>
 // #include <time.h>
 
+//---------------Hân--------//
+
 //------------------------------------------Hân---------Authentication---------------------------------------------//
 #include <math.h>
 #include <conio.h>
@@ -268,18 +270,30 @@ gboolean update_time(gpointer label)
   // return G_SOURCE_CONTINUE;
 }
 
+<<<<<<< HEAD
+void update_today(gpointer label) {
+  gchar *display = g_strdup_printf("Today:\t\t%02d/%02d/%d (dd/mm/yyyy)",day_today, month_today + 1, year_today);
+  gtk_label_set_text(GTK_LABEL(label),display);  
+=======
 void update_today(gpointer label)
 {
   gchar *display = g_strdup_printf("Today:\t\t%02d/%02d/%d (dd/mm/yyyy)", day_today, month_today + 1, year_today);
   gtk_label_set_text(GTK_LABEL(label), display);
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 }
 
 gboolean update_choose(gpointer label)
 {
   guint year_select, month_select, day_select;
+<<<<<<< HEAD
+  gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_select, &month_select, &day_select); //chọn ngày đã được chọn lưu vào []_select 
+  gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)",day_select, month_select + 1,year_select);
+  gtk_label_set_text(GTK_LABEL(label),display); 
+=======
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select); // chọn ngày đã được chọn lưu vào []_select
   gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1, year_select);
   gtk_label_set_text(GTK_LABEL(label), display);
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 }
 
 void destroy(gpointer *data, GtkWidget *widget)
@@ -439,7 +453,11 @@ void goto_activate(gpointer *data, GtkWidget *error_label)
   int day = atoi(gtk_entry_get_text(GTK_ENTRY(goto_day_entry)));
   int month = atoi(gtk_entry_get_text(GTK_ENTRY(goto_month_entry)));
   int year = atoi(gtk_entry_get_text(GTK_ENTRY(goto_year_entry)));
+<<<<<<< HEAD
+  int error; //biến để kiểm tra có lỗi hay ko 
+=======
   int error; // biến để kiểm tra có lỗi hay ko
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 
   if (year >= 1 && year <= 9999)
   { // year = 1:9999
@@ -575,6 +593,9 @@ void goto_day_show()
   gtk_widget_hide(error_label);
 }
 
+<<<<<<< HEAD
+void addEvent_show() {
+=======
 void addEvent_show()
 {
   GtkWidget *dialog, *container, *fixed;
@@ -590,6 +611,7 @@ void addEvent_show()
   month_label = gtk_label_new("Month:");
   year_label = gtk_label_new("Year:");
   note_label = gtk_label_new("Note:");
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 }
 
 void addEvent_show_double_click()
@@ -615,7 +637,11 @@ void addEvent_show_double_click()
   note_event_label = gtk_label_new("Note:");
   show_day_label = gtk_label_new("");
 
+<<<<<<< HEAD
+  display_update = g_strdup_printf("Date:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1 , year_select); 
+=======
   display_update = g_strdup_printf("Date:\t%02d/%02d/%02d (dd/mm/yyyy)", day_select, month_select + 1, year_select);
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 
   gtk_label_set_text(GTK_LABEL(show_day_label), display_update);
 
@@ -651,8 +677,12 @@ void addEvent_show_double_click()
   }
 }
 
+<<<<<<< HEAD
+void eventList_show() {
+=======
 void eventList_show()
 {
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 }
 
 void month_show()
@@ -865,8 +895,12 @@ void register_dialog_screen()
   gtk_widget_show_all(register_dialog);
 }
 
+<<<<<<< HEAD
+int main(int argc, char *argv[]) { //mainde03x
+=======
 int main(int argc, char *argv[])
 { // main
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 
   gtk_init(&argc, &argv);
 
@@ -879,6 +913,7 @@ int main(int argc, char *argv[])
   GtkWidget *time_label;
   GtkWidget *today_label, *choose_label;
   GtkWidget *box_info;
+  GtkWidget *event_show;
 
   // set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); // cho app ở quyền cao nhất
@@ -995,6 +1030,18 @@ int main(int argc, char *argv[])
   update_time(time_label);
 
   update_today(today_label);
+<<<<<<< HEAD
+  
+//-----------loop-----------//
+  g_timeout_add (100, update_time, time_label);
+  g_timeout_add (100, update_choose, choose_label);
+  
+//---------------------------C---------------------------------//
+//-----------------------------test------------------//
+//----------------------------------------------------/
+  gtk_main(); 
+//----------không viết gì dưới gtk_main() vì đây là điểm kết thúc-----------------------------//
+=======
 
   //-----------loop-----------//
   g_timeout_add(1000, update_time, time_label);
@@ -1005,6 +1052,7 @@ int main(int argc, char *argv[])
   //----------------------------------------------------/
   gtk_main();
   //----------không viết gì dưới gtk_main() vì đây là điểm kết thúc-----------------------------//
+>>>>>>> 6d10ef81ac93cd47728d985a5a4380b25888c06b
 }
 
 // mở app msys2 64 bit

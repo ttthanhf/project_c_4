@@ -7,6 +7,12 @@ Pass: Ha123456
 Fullname: 1
 Name: ha1
 Pass: Ha123456
+<<<<<<< HEAD
 Fullname: hanaa
 Name: hanaa
 Pass: Ha123456
+=======
+Fullname: Tran Tan Thanh
+Name: Thanhne
+Pass: Thanhne123456
+>>>>>>> def86e02fab8e5f6ca62c1926086ede29f917d36

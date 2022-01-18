@@ -16,7 +16,7 @@ window {
     background: #ddd0ab;
 }
 
-#login_dialog {
+#login_register_dialog {
     background: #f0f0f0;
 }
 
@@ -33,7 +33,7 @@ window {
     font-weight: bold;
 }
 
-#register_button {
+#login_register_button {
     box-shadow: none;
     border: none;
     font-size: 15px;
@@ -42,7 +42,7 @@ window {
     font-weight: bold;
 }
 
-#register_button:hover {
+#login_register_button:hover {
     font-size: 16px;
     color: #204566;
 }
@@ -135,10 +135,27 @@ window {
     border: 0.1px solid #8f8a75;
     box-shadow: none;
     background: #f2f1eb;
-    min-width: 280px;
+    min-width: 300px;
     min-height: 100px;
 }
 
+#box_event_header {
+    border: 0.1px solid #8f8a75;
+    box-shadow: none;
+    background: #d4c7a3;
+    min-width: 800px;
+    min-height: 30px;
+
+}
+
+#box_event_main {
+    border: 0.1px solid #8f8a75;
+    box-shadow: none;
+    background: #e0edef;
+    min-width: 800px;
+    min-height: 100px;
+}
+ 
 #calendar {
     padding: 15px 30px 10px 30px; /*top right bottom left*/
     font-size: 28px;

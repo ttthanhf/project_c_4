@@ -58,6 +58,7 @@ void register_show() {
         printf("dang ky thanh cong");
         fclose(file);
     }
+    
     else {
         printf("sai roi");
     }
