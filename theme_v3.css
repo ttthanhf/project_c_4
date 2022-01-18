@@ -16,7 +16,7 @@ window {
     background: #ddd0ab;
 }
 
-#login_dialog {
+#login_register_dialog {
     background: #f0f0f0;
 }
 
@@ -33,7 +33,7 @@ window {
     font-weight: bold;
 }
 
-#register_button {
+#login_register_button {
     box-shadow: none;
     border: none;
     font-size: 15px;
@@ -42,7 +42,7 @@ window {
     font-weight: bold;
 }
 
-#register_button:hover {
+#login_register_button:hover {
     font-size: 16px;
     color: #204566;
 }

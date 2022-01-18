@@ -483,7 +483,13 @@ void exit_screen() {
   }
 }
 
-void register_dialog_screen() { //màn hình register
+void login_callback(gpointer *data, GtkWidget *error_label) {
+  gtk_widget_hide(register_dialog);
+  gtk_widget_show_all(login_dialog);
+  gtk_widget_hide(error_label);
+}
+
+void register_dialog_screen(gpointer *data, GtkWidget *error_label) { //màn hình register
 
   GtkWidget *container_register_dialog;
   GtkWidget *username_label, *password_label, *retypePassword_label, *fullname_label;
@@ -491,17 +497,26 @@ void register_dialog_screen() { //màn hình register
   GtkWidget *button_submit;
   GtkWidget *fixed_register;
   GtkWidget *register_label;
+  GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_format_pass;
+  GtkWidget *login_button;
+  GtkWidget *login_label;
 
   register_dialog = gtk_dialog_new();
   fixed_register = gtk_fixed_new();
 
   button_submit = gtk_button_new_with_label("Register");
+  login_button = gtk_button_new_with_label("Login now");
   
   fullname_label = gtk_label_new("Your full name");  
   username_label = gtk_label_new("Username");   
   password_label = gtk_label_new("Password");
   retypePassword_label = gtk_label_new("Re-type password");
   register_label = gtk_label_new("Register");
+  login_label = gtk_label_new("Already have an account ?");
+
+  error_username_available = gtk_label_new("Username already exists, please try another name!");
+  error_retype_incorrect = gtk_label_new("Passwords do not match. Please try again !");
+  error_wrong_format_pass = gtk_label_new("Wrong format. At least 8 characters with uppercase letters and numbers.");
 
   fullname_entry = gtk_entry_new();
   username_entry = gtk_entry_new();
@@ -510,36 +525,56 @@ void register_dialog_screen() { //màn hình register
 
   gtk_widget_set_name(button_submit,"button_submit"); 
   gtk_widget_set_name(register_label,"login_register_label"); 
+  gtk_widget_set_name(login_button,"login_register_button"); 
+  gtk_widget_set_name(register_dialog,"login_register_dialog"); 
+  gtk_widget_set_name(error_username_available,"error_label"); 
+  gtk_widget_set_name(error_retype_incorrect,"error_label"); 
+  gtk_widget_set_name(error_wrong_format_pass,"error_label"); 
 
   gtk_entry_set_width_chars(GTK_ENTRY(username_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30); 
   gtk_entry_set_width_chars(GTK_ENTRY(retypePassword_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(fullname_entry),30);
 
-  gtk_fixed_put(GTK_FIXED(fixed_register), username_label, 50, 222); 
-  gtk_fixed_put(GTK_FIXED(fixed_register), password_label, 50, 302);
-  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_label, 50, 142);
-  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_entry, 50, 170);
-  gtk_fixed_put(GTK_FIXED(fixed_register), username_entry, 50, 250);
-  gtk_fixed_put(GTK_FIXED(fixed_register), password_entry, 50, 330);
-  gtk_fixed_put(GTK_FIXED(fixed_register), button_submit, 90, 500);
-  gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_label, 50, 382);
-  gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_entry, 50, 410);
-  gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 90, 50);
+  gtk_fixed_put(GTK_FIXED(fixed_register), username_label, 160, 222); 
+  gtk_fixed_put(GTK_FIXED(fixed_register), password_label, 160, 302);
+  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_label, 160, 142);
+  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_entry, 160, 170);
+  gtk_fixed_put(GTK_FIXED(fixed_register), username_entry, 160, 250);
+  gtk_fixed_put(GTK_FIXED(fixed_register), password_entry, 160, 330);
+  gtk_fixed_put(GTK_FIXED(fixed_register), button_submit, 200, 500);
+  gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_label, 160, 382);
+  gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_entry, 160, 410);
+  gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 200, 50);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_username_available, 120, 460);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_retype_incorrect, 153, 460);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_wrong_format_pass, 50, 460);
+  gtk_fixed_put(GTK_FIXED(fixed_register), login_button, 325, 545);
+  gtk_fixed_put(GTK_FIXED(fixed_register), login_label, 160, 550);
 
   gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
   gtk_entry_set_visibility(GTK_ENTRY(retypePassword_entry), FALSE);
 
   gtk_window_set_title(GTK_WINDOW(register_dialog),"Register"); 
   gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER); 
-  gtk_window_set_default_size(GTK_WINDOW(register_dialog),380,620); 
+  gtk_window_set_default_size(GTK_WINDOW(register_dialog),580,620); 
   gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE); 
+
+  g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
+
+  g_signal_connect(login_button,"clicked",G_CALLBACK(login_callback),error_label);
 
   container_register_dialog = gtk_dialog_get_content_area(GTK_DIALOG(register_dialog)); //tao phan vung chua content cho dialog
 
   gtk_container_add(GTK_CONTAINER(container_register_dialog),fixed_register);
   
   gtk_widget_show_all(register_dialog);
+  
+  gtk_widget_hide(login_dialog);
+
+  gtk_widget_hide(error_username_available);
+  gtk_widget_hide(error_retype_incorrect);
+  gtk_widget_hide(error_wrong_format_pass);
 }
 
 void main_calendar() {
@@ -727,8 +762,8 @@ void login_dialog_screen() { //màn hình login
   gtk_entry_set_width_chars(GTK_ENTRY(password_login_entry),30); // chỉnh kích thước entry theo số lượng chữ
 
   gtk_widget_set_name(button_submit,"button_submit"); 
-  gtk_widget_set_name(login_dialog,"login_dialog"); 
-  gtk_widget_set_name(register_button,"register_button"); 
+  gtk_widget_set_name(login_dialog,"login_register_dialog"); 
+  gtk_widget_set_name(register_button,"login_register_button"); 
   gtk_widget_set_name(forgot_button,"forgot_button"); 
   gtk_widget_set_name(login_label,"login_register_label"); 
   gtk_widget_set_name(login_error_label,"error_label"); 
@@ -754,7 +789,7 @@ void login_dialog_screen() { //màn hình login
 
   g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
-  g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
+  g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),login_error_label);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(check_user),login_error_label);
 
   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
