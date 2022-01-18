@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define MAX_USER 100
 #define MAX_LETTER 100
@@ -8,14 +9,50 @@
 char listUser[MAX_USER][3][MAX_LETTER] ; // listUser[STT][full name/user name/password][số kí tự]
 int countUser;                           //                    0  /     1   /   2
 
+FILE *file;
+char fileTmp[] = "Data.txt"; // tạo đuôi cho file ghi lịch sử người dùng
+char fileTmp2[] = "Log.txt"; // tạo đuôi cho file ghi lịch sử hoạt động
+char tmpAddress[256];
 
 
+void creatFolder()
+{
+    char name [10];
+    char cmmnd[]={"md "};
+    char address[256];
+    getcwd(address, 256); // hàm lấy path hiện tại
+    int status;
+
+    strcat(cmmnd, listUser[countUser][1]);
+    status=system (cmmnd); // hàm tạo folder
+    strcat(address, "\\");
+    strcat(address, listUser[countUser][1]); // dùng để dẫn path vào folder mới tạo
+    int ch = chdir(address); // hàm dùng để chuyển path vào folder
+    printf("%s", address);
+
+
+    strcat(tmpAddress, listUser[countUser][1]) ;
+    strcat(tmpAddress, fileTmp);
+    file = fopen(tmpAddress,"w");
+    fclose(file);
+
+    int len = strlen(tmpAddress);
+    for(int i = 0; i <= len; i++)
+        tmpAddress[i] = '\0';
+
+    strcat(tmpAddress, listUser[countUser][1]) ;
+    strcat(tmpAddress, fileTmp2);
+    file = fopen(tmpAddress,"w");
+        //fprintf(file,"da ghi");
+    fclose(file);
+
+
+}
 int loginPage() // ham in ra cac lua chon
 {
     int choice ;
     printf("\n1 - Sign up ");
     printf("\n2 - Login ");
-    printf("\n3 - Exit ") ;
     printf("\nChoose : ") ;
     scanf("%d", &choice ) ;
     return choice ;
@@ -36,14 +73,19 @@ int calendarPage()
 
 int checkUserName( char userNameTmp[])
 {
-  if(countUser == 0) return 1;
-  else
-    for(int i = 0; i < countUser; i++)
+    char userNameFile[MAX_LETTER];
+    char line[256];
+    file = fopen("acc2.txt","r");
+
+    while (fgets(line, sizeof(line), file))
     {
-      if( strcmp( userNameTmp, listUser[i][1]) == 0) // so sanh xem user name co bị trung khong
-        return 0;
+        fscanf(file,"Name: %s", &userNameFile);
+        if(strcmp(userNameTmp, userNameFile) == 0)
+            return 0;
     }
+
     return 1;
+
 }
 
 
@@ -79,7 +121,7 @@ int signUp()
 
     fflush(stdin);
     printf(" Full name : ");
-    scanf("%s", &fullNameTmp);
+    scanf("%[^\n]", &fullNameTmp);
 
     printf(" Username : ");
     do
@@ -87,8 +129,8 @@ int signUp()
         scanf("%s", &userNameTmp);
         if(checkUserName(userNameTmp) == 0)
             {
-            printf(" Username unavailable.");
-            printf(" Please input username again : ");
+                printf(" Username unavailable.");
+                printf(" Please input username again : ");
             }
         else printf(" Username available");
     }
@@ -130,6 +172,11 @@ int signUp()
     strcpy(listUser[countUser][1], userNameTmp) ;
     strcpy(listUser[countUser][2], passwordTmp) ;
 
+    file = fopen("acc2.txt","a");
+        fprintf(file,"Fullname: %s\nName: %s\nPass: %s\n",fullNameTmp, userNameTmp, passwordTmp);
+    fclose(file);
+    creatFolder();
+
     countUser++;
 }
 
@@ -149,13 +196,53 @@ int login()
 {
     char userNameTmp[MAX_LETTER] ;
     char passwordTmp[MAX_LETTER] ;
+    char userNameFile[MAX_LETTER] ;
+    char passwordFile[MAX_LETTER] ;
+    char line[256];
+    int check = 0;
+
+
+    file = fopen("acc2.txt","r");
 
     printf(" Username : ");
     scanf("%s", &userNameTmp);
     printf(" Password : ");
     scanf("%s", &passwordTmp);
+    while (fgets(line, sizeof(line), file))
+    {
+        fscanf(file,"Name: %s", &userNameFile);
+        fscanf(file,"Pass: %s", &passwordFile);
 
-    if(checkUserName(userNameTmp) == 0 && checkPasswordLogin(passwordTmp) == 1) // check cả 2 cái nếu 1 trong 2 sai -> sai
+        if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
+        {
+            check = 1;
+        }
+    }
+    fclose(file);
+
+    if (check == 1) {
+        printf("dang nhap thanh cong");
+         system("pause");
+        return 1;
+    }
+    else
+     {
+          while( check == 0)
+        {
+            printf(" The user name or password that you have entered is incorrect.\n ");
+            printf(" Username : ");
+            scanf("%s", &userNameTmp);
+            printf(" Password : ");
+            scanf("%s", &passwordTmp);
+            if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
+        {
+            check = 1;
+        }
+        }
+            printf(" Login successfully. \n") ;
+            return 1;
+      }
+  /*  if(checkUserName(userNameTmp) == 0 && checkPasswordLogin(passwordTmp) == 1) // check cả 2 cái nếu 1 trong 2 sai -> sai
     {
           printf(" Login successfully. \n") ;
           return 1; // return 1 để dùng cho logout
@@ -172,7 +259,7 @@ int login()
         }
             printf(" Login successfully. \n") ;
             return 1;
-    }
+    } */
 }
 
 
@@ -180,8 +267,6 @@ int main()
 {
     int userChoice ;
     int logined = 0 ; // khi logined = 0 -> chưa đăng nhập, còn logined = 1 -> đã đăng nhập
-    int inProgram = 1; // khi inProgram = 1 -> còn đang trong chương trình, inProgram = 0 -> thoát chương trình
-    if(inProgram = 1)
         if(logined == 0)
             do
             {
@@ -229,15 +314,9 @@ int main()
                         while ( userChoice != 3); // thoát khỏi giao diện lịch khi người dùng bấm đăng xuất
                     }
                     ; break ;
-                    case 3 :
-                        {
-                            inProgram = 0;
-                            printf(" logout successfully");
-                        }
-                        break ;
 
                 }
             }
-            while ( inProgram != 0);
+            while ( userChoice < 2 && userChoice > 0 );
       return 0;
 }
