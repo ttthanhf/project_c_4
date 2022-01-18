@@ -25,6 +25,7 @@ GtkWidget *username_login_entry, *password_login_entry; //in function login_dial
 GtkWidget *login_dialog, *register_dialog; //in function login_dialog_show  and next from register_dialog_show
 GtkWidget *window; //in function main_calendar
 GtkWidget *login_error_label; //in function login_dialog_show
+GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_format_pass; //in function register_dialog_show
 
 const char *username; // in function check_user
  
@@ -504,7 +505,6 @@ void register_dialog_screen() { //màn hình register
   GtkWidget *button_submit;
   GtkWidget *fixed_register;
   GtkWidget *register_label;
-  GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_format_pass;
   GtkWidget *login_button;
   GtkWidget *login_label;
 
