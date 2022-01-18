@@ -4,14 +4,241 @@
 //--------------------Thành------------------------//
 #include <gtk/gtk.h>
 // #include <windows.h>
-// #include <stdio.h> 
+// #include <stdio.h>
 #include <stdlib.h>
 // #include <time.h>
 
 //---------------Hân--------//
 
 //------------------------------------------Hân---------Authentication---------------------------------------------//
+#include <string.h>
+#include <unistd.h>
 
+#define MAX_USER 100
+#define MAX_LETTER 100
+
+char listUser[MAX_USER][3][MAX_LETTER] ; // listUser[STT][full name/user name/password][số kí tự]
+int countUser;                           //                    0  /     1   /   2
+
+FILE *file;
+char fileTmp[] = "Data.txt";
+char fileTmp2[] = "Log.txt";
+char tmpAddress[256];
+
+
+void creatFolder()
+{
+    char name [10];
+    char cmmnd[]={"md "};
+    char address[256];
+    getcwd(address, 256); // hàm lấy path hiện tại
+    int status;
+    strcat(address, "\\User");
+    int ch = chdir(address);
+    strcat(cmmnd, listUser[countUser][1]);
+    status=system (cmmnd); // hàm tạo folder
+    strcat(address, "\\");
+    strcat(address, listUser[countUser][1]);
+    int ck = chdir(address);
+    printf("%s", address);
+
+
+    strcat(tmpAddress, listUser[countUser][1]) ;
+    strcat(tmpAddress, fileTmp);
+    file = fopen(tmpAddress,"w");
+    fclose(file);
+
+    int len = strlen(tmpAddress);
+    for(int i = 0; i <= len; i++)
+        tmpAddress[i] = '\0';
+
+    strcat(tmpAddress, listUser[countUser][1]) ;
+    strcat(tmpAddress, fileTmp2);
+    file = fopen(tmpAddress,"w");
+        //fprintf(file,"da ghi");
+    fclose(file);
+
+}
+/*int loginPage() // ham in ra cac lua chon
+{
+    int choice ;
+    printf("\n1 - Sign up ");
+    printf("\n2 - Login ");
+    printf("\nChoose : ") ;
+    scanf("%d", &choice ) ;
+    return choice ;
+}
+int calendarPage()
+{
+    int choice ;
+    printf("\nlich thieu nang") ;
+    printf("\n1. Add note");
+    printf("\n2. Delete ");
+    printf("\n3. Logout ");
+    printf("\nChoose : ");
+    scanf("%d", &choice ) ;
+    return choice ;
+
+}
+*/
+
+int checkUserName( char userNameTmp[])
+{
+    char userNameFile[MAX_LETTER];
+    char line[256];
+    file = fopen("acc2.txt","r");
+
+    while (fgets(line, sizeof(line), file))
+    {
+        fscanf(file,"Name: %s", &userNameFile);
+        if(strcmp(userNameTmp, userNameFile) == 0)
+            return 0;
+    }
+
+    return 1;
+
+}
+
+
+int checkPassword(char *passwordTmp)    // mat khau phai co tu 8 ki tu tro len va co chu hoa va chu thuong
+{
+    int length = strlen(passwordTmp), upperCase = 0, lowerCase = 0, number = 0;
+    do
+    {
+        if(*passwordTmp != '\0')
+        {
+            if(*passwordTmp >= 65 && *passwordTmp <= 90) // do chu in hoa A(65) -> Z(90)
+                upperCase++;
+            if(*passwordTmp >= 97 && *passwordTmp <= 122)   // do chu thuong a(97) -> z(122)
+                lowerCase++;
+            if(*passwordTmp >= 49 && *passwordTmp <= 58)
+                number++;
+            passwordTmp++;
+        }
+    }
+    while( *passwordTmp != '\0') ; // nếu kí tự != rỗng
+    if ((upperCase > 0) && (lowerCase > 0) && (number > 0) && (length >=8))
+        return 1;
+    return 0;
+}
+
+
+int signUp()
+{
+    char userNameTmp[MAX_LETTER] ; // cac mang tam
+    char retypePassword[MAX_LETTER] ;
+    char passwordTmp[MAX_LETTER] ;
+    char fullNameTmp[MAX_LETTER] ;
+    ri
+    fflush(stdin);
+    printf(" Full name : ");
+    scanf("%[^\n]", &fullNameTmp);
+
+    printf(" Username : ");
+    do
+    {
+        scanf("%s", &userNameTmp);
+        if(checkUserName(userNameTmp) == 0)
+            {
+                printf(" Username unavailable.");
+                printf(" Please input username again : ");
+            }
+        else printf(" Username available");
+    }
+    while(checkUserName(userNameTmp) == 0) ;
+
+    printf("\n");
+    printf(" Password : ");
+     do
+    {
+        scanf("%s", &passwordTmp);
+        if(checkPassword(passwordTmp) == 0)
+            {
+                printf(" Wrong format. At least 8 characters with uppercase letters and numbers. ");
+                printf(" Please input password again : ");
+            }
+        else
+        {
+            printf(" Retype password: ");
+            do
+            {
+                scanf("%s", &retypePassword);
+                if( strcasecmp(retypePassword, passwordTmp) == 0)
+                printf(" Sign up successfully. \n");
+                else
+                   {
+                        printf(" Wrong password.");
+                        printf(" Please retype password again : ");
+                   }
+            }
+            while(strcasecmp(retypePassword, passwordTmp) != 0) ;
+
+
+        }
+
+    }
+    while(checkPassword(passwordTmp) == 0) ;
+
+    strcpy(listUser[countUser][0], fullNameTmp) ; // gan cac fullname, username, password vao mang chinh
+    strcpy(listUser[countUser][1], userNameTmp) ;
+    strcpy(listUser[countUser][2], passwordTmp) ;
+
+    file = fopen("acc2.txt","a");
+        fprintf(file,"Fullname: %s\nName: %s\nPass: %s\n",fullNameTmp, userNameTmp, passwordTmp);
+    fclose(file);
+    creatFolder();
+
+    countUser++;
+}
+
+
+
+int login(GtkButton *button, gpointer data)
+{
+    char userNameTmp[MAX_LETTER] ;
+    char passwordTmp[MAX_LETTER] ;
+    char userNameFile[MAX_LETTER] ;
+    char passwordFile[MAX_LETTER] ;
+    char line[256];
+    int check = 0;
+
+
+    file = fopen("acc2.txt","r");
+    userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
+    passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
+    while (fgets(line, sizeof(line), file))
+    {
+        fscanf(file,"Name: %s", &userNameFile);
+        fscanf(file,"Pass: %s", &passwordFile);
+
+        if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
+        {
+            check = 1;
+        }
+    }
+    fclose(file);
+
+    if (check == 1) {
+       main_calendar();
+        gtk_widget_hide(login_dialog);
+    }
+    else
+     {
+          while( check == 0)
+        {
+            gtk_widget_show(data);
+            userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
+            passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
+            if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
+            {
+            check = 1;
+            }
+        }
+            main_calendar();
+            gtk_widget_hide(login_dialog);
+      }
+
+}
 
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
 
@@ -21,11 +248,11 @@ GtkWidget *show_month, *show_year; //in function main
 GtkWidget *calendar;  //in fuction main
 GtkWidget *goto_day_entry, *goto_month_entry, *goto_year_entry; // in function goto_day_show
 GtkWidget *goto_dialog, *year_dialog, *month_dialog; //in function goto_day_show and next from year_show and next from month_show
-GtkWidget *username_login_entry, *password_login_entry; //in function login_dialog_show 
+GtkWidget *username_login_entry, *password_login_entry; //in function login_dialog_show
 GtkWidget *login_dialog, *register_dialog; //in function login_dialog_show  and next from register_dialog_show
 
 const char *username; // in function check_user
- 
+
 char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
 
 guint year_today, month_today, day_today;// in function main
@@ -35,28 +262,28 @@ guint year_today, month_today, day_today;// in function main
 static void load_css() {
   GtkCssProvider *cssProvider = gtk_css_provider_new();
   gtk_css_provider_load_from_path(cssProvider, "theme_v3.css", NULL); // đọc file css
-  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
 gboolean update_time(gpointer label) {
   time_t t = time(NULL);
   struct tm tm = *localtime(&t);
   gchar *display = g_strdup_printf("Clock:\t\t%02d : %02d : %02d (hh/mm/ss)",tm.tm_hour, tm.tm_min, tm.tm_sec);
-  gtk_label_set_text(GTK_LABEL(label),display);  
+  gtk_label_set_text(GTK_LABEL(label),display);
 
   // return G_SOURCE_CONTINUE;
 }
 
 void update_today(gpointer label) {
   gchar *display = g_strdup_printf("Today:\t\t%02d/%02d/%d (dd/mm/yyyy)",day_today, month_today + 1, year_today);
-  gtk_label_set_text(GTK_LABEL(label),display);  
+  gtk_label_set_text(GTK_LABEL(label),display);
 }
 
 gboolean update_choose(gpointer label) {
   guint year_select, month_select, day_select;
-  gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_select, &month_select, &day_select); //chọn ngày đã được chọn lưu vào []_select 
+  gtk_calendar_get_date(GTK_CALENDAR(calendar),&year_select, &month_select, &day_select); //chọn ngày đã được chọn lưu vào []_select
   gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)",day_select, month_select + 1,year_select);
-  gtk_label_set_text(GTK_LABEL(label),display); 
+  gtk_label_set_text(GTK_LABEL(label),display);
 }
 
 void destroy(gpointer *data, GtkWidget *widget) {
@@ -65,10 +292,10 @@ void destroy(gpointer *data, GtkWidget *widget) {
 
 void update_hello(GtkWidget *label) {
   gchar *display = g_strdup_printf("Hello, %s !",username);
-  gtk_label_set_text(GTK_LABEL(label),display); 
+  gtk_label_set_text(GTK_LABEL(label),display);
 }
 
-void update_year(int year) { //cập nhật label trong button 
+void update_year(int year) { //cập nhật label trong button
   gchar *display;
   display = g_strdup_printf("%d", year); // chuyển int thành char
   gtk_button_set_label(GTK_BUTTON(show_year), display); //vì set label phải chuyển thành char mớ nhận được
@@ -78,7 +305,7 @@ void update_year(int year) { //cập nhật label trong button
   gtk_calendar_select_month(GTK_CALENDAR(calendar),month_select, year);
 }
 
-void update_month(int month) { //cập nhật label trong button 
+void update_month(int month) { //cập nhật label trong button
   gtk_button_set_label(GTK_BUTTON(show_month), monthList[month]); //vì set label phải chuyển thành char mớ nhận được
 
   guint year_select, month_select, day_select;
@@ -103,7 +330,7 @@ void add_year_input(gpointer *data, GtkWidget *error_label) { // lấy dữ li�
 }
 
 void add_month_input(gpointer *data, GtkWidget *error_label) { // lấy dữ liệu từ input month
-  int month = atoi(gtk_entry_get_text(GTK_ENTRY(entry_month))); 
+  int month = atoi(gtk_entry_get_text(GTK_ENTRY(entry_month)));
 
   if (month >= 1 && month <= 12){ //nếu month input < 1 hoặc > 12 thì báo lỗi
     update_month(month);
@@ -141,10 +368,10 @@ void add_one_month() {
       int add = i;
       add += 1;
       if (add > 12) { // nếu value month > 12 thì month = 1
-        add = 1; 
+        add = 1;
         update_month(add);
         // nếu hơn tháng 12 thì year + 1
-        int year = atoi(gtk_button_get_label(GTK_BUTTON(show_year))); 
+        int year = atoi(gtk_button_get_label(GTK_BUTTON(show_year)));
         year += 1;
         update_year(year);
         break; // dừng loop để trả đúng kết quả i
@@ -167,10 +394,10 @@ void minus_one_month() {
       int minus = i;
       minus -= 1;
       if (minus < 1) { // nếu value month > 12 thì month = 1
-        minus = 12; 
+        minus = 12;
         update_month(minus);
 
-        int year = atoi(gtk_button_get_label(GTK_BUTTON(show_year))); 
+        int year = atoi(gtk_button_get_label(GTK_BUTTON(show_year)));
         if (year < 2) { // nếu year nhỏ hơn 2 thì year tối đa chỉ đến year = 1
           year = 1;
           update_year(year);
@@ -194,12 +421,12 @@ void goto_activate(gpointer *data, GtkWidget *error_label) {
   int day = atoi(gtk_entry_get_text(GTK_ENTRY(goto_day_entry)));
   int month = atoi(gtk_entry_get_text(GTK_ENTRY(goto_month_entry)));
   int year = atoi(gtk_entry_get_text(GTK_ENTRY(goto_year_entry)));
-  int error; //biến để kiểm tra có lỗi hay ko 
+  int error; //biến để kiểm tra có lỗi hay ko
 
   if (year >= 1 && year <= 9999) { // year = 1:9999
     if (month >= 1 && month <= 12) { // nếu month > 12 or < 1 thì thống báo lỗi
-      if(month == 4 || month == 6 || month == 9 || month == 11 ) { // check tháng 4 6 9 11 
-        if(day >= 1 && day <= 30) { 
+      if(month == 4 || month == 6 || month == 9 || month == 11 ) { // check tháng 4 6 9 11
+        if(day >= 1 && day <= 30) {
           error = 0;
         }
         else {
@@ -280,7 +507,7 @@ void goto_day_show() {
   gtk_entry_set_width_chars(GTK_ENTRY(goto_day_entry),3); // chỉnh kích thước entry theo số lượng chữ
   gtk_entry_set_width_chars(GTK_ENTRY(goto_month_entry),3); // chỉnh kích thước entry theo số lượng chữ
   gtk_entry_set_width_chars(GTK_ENTRY(goto_year_entry),5); // chỉnh kích thước entry theo số lượng chữ
-  
+
   gtk_fixed_put(GTK_FIXED(fixed), goto_day_entry, 40, 18);
   gtk_fixed_put(GTK_FIXED(fixed), goto_month_entry, 140, 18);
   gtk_fixed_put(GTK_FIXED(fixed), goto_year_entry, 225, 16);
@@ -336,7 +563,7 @@ void addEvent_show_double_click() {
   note_event_label = gtk_label_new("Note:");
   show_day_label = gtk_label_new("");
 
-  display_update = g_strdup_printf("Date:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1 , year_select); 
+  display_update = g_strdup_printf("Date:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1 , year_select);
 
   gtk_label_set_text (GTK_LABEL(show_day_label), display_update);
 
@@ -388,11 +615,11 @@ void month_show() {
   entry_month = gtk_entry_new();
 
   button_enter = gtk_button_new_with_label("Enter");
-  
+
   container_month = gtk_dialog_get_content_area(GTK_DIALOG(month_dialog)); //đưa dialog vào xử lí tạo vùng để hiển thị
 
   gtk_window_set_position(GTK_WINDOW(month_dialog),GTK_WIN_POS_CENTER);
-  
+
   gtk_container_add(GTK_CONTAINER(container_month),label_month);
   gtk_container_add(GTK_CONTAINER(container_month),entry_month);
   gtk_container_add(GTK_CONTAINER(container_month),error_label);
@@ -421,24 +648,24 @@ void year_show() {
   entry_year = gtk_entry_new();
 
   button_enter = gtk_button_new_with_label("Enter");
-  
+
   container_year = gtk_dialog_get_content_area(GTK_DIALOG(year_dialog));
 
   gtk_window_set_position(GTK_WINDOW(year_dialog),GTK_WIN_POS_CENTER);
-  
+
   gtk_container_add(GTK_CONTAINER(container_year),label_year);
   gtk_container_add(GTK_CONTAINER(container_year),entry_year);
   gtk_container_add(GTK_CONTAINER(container_year),error_label);
   gtk_container_add(GTK_CONTAINER(container_year),button_enter);
 
   gtk_widget_set_name(error_label,"error_label");
-  
+
   g_signal_connect(button_enter,"clicked",G_CALLBACK(add_year_input),error_label);
 
   gtk_widget_show_all(year_dialog);
 
   gtk_widget_hide(error_label);
-  
+
 }
 
 void today_set() {
@@ -478,7 +705,7 @@ void exit_screen() {
     case 2:
       gtk_widget_destroy(GTK_WIDGET(exit_dialog));
       break;
-    default: 
+    default:
       break;
   }
 }
@@ -496,9 +723,9 @@ void register_dialog_screen() { //màn hình register
   fixed_register = gtk_fixed_new();
 
   button_submit = gtk_button_new_with_label("Register");
-  
-  fullname_label = gtk_label_new("Your full name");  
-  username_label = gtk_label_new("Username");   
+
+  fullname_label = gtk_label_new("Your full name");
+  username_label = gtk_label_new("Username");
   password_label = gtk_label_new("Password");
   retypePassword_label = gtk_label_new("Re-type password");
   register_label = gtk_label_new("Register");
@@ -508,15 +735,15 @@ void register_dialog_screen() { //màn hình register
   password_entry = gtk_entry_new();
   retypePassword_entry = gtk_entry_new();
 
-  gtk_widget_set_name(button_submit,"button_submit"); 
-  gtk_widget_set_name(register_label,"login_register_label"); 
+  gtk_widget_set_name(button_submit,"button_submit");
+  gtk_widget_set_name(register_label,"login_register_label");
 
   gtk_entry_set_width_chars(GTK_ENTRY(username_entry),30);
-  gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30); 
+  gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(retypePassword_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(fullname_entry),30);
 
-  gtk_fixed_put(GTK_FIXED(fixed_register), username_label, 50, 222); 
+  gtk_fixed_put(GTK_FIXED(fixed_register), username_label, 50, 222);
   gtk_fixed_put(GTK_FIXED(fixed_register), password_label, 50, 302);
   gtk_fixed_put(GTK_FIXED(fixed_register), fullname_label, 50, 142);
   gtk_fixed_put(GTK_FIXED(fixed_register), fullname_entry, 50, 170);
@@ -530,15 +757,15 @@ void register_dialog_screen() { //màn hình register
   gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
   gtk_entry_set_visibility(GTK_ENTRY(retypePassword_entry), FALSE);
 
-  gtk_window_set_title(GTK_WINDOW(register_dialog),"Register"); 
-  gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER); 
-  gtk_window_set_default_size(GTK_WINDOW(register_dialog),380,620); 
-  gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE); 
+  gtk_window_set_title(GTK_WINDOW(register_dialog),"Register");
+  gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER);
+  gtk_window_set_default_size(GTK_WINDOW(register_dialog),380,620);
+  gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE);
 
   container_register_dialog = gtk_dialog_get_content_area(GTK_DIALOG(register_dialog)); //tao phan vung chua content cho dialog
 
   gtk_container_add(GTK_CONTAINER(container_register_dialog),fixed_register);
-  
+
   gtk_widget_show_all(register_dialog);
 }
 
@@ -559,7 +786,7 @@ void main_calendar() {
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //cho app ở quyền cao nhất
   fixed = gtk_fixed_new();
   calendar = gtk_calendar_new();
-  
+
   gtk_window_set_title(GTK_WINDOW(window),"Lịch thiểu năng"); // title cho app
   gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER); // canh app khi mở sẽ ở giữa màn hình
   gtk_window_set_default_size(GTK_WINDOW(window),1580,860); // kích thước app mặc định
@@ -597,7 +824,7 @@ void main_calendar() {
   update_year(year_today);
 
   //tạo khả năng fixed cho từng thành phần và mặc định vị trí
-  gtk_fixed_put(GTK_FIXED(fixed), button_exit, 1300, 760); 
+  gtk_fixed_put(GTK_FIXED(fixed), button_exit, 1300, 760);
   gtk_fixed_put(GTK_FIXED(fixed), button_logout, 1300, 150);
   gtk_fixed_put(GTK_FIXED(fixed), button_add_event, 1300, 250);
   gtk_fixed_put(GTK_FIXED(fixed), button_delete_event, 1300, 300);
@@ -616,13 +843,13 @@ void main_calendar() {
   gtk_fixed_put(GTK_FIXED(fixed), today_label, 20, 90);
   gtk_fixed_put(GTK_FIXED(fixed), choose_label, 20, 120);
   gtk_fixed_put(GTK_FIXED(fixed), hello_label, 1300, 100);
-  
+
   //set biến thành id name để css có thể nhận dạng
-  gtk_widget_set_name(button_exit,"button_menu"); 
+  gtk_widget_set_name(button_exit,"button_menu");
   gtk_widget_set_name(button_logout,"button_menu");
   gtk_widget_set_name(button_add_event,"button_menu");
-  gtk_widget_set_name(button_delete_event,"button_menu"); 
-  gtk_widget_set_name(button_event_list,"button_menu"); 
+  gtk_widget_set_name(button_delete_event,"button_menu");
+  gtk_widget_set_name(button_event_list,"button_menu");
 
   gtk_widget_set_name(button_previous_month,"button_main");
   gtk_widget_set_name(button_next_month,"button_main");
@@ -639,9 +866,9 @@ void main_calendar() {
 
 
 //gọi hàm khi nhấn button
-  g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
+  g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app
   g_signal_connect(button_exit,"clicked",G_CALLBACK(exit_screen),NULL);
-  
+
   g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),NULL);
   g_signal_connect(show_year,"clicked",G_CALLBACK(year_show),NULL);
 
@@ -658,7 +885,7 @@ void main_calendar() {
 
   gtk_container_add(GTK_CONTAINER(window),fixed);
 
-  gtk_widget_show_all(window); 
+  gtk_widget_show_all(window);
 
 //---------------------------load---fuction---------------------------------//
 
@@ -669,13 +896,13 @@ void main_calendar() {
   update_choose(choose_label);
 
   update_hello(hello_label);
-  
+
 //-----------loop-----------//
   g_timeout_add (100, update_time, time_label);
   g_timeout_add (100, update_choose, choose_label);
 }
 
-void check_user(GtkButton *button, gpointer data) {
+/*void check_user(GtkButton *button, gpointer data) {
   username = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
   const char *password = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
   char *test_username = "admin";
@@ -694,7 +921,7 @@ void check_user(GtkButton *button, gpointer data) {
     gtk_widget_show(data);
   }
 }
-
+*/
 void login_dialog_screen() { //màn hình login
   GtkWidget *container_login_dialog;
   GtkWidget *username_label, *password_label;
@@ -710,12 +937,12 @@ void login_dialog_screen() { //màn hình login
   fixed_login = gtk_fixed_new();
 
   button_submit = gtk_button_new_with_label("Login");
-  
-  login_label =  gtk_label_new("Login");   
-  username_label = gtk_label_new("Username");   
+
+  login_label =  gtk_label_new("Login");
+  username_label = gtk_label_new("Username");
   password_label = gtk_label_new("Password");
   register_label = gtk_label_new("Don't have an account ?");
-  login_error_label = gtk_label_new("Invaild Username or Password ! Try again !");
+  login_error_label = gtk_label_new("The user name or password that you have entered is incorrect.");
 
   username_login_entry = gtk_entry_new();
   password_login_entry = gtk_entry_new();
@@ -726,14 +953,14 @@ void login_dialog_screen() { //màn hình login
   gtk_entry_set_width_chars(GTK_ENTRY(username_login_entry),30); // chỉnh kích thước entry theo số lượng chữ
   gtk_entry_set_width_chars(GTK_ENTRY(password_login_entry),30); // chỉnh kích thước entry theo số lượng chữ
 
-  gtk_widget_set_name(button_submit,"button_submit"); 
-  gtk_widget_set_name(login_dialog,"login_dialog"); 
-  gtk_widget_set_name(register_button,"register_button"); 
-  gtk_widget_set_name(forgot_button,"forgot_button"); 
-  gtk_widget_set_name(login_label,"login_register_label"); 
-  gtk_widget_set_name(login_error_label,"error_label"); 
+  gtk_widget_set_name(button_submit,"button_submit");
+  gtk_widget_set_name(login_dialog,"login_dialog");
+  gtk_widget_set_name(register_button,"register_button");
+  gtk_widget_set_name(forgot_button,"forgot_button");
+  gtk_widget_set_name(login_label,"login_register_label");
+  gtk_widget_set_name(login_error_label,"error_label");
 
-  gtk_fixed_put(GTK_FIXED(fixed_login), username_label, 50, 272); 
+  gtk_fixed_put(GTK_FIXED(fixed_login), username_label, 50, 272);
   gtk_fixed_put(GTK_FIXED(fixed_login), password_label, 50, 352);
   gtk_fixed_put(GTK_FIXED(fixed_login), username_login_entry, 50, 300);
   gtk_fixed_put(GTK_FIXED(fixed_login), password_login_entry, 50, 380);
@@ -744,10 +971,10 @@ void login_dialog_screen() { //màn hình login
   gtk_fixed_put(GTK_FIXED(fixed_login), login_label, 110, 150);
   gtk_fixed_put(GTK_FIXED(fixed_login), login_error_label, 40, 450);
 
-  gtk_window_set_title(GTK_WINDOW(login_dialog),"Login"); 
-  gtk_window_set_position(GTK_WINDOW(login_dialog),GTK_WIN_POS_CENTER); 
-  gtk_window_set_default_size(GTK_WINDOW(login_dialog),380,620); 
-  gtk_window_set_resizable(GTK_WINDOW(login_dialog),FALSE); 
+  gtk_window_set_title(GTK_WINDOW(login_dialog),"Login");
+  gtk_window_set_position(GTK_WINDOW(login_dialog),GTK_WIN_POS_CENTER);
+  gtk_window_set_default_size(GTK_WINDOW(login_dialog),380,620);
+  gtk_window_set_resizable(GTK_WINDOW(login_dialog),FALSE);
   gtk_container_set_border_width(GTK_CONTAINER(login_dialog),10);
 
   gtk_entry_set_visibility(GTK_ENTRY(password_login_entry), FALSE); //che lại khi nhập mật khẩu
@@ -755,7 +982,7 @@ void login_dialog_screen() { //màn hình login
   g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
   g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
-  g_signal_connect(button_submit,"clicked",G_CALLBACK(check_user),login_error_label);
+  g_signal_connect(button_submit,"clicked",G_CALLBACK(login),login_error_label);
 
   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
 
@@ -764,7 +991,7 @@ void login_dialog_screen() { //màn hình login
   gtk_widget_show_all(login_dialog);
 
   gtk_widget_hide(login_error_label);
-} 
+}
 
 int main(int argc, char *argv[]) { //mainde03x
 
@@ -775,12 +1002,12 @@ int main(int argc, char *argv[]) { //mainde03x
 
   load_css();
 
-  gtk_main(); 
+  gtk_main();
 //----------không viết gì dưới gtk_main() vì đây là điểm kết thúc-----------------------------//
 }
 
 // mở app msys2 64 bit
-// nhớ cd /c/thư mục chứ file 
+// nhớ cd /c/thư mục chứ file
 // gcc `pkg-config --cflags gtk+-3.0` -o app gtk_v3.c `pkg-config --libs gtk+-3.0`
 // ./app
 

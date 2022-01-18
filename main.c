@@ -10,8 +10,8 @@ char listUser[MAX_USER][3][MAX_LETTER] ; // listUser[STT][full name/user name/pa
 int countUser;                           //                    0  /     1   /   2
 
 FILE *file;
-char fileTmp[] = "Data.txt"; // tạo đuôi cho file ghi lịch sử người dùng
-char fileTmp2[] = "Log.txt"; // tạo đuôi cho file ghi lịch sử hoạt động
+char fileTmp[] = "Data.txt";
+char fileTmp2[] = "Log.txt";
 char tmpAddress[256];
 
 
@@ -22,12 +22,13 @@ void creatFolder()
     char address[256];
     getcwd(address, 256); // hàm lấy path hiện tại
     int status;
-
+    strcat(address, "\\User");
+    int ch = chdir(address);
     strcat(cmmnd, listUser[countUser][1]);
     status=system (cmmnd); // hàm tạo folder
     strcat(address, "\\");
-    strcat(address, listUser[countUser][1]); // dùng để dẫn path vào folder mới tạo
-    int ch = chdir(address); // hàm dùng để chuyển path vào folder
+    strcat(address, listUser[countUser][1]);
+    int ck = chdir(address);
     printf("%s", address);
 
 
@@ -45,7 +46,6 @@ void creatFolder()
     file = fopen(tmpAddress,"w");
         //fprintf(file,"da ghi");
     fclose(file);
-
 
 }
 int loginPage() // ham in ra cac lua chon
@@ -180,16 +180,6 @@ int signUp()
     countUser++;
 }
 
-int checkPasswordLogin( char passwordTmp[])
-{
-     for(int i = 0; i < countUser; i++)
-    {
-      if( strcmp( passwordTmp, listUser[i][2]) == 0) // so sánh 2 mảng
-        return 1;
-    }
-    return 0;
-}
-
 
 
 int login()
@@ -242,24 +232,7 @@ int login()
             printf(" Login successfully. \n") ;
             return 1;
       }
-  /*  if(checkUserName(userNameTmp) == 0 && checkPasswordLogin(passwordTmp) == 1) // check cả 2 cái nếu 1 trong 2 sai -> sai
-    {
-          printf(" Login successfully. \n") ;
-          return 1; // return 1 để dùng cho logout
-    }
-    else
-    {
-           while(checkUserName(userNameTmp) == 1 || checkPasswordLogin(passwordTmp) == 0)
-        {
-            printf(" The user name or password that you have entered is incorrect.\n ");
-            printf(" Username : ");
-            scanf("%s", &userNameTmp);
-            printf(" Password : ");
-            scanf("%s", &passwordTmp);
-        }
-            printf(" Login successfully. \n") ;
-            return 1;
-    } */
+  
 }
 
 
