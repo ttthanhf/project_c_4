@@ -23,6 +23,8 @@ GtkWidget *goto_day_entry, *goto_month_entry, *goto_year_entry; // in function g
 GtkWidget *goto_dialog, *year_dialog, *month_dialog; //in function goto_day_show and next from year_show and next from month_show
 GtkWidget *username_login_entry, *password_login_entry; //in function login_dialog_show 
 GtkWidget *login_dialog, *register_dialog; //in function login_dialog_show  and next from register_dialog_show
+GtkWidget *window; //in function main_calendar
+GtkWidget *login_error_label; //in function login_dialog_show
 
 const char *username; // in function check_user
  
@@ -483,13 +485,18 @@ void exit_screen() {
   }
 }
 
-void login_callback(gpointer *data, GtkWidget *error_label) {
-  gtk_widget_hide(register_dialog);
-  gtk_widget_show_all(login_dialog);
-  gtk_widget_hide(error_label);
+void logout_process() {
+  gtk_widget_hide(window);
+  gtk_widget_show(login_dialog);
 }
 
-void register_dialog_screen(gpointer *data, GtkWidget *error_label) { //màn hình register
+void login_callback() {
+  gtk_widget_hide(register_dialog);
+  gtk_widget_show(login_dialog);
+  gtk_widget_hide(login_error_label);
+}
+
+void register_dialog_screen() { //màn hình register
 
   GtkWidget *container_register_dialog;
   GtkWidget *username_label, *password_label, *retypePassword_label, *fullname_label;
@@ -562,7 +569,7 @@ void register_dialog_screen(gpointer *data, GtkWidget *error_label) { //màn hì
 
   g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
-  g_signal_connect(login_button,"clicked",G_CALLBACK(login_callback),error_label);
+  g_signal_connect(login_button,"clicked",G_CALLBACK(login_callback),NULL);
 
   container_register_dialog = gtk_dialog_get_content_area(GTK_DIALOG(register_dialog)); //tao phan vung chua content cho dialog
 
@@ -579,14 +586,13 @@ void register_dialog_screen(gpointer *data, GtkWidget *error_label) { //màn hì
 
 void main_calendar() {
 //add biến
-  GtkWidget *window;
   GtkWidget *fixed;
   GtkWidget *button_exit, *button_logout, *button_add_event, *button_delete_event, *button_event_list;
   GtkWidget *button_previous_month, *button_next_month, *button_previous_year, *button_next_year;
   GtkWidget *button_goto_day, *button_today;
   GtkWidget *time_label;
   GtkWidget *today_label, *choose_label;
-  GtkWidget *box_info;
+  GtkWidget *box_info, *box_event_header, *box_event_main;
   GtkWidget *event_show;
   GtkWidget *hello_label;
 
@@ -618,7 +624,9 @@ void main_calendar() {
   show_year = gtk_button_new_with_label("");
 
   //----tạo box----
-  box_info = gtk_button_new();
+  box_info = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+  box_event_header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+  box_event_main = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
   //tạo label
   time_label = gtk_label_new("");
@@ -646,11 +654,14 @@ void main_calendar() {
   gtk_fixed_put(GTK_FIXED(fixed), show_month, 600, 135);
   gtk_fixed_put(GTK_FIXED(fixed), show_year, 600, 30);
   gtk_fixed_put(GTK_FIXED(fixed), calendar, 270, 210);
+  gtk_fixed_put(GTK_FIXED(fixed), box_event_header, 330, 690);
+  gtk_fixed_put(GTK_FIXED(fixed), box_event_main, 330, 720);
   gtk_fixed_put(GTK_FIXED(fixed), box_info, 10, 50);
   gtk_fixed_put(GTK_FIXED(fixed), time_label, 20, 60);
   gtk_fixed_put(GTK_FIXED(fixed), today_label, 20, 90);
-  gtk_fixed_put(GTK_FIXED(fixed), choose_label, 20, 120);
+  gtk_fixed_put(GTK_FIXED(fixed), choose_label, 380, 695);
   gtk_fixed_put(GTK_FIXED(fixed), hello_label, 1300, 100);
+
   
   //set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit,"button_menu"); 
@@ -667,10 +678,13 @@ void main_calendar() {
   gtk_widget_set_name(button_goto_day,"goto_day");
   gtk_widget_set_name(button_today,"goto_day");
 
+  gtk_widget_set_name(box_info,"box_info");
+  gtk_widget_set_name(box_event_header,"box_event_header");
+  gtk_widget_set_name(box_event_main,"box_event_main");
+  
   gtk_widget_set_name(show_month,"show_month");
   gtk_widget_set_name(show_year,"show_year");
   gtk_widget_set_name(calendar,"calendar");
-  gtk_widget_set_name(box_info,"box_info");
 
 
 //gọi hàm khi nhấn button
@@ -686,6 +700,7 @@ void main_calendar() {
   g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one_year),NULL);
   g_signal_connect(button_goto_day,"clicked",G_CALLBACK(goto_day_show),NULL);
   g_signal_connect(button_today,"clicked",G_CALLBACK(today_set),NULL);
+  g_signal_connect(button_logout,"clicked",G_CALLBACK(logout_process),NULL);
 
   g_signal_connect (calendar,"day_selected_double_click",G_CALLBACK(addEvent_show_double_click),NULL); // when double click on day
 
@@ -738,7 +753,7 @@ void login_dialog_screen() { //màn hình login
   GtkWidget *register_button, *forgot_button;
   GtkWidget *register_label;
   GtkWidget *login_label;
-  GtkWidget *login_error_label;
+
 
   login_dialog = gtk_dialog_new();
 
@@ -789,7 +804,7 @@ void login_dialog_screen() { //màn hình login
 
   g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
-  g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),login_error_label);
+  g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(check_user),login_error_label);
 
   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
