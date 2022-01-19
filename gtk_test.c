@@ -756,44 +756,41 @@ int signUp()
     char fullNameTmp[MAX_LETTER] ;
     
     fflush(stdin);
-    printf(" Full name : ");
-    scanf("%[^\n]", &fullNameTmp);
-
-    printf(" Username : ");
+   // printf(" Full name : ");
+    //scanf("%[^\n]", &fullNameTmp);
+     fullNameTmp = gtk_entry_get_text(GTK_ENTRY(fullname_entry));
+    //printf(" Username : ");
     do
     {
-        scanf("%s", &userNameTmp);
+        userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
         if(checkUserName(userNameTmp) == 0)
             {
-                printf(" Username unavailable.");
-                printf(" Please input username again : ");
+                //printf(" Username unavailable.");
+                //printf(" Please input username again : ");
             }
-        else printf(" Username available");
-    }
+        else gtk_widget_show(register_dialog);
     while(checkUserName(userNameTmp) == 0) ;
 
-    printf("\n");
-    printf(" Password : ");
+   // printf("\n");
+   // printf(" Password : ");
      do
     {
-        scanf("%s", &passwordTmp);
+        passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
         if(checkPassword(passwordTmp) == 0)
             {
-                printf(" Wrong format. At least 8 characters with uppercase letters and numbers. ");
-                printf(" Please input password again : ");
+               gtk_widget_show(register_dialog);
             }
         else
         {
-            printf(" Retype password: ");
             do
             {
-                scanf("%s", &retypePassword);
+               retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
                 if( strcasecmp(retypePassword, passwordTmp) == 0)
-                printf(" Sign up successfully. \n");
+               // printf(" Sign up successfully. \n");
                 else
                    {
-                        printf(" Wrong password.");
-                        printf(" Please retype password again : ");
+                      gtk_widget_show(register_dialog);
+                      //  printf(" Please retype password again : ");
                    }
             }
             while(strcasecmp(retypePassword, passwordTmp) != 0) ;
@@ -889,6 +886,7 @@ void register_dialog_screen() { //màn hình register
   g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
   g_signal_connect(login_button,"clicked",G_CALLBACK(login_callback),NULL);
+  g_signal_connect(button_submit,"cliked",G_CALLBACK(signUp),register_dialog);
 
   container_register_dialog = gtk_dialog_get_content_area(GTK_DIALOG(register_dialog)); //tao phan vung chua content cho dialog
 
@@ -898,9 +896,9 @@ void register_dialog_screen() { //màn hình register
   
   gtk_widget_hide(login_dialog);
 
-  gtk_widget_hide(error_username_available);
-  gtk_widget_hide(error_retype_incorrect);
-  gtk_widget_hide(error_wrong_format_pass);
+  //gtk_widget_hide(error_username_available);
+  //gtk_widget_hide(error_retype_incorrect);
+  //gtk_widget_hide(error_wrong_format_pass);
 }
 
 
@@ -941,8 +939,8 @@ int login(GtkButton *button, gpointer data)
 
 
     file = fopen("acc2.txt","r");
-    // userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
-    // passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
+     userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
+     passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
     while (fgets(line, sizeof(line), file))
     {
         fscanf(file,"Name: %s", &userNameFile);
@@ -960,20 +958,10 @@ int login(GtkButton *button, gpointer data)
         gtk_widget_hide(login_dialog);
     }
     else
-     {
-          while( check == 0)
-        {
-            gtk_widget_show(data);
-            userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
-            passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
-            if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
-            {
-            check = 1;
-            }
-        }
-            main_calendar();
-            gtk_widget_hide(login_dialog);
-      }
+    {
+         gtk_widget_show(data);
+    }
+           
 
 }
 
