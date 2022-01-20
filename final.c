@@ -937,8 +937,7 @@ void login_dialog_screen() { //màn hình login
   GtkWidget *register_label;
   GtkWidget *login_label;
 
-
-  login_dialog = gtk_dialog_new();
+  login_dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
   fixed_login = gtk_fixed_new();
 
@@ -985,14 +984,14 @@ void login_dialog_screen() { //màn hình login
 
   gtk_entry_set_visibility(GTK_ENTRY(password_login_entry), FALSE); //che lại khi nhập mật khẩu
 
-  g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
+  g_signal_connect(GTK_WINDOW(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
   g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(login),login_error_label);
 
-  container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
+//   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
 
-  gtk_container_add(GTK_CONTAINER(container_login_dialog),fixed_login);
+  gtk_container_add(GTK_CONTAINER(login_dialog),fixed_login);
 
   gtk_widget_show_all(login_dialog);
 
