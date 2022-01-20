@@ -739,16 +739,10 @@ void register_dialog_screen() { //màn hình register
   fixed_register = gtk_fixed_new();
 
   button_submit = gtk_button_new_with_label("Register");
-<<<<<<< HEAD
-
-  fullname_label = gtk_label_new("Your full name");
-  username_label = gtk_label_new("Username");
-=======
   login_button = gtk_button_new_with_label("Login now");
   
   fullname_label = gtk_label_new("Your full name");  
   username_label = gtk_label_new("Username");   
->>>>>>> def86e02fab8e5f6ca62c1926086ede29f917d36
   password_label = gtk_label_new("Password");
   retypePassword_label = gtk_label_new("Re-type password");
   register_label = gtk_label_new("Register");
@@ -763,10 +757,6 @@ void register_dialog_screen() { //màn hình register
   password_entry = gtk_entry_new();
   retypePassword_entry = gtk_entry_new();
 
-<<<<<<< HEAD
-  gtk_widget_set_name(button_submit,"button_submit");
-  gtk_widget_set_name(register_label,"login_register_label");
-=======
   gtk_widget_set_name(button_submit,"button_submit"); 
   gtk_widget_set_name(register_label,"login_register_label"); 
   gtk_widget_set_name(login_button,"login_register_button"); 
@@ -774,25 +764,12 @@ void register_dialog_screen() { //màn hình register
   gtk_widget_set_name(error_username_available,"error_label"); 
   gtk_widget_set_name(error_retype_incorrect,"error_label"); 
   gtk_widget_set_name(error_wrong_format_pass,"error_label"); 
->>>>>>> def86e02fab8e5f6ca62c1926086ede29f917d36
 
   gtk_entry_set_width_chars(GTK_ENTRY(username_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(retypePassword_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(fullname_entry),30);
 
-<<<<<<< HEAD
-  gtk_fixed_put(GTK_FIXED(fixed_register), username_label, 50, 222);
-  gtk_fixed_put(GTK_FIXED(fixed_register), password_label, 50, 302);
-  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_label, 50, 142);
-  gtk_fixed_put(GTK_FIXED(fixed_register), fullname_entry, 50, 170);
-  gtk_fixed_put(GTK_FIXED(fixed_register), username_entry, 50, 250);
-  gtk_fixed_put(GTK_FIXED(fixed_register), password_entry, 50, 330);
-  gtk_fixed_put(GTK_FIXED(fixed_register), button_submit, 90, 500);
-  gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_label, 50, 382);
-  gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_entry, 50, 410);
-  gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 90, 50);
-=======
   gtk_fixed_put(GTK_FIXED(fixed_register), username_label, 160, 222); 
   gtk_fixed_put(GTK_FIXED(fixed_register), password_label, 160, 302);
   gtk_fixed_put(GTK_FIXED(fixed_register), fullname_label, 160, 142);
@@ -808,22 +785,14 @@ void register_dialog_screen() { //màn hình register
   gtk_fixed_put(GTK_FIXED(fixed_register), error_wrong_format_pass, 50, 460);
   gtk_fixed_put(GTK_FIXED(fixed_register), login_button, 325, 545);
   gtk_fixed_put(GTK_FIXED(fixed_register), login_label, 160, 550);
->>>>>>> def86e02fab8e5f6ca62c1926086ede29f917d36
 
   gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
   gtk_entry_set_visibility(GTK_ENTRY(retypePassword_entry), FALSE);
 
-<<<<<<< HEAD
-  gtk_window_set_title(GTK_WINDOW(register_dialog),"Register");
-  gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER);
-  gtk_window_set_default_size(GTK_WINDOW(register_dialog),380,620);
-  gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE);
-=======
   gtk_window_set_title(GTK_WINDOW(register_dialog),"Register"); 
   gtk_window_set_position(GTK_WINDOW(register_dialog),GTK_WIN_POS_CENTER); 
   gtk_window_set_default_size(GTK_WINDOW(register_dialog),580,620); 
   gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE); 
->>>>>>> def86e02fab8e5f6ca62c1926086ede29f917d36
 
   g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
@@ -920,10 +889,7 @@ void main_calendar() {
   gtk_fixed_put(GTK_FIXED(fixed), choose_label, 380, 695);
   gtk_fixed_put(GTK_FIXED(fixed), hello_label, 1300, 100);
 
-<<<<<<< HEAD
-=======
   
->>>>>>> def86e02fab8e5f6ca62c1926086ede29f917d36
   //set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit,"button_menu");
   gtk_widget_set_name(button_logout,"button_menu");
@@ -1037,21 +1003,12 @@ void login_dialog_screen() { //màn hình login
   gtk_entry_set_width_chars(GTK_ENTRY(username_login_entry),30); // chỉnh kích thước entry theo số lượng chữ
   gtk_entry_set_width_chars(GTK_ENTRY(password_login_entry),30); // chỉnh kích thước entry theo số lượng chữ
 
-<<<<<<< HEAD
-  gtk_widget_set_name(button_submit,"button_submit");
-  gtk_widget_set_name(login_dialog,"login_dialog");
-  gtk_widget_set_name(register_button,"register_button");
-  gtk_widget_set_name(forgot_button,"forgot_button");
-  gtk_widget_set_name(login_label,"login_register_label");
-  gtk_widget_set_name(login_error_label,"error_label");
-=======
   gtk_widget_set_name(button_submit,"button_submit"); 
   gtk_widget_set_name(login_dialog,"login_register_dialog"); 
   gtk_widget_set_name(register_button,"login_register_button"); 
   gtk_widget_set_name(forgot_button,"forgot_button"); 
   gtk_widget_set_name(login_label,"login_register_label"); 
   gtk_widget_set_name(login_error_label,"error_label"); 
->>>>>>> def86e02fab8e5f6ca62c1926086ede29f917d36
 
   gtk_fixed_put(GTK_FIXED(fixed_login), username_label, 50, 272);
   gtk_fixed_put(GTK_FIXED(fixed_login), password_label, 50, 352);
