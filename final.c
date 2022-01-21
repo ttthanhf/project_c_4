@@ -28,7 +28,7 @@ GtkWidget *login_dialog, *register_dialog; //in function login_dialog_show  and 
 GtkWidget *window; //in function main_calendar
 GtkWidget *login_error_label; //in function login_dialog_show
 GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_format_pass; //in function register_dialog_show
-GtkWidget *popup_register; //in function register_dialog_screen
+GtkWidget *popup_register; //in function register_success
 
 const char *username; // in function check_user
  
@@ -44,6 +44,10 @@ static void load_css() {
   GtkCssProvider *cssProvider = gtk_css_provider_new();
   gtk_css_provider_load_from_path(cssProvider, "theme_v3.css", NULL); // đọc file css
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER); 
+}
+
+void destroy_all() {
+  gtk_main_quit();
 }
 
 gboolean update_time(gpointer label) {
@@ -460,7 +464,6 @@ void exit_screen() {
 
   GtkWidget *exit_dialog, *container_exit;
   GtkWidget *label_ask;
-  GtkWidget *fixed_exit;
 
   exit_dialog = gtk_dialog_new();
 
@@ -491,10 +494,40 @@ void exit_screen() {
   }
 }
 
-void logout_process() {
-  gtk_widget_hide(window);
-  gtk_widget_show(login_dialog);
+void logout_show() {
+  GtkWidget *logout_dialog, *container_logout;
+  GtkWidget *label_ask;
+
+  logout_dialog = gtk_dialog_new();
+
+  label_ask = gtk_label_new("Are you want to Logout?");
+
+  gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog),"Yes",1,"No",2,NULL); // yes = 1 , no = 2
+
+  gtk_window_set_position(GTK_WINDOW(logout_dialog),GTK_WIN_POS_CENTER);
+  gtk_container_set_border_width(GTK_CONTAINER(logout_dialog),10);
+
+  container_logout = gtk_dialog_get_content_area(GTK_DIALOG(logout_dialog));
+
+  gtk_container_add(GTK_CONTAINER(container_logout),label_ask);
+
+  gtk_widget_show_all(logout_dialog);
+
+  gint response = gtk_dialog_run(GTK_DIALOG(logout_dialog)); //add gia tri khi bam button
+
+  switch (response) { //thuc hien ham khi gia tri = nhau
+    case 1:
+      gtk_widget_destroy(GTK_WIDGET(window));
+      gtk_widget_show(login_dialog);
+      break;
+    case 2:
+      gtk_widget_destroy(GTK_WIDGET(logout_dialog));
+      break;
+    default: 
+      break;
+  }
 }
+
 
 void main_calendar() {
 //add biến
@@ -600,7 +633,7 @@ void main_calendar() {
 
 
 //gọi hàm khi nhấn button
-  g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
+  // g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // tắt app 
   g_signal_connect(button_exit,"clicked",G_CALLBACK(exit_screen),NULL);
   
   g_signal_connect(show_month,"clicked",G_CALLBACK(month_show),NULL);
@@ -612,7 +645,7 @@ void main_calendar() {
   g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one_year),NULL);
   g_signal_connect(button_goto_day,"clicked",G_CALLBACK(goto_day_show),NULL);
   g_signal_connect(button_today,"clicked",G_CALLBACK(today_set),NULL);
-  g_signal_connect(button_logout,"clicked",G_CALLBACK(logout_process),NULL);
+  g_signal_connect(button_logout,"clicked",G_CALLBACK(logout_show),NULL);
 
   g_signal_connect (calendar,"day_selected_double_click",G_CALLBACK(addEvent_show_double_click),NULL); // when double click on day
 
@@ -638,7 +671,8 @@ void main_calendar() {
 }
 
 void login_callback() {
-  gtk_widget_hide(register_dialog);
+  gtk_widget_destroy(GTK_WIDGET(register_dialog));
+  gtk_widget_destroy(GTK_WIDGET(popup_register));
   gtk_widget_show(login_dialog);
   gtk_widget_hide(login_error_label);
 }
@@ -684,37 +718,23 @@ int checkPassword(const char *passwordTmp)    // mat khau phai co tu 8 ki tu tro
     else return 1;
 }
 
-gboolean time_to_login(gpointer label) {
-    static int time = 7; //second
-    gchar *display = g_strdup_printf("Registration is complete.\nPlease wait in %d second !",time - 2);
-    gtk_label_set_text(GTK_LABEL(label),display); 
-    time -= 1;
-    if (time == 1) {
-        gtk_widget_show(login_dialog);
-    }
-    if (time == 0) {
-        gtk_window_close(GTK_WINDOW(register_dialog));
-        gtk_window_close(GTK_WINDOW(popup_register));
-        time = 7;
-    }
-}
-
 void register_success() {
-    GtkWidget *label;
+    GtkWidget *label, *button;
     GtkWidget *container;
 
     popup_register = gtk_dialog_new();
 
-    label = gtk_label_new("");
+    label = gtk_label_new("Sign Up Success");
+    button = gtk_button_new_with_label("OK");
 
     gtk_window_set_position(GTK_WINDOW(popup_register),GTK_WIN_POS_CENTER); 
 
-    time_to_login(label);
-    g_timeout_add(1000,time_to_login,label);
+    g_signal_connect(button,"clicked",G_CALLBACK(login_callback),NULL);
 
     container = gtk_dialog_get_content_area(GTK_DIALOG(popup_register));
 
     gtk_container_add(GTK_CONTAINER(container),label);
+    gtk_container_add(GTK_CONTAINER(container),button);
 
     gtk_widget_show_all(popup_register);
 }
@@ -873,7 +893,7 @@ void register_dialog_screen() { //màn hình register
   gtk_window_set_default_size(GTK_WINDOW(register_dialog),580,620); 
   gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE); 
 
-  g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
+  // g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL); //khi dùng widget_destroy thì sẽ nhận luôn cái hàm phá hủy main làm app tắt
 
   g_signal_connect(login_button,"clicked",G_CALLBACK(login_callback),NULL);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(signUp),NULL);
@@ -937,7 +957,8 @@ void login_dialog_screen() { //màn hình login
   GtkWidget *register_label;
   GtkWidget *login_label;
 
-  login_dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  // login_dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  login_dialog = gtk_dialog_new();
 
   fixed_login = gtk_fixed_new();
 
@@ -989,9 +1010,9 @@ void login_dialog_screen() { //màn hình login
   g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(login),login_error_label);
 
-//   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
+  container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
 
-  gtk_container_add(GTK_CONTAINER(login_dialog),fixed_login);
+  gtk_container_add(GTK_CONTAINER(container_login_dialog),fixed_login);
 
   gtk_widget_show_all(login_dialog);
 
