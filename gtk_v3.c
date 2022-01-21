@@ -123,13 +123,12 @@ int checkPassword(char *passwordTmp)    // mat khau phai co tu 8 ki tu tro len v
 }
 
 
-int signUp()
+/*int signUp()
 {
     char userNameTmp[MAX_LETTER] ; // cac mang tam
     char retypePassword[MAX_LETTER] ;
     char passwordTmp[MAX_LETTER] ;
     char fullNameTmp[MAX_LETTER] ;
-    ri
     fflush(stdin);
     printf(" Full name : ");
     scanf("%[^\n]", &fullNameTmp);
@@ -192,7 +191,7 @@ int signUp()
 }
 
 
-
+*/
 int login(GtkButton *button, gpointer data)
 {
     char userNameTmp[MAX_LETTER] ;
@@ -219,7 +218,7 @@ int login(GtkButton *button, gpointer data)
     fclose(file);
 
     if (check == 1) {
-       main_calendar();
+      //  main_calendar();
         gtk_widget_hide(login_dialog);
     }
     else

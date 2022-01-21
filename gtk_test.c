@@ -22,8 +22,9 @@ GtkWidget *login_dialog, *register_dialog; //in function login_dialog_show  and 
 GtkWidget *window; //in function main_calendar
 GtkWidget *login_error_label; //in function login_dialog_show
 GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_format_pass; //in function register_dialog_show
+GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_entry;
 
-const char *username; // in function check_user
+const char *userNameTmp; // in function check_user
 
 char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
 
@@ -136,7 +137,7 @@ void destroy(gpointer *data, GtkWidget *widget) {
 }
 
 void update_hello(GtkWidget *label) {
-  gchar *display = g_strdup_printf("Hello, %s !",username);
+  gchar *display = g_strdup_printf("Hello, %s !",userNameTmp);
   gtk_label_set_text(GTK_LABEL(label),display);
 }
 
@@ -703,7 +704,7 @@ void main_calendar() {
 
 
 
-int checkUserName( char userNameTmp[])
+int checkUserName( const gchar userNameTmp[])
 {
     char userNameFile[MAX_LETTER];
     char line[256];
@@ -720,7 +721,7 @@ int checkUserName( char userNameTmp[])
 
 }
 
-int checkPassword(char *passwordTmp)    // mat khau phai co tu 8 ki tu tro len va co chu hoa va chu thuong
+int checkPassword(const gchar *passwordTmp)    // mat khau phai co tu 8 ki tu tro len va co chu hoa va chu thuong
 {
     int length = strlen(passwordTmp), upperCase = 0, lowerCase = 0, number = 0;
     do
@@ -748,34 +749,38 @@ void login_callback() {
   gtk_widget_hide(login_error_label);
 }
 
-int signUp()
+int signUp(GtkButton *button, gpointer data)
 {
-    char userNameTmp[MAX_LETTER] ; // cac mang tam
-    char retypePassword[MAX_LETTER] ;
-    char passwordTmp[MAX_LETTER] ;
-    char fullNameTmp[MAX_LETTER] ;
-    
+   // char userNameTmp[MAX_LETTER] ; // cac mang tam
+   // char retypePassword[MAX_LETTER] ;
+   // char passwordTmp[MAX_LETTER] ;
+   // char fullNameTmp[MAX_LETTER] ;
+    const char *passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
+    const char *retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
+     userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
+
     fflush(stdin);
    // printf(" Full name : ");
     //scanf("%[^\n]", &fullNameTmp);
-     fullNameTmp = gtk_entry_get_text(GTK_ENTRY(fullname_entry));
+     const char *fullNameTmp = gtk_entry_get_text(GTK_ENTRY(fullname_entry));
     //printf(" Username : ");
     do
     {
-        userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
         if(checkUserName(userNameTmp) == 0)
             {
                 //printf(" Username unavailable.");
                 //printf(" Please input username again : ");
             }
         else gtk_widget_show(register_dialog);
+    }
     while(checkUserName(userNameTmp) == 0) ;
 
    // printf("\n");
    // printf(" Password : ");
+
      do
     {
-        passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
+      
         if(checkPassword(passwordTmp) == 0)
             {
                gtk_widget_show(register_dialog);
@@ -784,9 +789,9 @@ int signUp()
         {
             do
             {
-               retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
                 if( strcasecmp(retypePassword, passwordTmp) == 0)
-               // printf(" Sign up successfully. \n");
+               // printf(" Sign up successfully. \n"); 
+                   gtk_widget_show(login_dialog);
                 else
                    {
                       gtk_widget_show(register_dialog);
@@ -797,9 +802,8 @@ int signUp()
 
 
         }
-
     }
-    while(checkPassword(passwordTmp) == 0) ;
+    while (checkPassword(passwordTmp) == 0) ;
 
     strcpy(listUser[countUser][0], fullNameTmp) ; // gan cac fullname, username, password vao mang chinh
     strcpy(listUser[countUser][1], userNameTmp) ;
@@ -812,12 +816,11 @@ int signUp()
 
     countUser++;
 }
-
 void register_dialog_screen() { //màn hình register
 
   GtkWidget *container_register_dialog;
   GtkWidget *username_label, *password_label, *retypePassword_label, *fullname_label;
-  GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_entry;
+
   GtkWidget *button_submit;
   GtkWidget *fixed_register;
   GtkWidget *register_label;
@@ -930,7 +933,7 @@ int login(GtkButton *button, gpointer data)
     // char passwordTmp[MAX_LETTER] ;
     // char userNameFile[MAX_LETTER] ;
     // char passwordFile[MAX_LETTER] ;
-    const char *userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
+    userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
     const char *passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
     char userNameFile[MAX_LETTER] ;
     char passwordFile[MAX_LETTER] ;
@@ -1024,7 +1027,7 @@ void login_dialog_screen() { //màn hình login
 
   g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
-  g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
+  g_signal_connect(register_button,"clicked",G_CALLBACK(signUp),NULL);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(login),login_error_label);
 
   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
@@ -1047,6 +1050,7 @@ int main(int argc, char *argv[]) { //mainde03x
 
   gtk_main();
 //----------không viết gì dưới gtk_main() vì đây là điểm kết thúc-----------------------------//
+
 }
 
 // mở app msys2 64 bit
