@@ -1,12 +1,9 @@
-Fullname: 1
+Fullname: Hana
+Name: k
+Pass: Ha123456
+Fullname: Hana
 Name: hana
 Pass: Ha123456
 Fullname: 1
-Name: ngochan
+Name: H
 Pass: Ha123456
-Fullname: 1
-Name: ha1
-Pass: Ha123456
-Fullname: Tran Tan Thanh
-Name: Thanhne
-Pass: Thanhne123456

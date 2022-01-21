@@ -23,7 +23,7 @@ GtkWidget *window; //in function main_calendar
 GtkWidget *login_error_label; //in function login_dialog_show
 GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_format_pass; //in function register_dialog_show
 GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_entry;
-
+GtkWidget *success_signup;
 const char *userNameTmp; // in function check_user
 
 char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
@@ -790,8 +790,10 @@ int signUp(GtkButton *button, gpointer data)
             do
             {
                 if( strcasecmp(retypePassword, passwordTmp) == 0)
-               // printf(" Sign up successfully. \n"); 
-                   gtk_widget_show(login_dialog);
+                {
+                     // printf(" Sign up successfully. \n"); 
+                  gtk_widget_show(success_signup);
+                }
                 else
                    {
                       gtk_widget_show(register_dialog);
@@ -843,7 +845,7 @@ void register_dialog_screen() { //màn hình register
   error_username_available = gtk_label_new("Username already exists, please try another name!");
   error_retype_incorrect = gtk_label_new("Passwords do not match. Please try again !");
   error_wrong_format_pass = gtk_label_new("Wrong format. At least 8 characters with uppercase letters and numbers.");
-
+  success_signup = gtk_label_new("Sign up successfully.");
   fullname_entry = gtk_entry_new();
   username_entry = gtk_entry_new();
   password_entry = gtk_entry_new();
@@ -856,6 +858,7 @@ void register_dialog_screen() { //màn hình register
   gtk_widget_set_name(error_username_available,"error_label"); 
   gtk_widget_set_name(error_retype_incorrect,"error_label"); 
   gtk_widget_set_name(error_wrong_format_pass,"error_label"); 
+  gtk_widget_set_name(success_signup,"error_label");
 
   gtk_entry_set_width_chars(GTK_ENTRY(username_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30);
@@ -872,11 +875,12 @@ void register_dialog_screen() { //màn hình register
   gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_label, 160, 382);
   gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_entry, 160, 410);
   gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 200, 50);
-  gtk_fixed_put(GTK_FIXED(fixed_register), error_username_available, 120, 460);
-  gtk_fixed_put(GTK_FIXED(fixed_register), error_retype_incorrect, 153, 460);
-  gtk_fixed_put(GTK_FIXED(fixed_register), error_wrong_format_pass, 50, 460);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_username_available, 160, 282);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_retype_incorrect, 160, 444);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_wrong_format_pass, 160, 364);
   gtk_fixed_put(GTK_FIXED(fixed_register), login_button, 325, 545);
   gtk_fixed_put(GTK_FIXED(fixed_register), login_label, 160, 550);
+  gtk_fixed_put(GTK_FIXED(fixed_register), success_signup, 223, 470);
 
   gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
   gtk_entry_set_visibility(GTK_ENTRY(retypePassword_entry), FALSE);
@@ -889,7 +893,8 @@ void register_dialog_screen() { //màn hình register
   g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
   g_signal_connect(login_button,"clicked",G_CALLBACK(login_callback),NULL);
-  g_signal_connect(button_submit,"cliked",G_CALLBACK(signUp),register_dialog);
+  g_signal_connect(button_submit,"clicked",G_CALLBACK(signUp),register_dialog);
+  //g_signal_connect(login_button,"clicked",G_CALLBACK(login_dialog),NULL);
 
   container_register_dialog = gtk_dialog_get_content_area(GTK_DIALOG(register_dialog)); //tao phan vung chua content cho dialog
 
@@ -899,9 +904,11 @@ void register_dialog_screen() { //màn hình register
   
   gtk_widget_hide(login_dialog);
 
-  //gtk_widget_hide(error_username_available);
-  //gtk_widget_hide(error_retype_incorrect);
-  //gtk_widget_hide(error_wrong_format_pass);
+  gtk_widget_hide(error_username_available);
+  gtk_widget_hide(error_retype_incorrect);
+  gtk_widget_hide(error_wrong_format_pass);
+  gtk_widget_hide(success_signup);
+
 }
 
 
@@ -1027,7 +1034,7 @@ void login_dialog_screen() { //màn hình login
 
   g_signal_connect(GTK_DIALOG(login_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 
-  g_signal_connect(register_button,"clicked",G_CALLBACK(signUp),NULL);
+  g_signal_connect(register_button,"clicked",G_CALLBACK(register_dialog_screen),NULL);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(login),login_error_label);
 
   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
@@ -1055,6 +1062,6 @@ int main(int argc, char *argv[]) { //mainde03x
 
 // mở app msys2 64 bit
 // nhớ cd /c/thư mục chứ file
-// gcc `pkg-config --cflags gtk+-3.0` -o app gtk_v3.c `pkg-config --libs gtk+-3.0`
+// gcc `pkg-config --cflags gtk+-3.0` -o app gtk_test.c `pkg-config --libs gtk+-3.0`
 // ./app
 
