@@ -464,7 +464,6 @@ void exit_screen() {
 
   GtkWidget *exit_dialog, *container_exit;
   GtkWidget *label_ask;
-  GtkWidget *fixed_exit;
 
   exit_dialog = gtk_dialog_new();
 
@@ -495,10 +494,40 @@ void exit_screen() {
   }
 }
 
-void logout_process() {
-  gtk_widget_destroy(GTK_WIDGET(window);
-  gtk_widget_show(login_dialog);
+void logout_show() {
+  GtkWidget *logout_dialog, *container_logout;
+  GtkWidget *label_ask;
+
+  logout_dialog = gtk_dialog_new();
+
+  label_ask = gtk_label_new("Are you want to Logout?");
+
+  gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog),"Yes",1,"No",2,NULL); // yes = 1 , no = 2
+
+  gtk_window_set_position(GTK_WINDOW(logout_dialog),GTK_WIN_POS_CENTER);
+  gtk_container_set_border_width(GTK_CONTAINER(logout_dialog),10);
+
+  container_logout = gtk_dialog_get_content_area(GTK_DIALOG(logout_dialog));
+
+  gtk_container_add(GTK_CONTAINER(container_logout),label_ask);
+
+  gtk_widget_show_all(logout_dialog);
+
+  gint response = gtk_dialog_run(GTK_DIALOG(logout_dialog)); //add gia tri khi bam button
+
+  switch (response) { //thuc hien ham khi gia tri = nhau
+    case 1:
+      gtk_widget_destroy(GTK_WIDGET(window));
+      gtk_widget_show(login_dialog);
+      break;
+    case 2:
+      gtk_widget_destroy(GTK_WIDGET(logout_dialog));
+      break;
+    default: 
+      break;
+  }
 }
+
 
 void main_calendar() {
 //add biến
@@ -616,7 +645,7 @@ void main_calendar() {
   g_signal_connect(button_previous_year,"clicked",G_CALLBACK(minus_one_year),NULL);
   g_signal_connect(button_goto_day,"clicked",G_CALLBACK(goto_day_show),NULL);
   g_signal_connect(button_today,"clicked",G_CALLBACK(today_set),NULL);
-  g_signal_connect(button_logout,"clicked",G_CALLBACK(logout_process),NULL);
+  g_signal_connect(button_logout,"clicked",G_CALLBACK(logout_show),NULL);
 
   g_signal_connect (calendar,"day_selected_double_click",G_CALLBACK(addEvent_show_double_click),NULL); // when double click on day
 
