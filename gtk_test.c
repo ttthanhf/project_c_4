@@ -24,8 +24,8 @@ GtkWidget *login_error_label; //in function login_dialog_show
 GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_format_pass; //in function register_dialog_show
 GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_entry;
 GtkWidget *success_signup;
-const char *userNameTmp; // in function check_user
-
+const char *userNameTmp, *passwordTmp, *retypePassword;  // in function check_user
+const char *fullNameFile; // in function signUp
 char *monthList[] = {"","January","February","March","April","May","June","July","August","September","October","November","December"}; //loại bỏ vị trí 0
 
 guint year_today, month_today, day_today;// in function main
@@ -59,7 +59,7 @@ void creatFolder()
     strcat(address, "\\");
     strcat(address, listUser[countUser][1]);
     int ck = chdir(address);
-    printf("%s", address);
+   // printf("%s", address);
 
 
     strcat(tmpAddress, listUser[countUser][1]) ;
@@ -137,7 +137,8 @@ void destroy(gpointer *data, GtkWidget *widget) {
 }
 
 void update_hello(GtkWidget *label) {
-  gchar *display = g_strdup_printf("Hello, %s !",userNameTmp);
+  gchar *display = g_strdup_printf("Hello, %s !",fullNameFile);
+  printf("%s", fullNameFile);
   gtk_label_set_text(GTK_LABEL(label),display);
 }
 
@@ -755,65 +756,55 @@ int signUp(GtkButton *button, gpointer data)
    // char retypePassword[MAX_LETTER] ;
    // char passwordTmp[MAX_LETTER] ;
    // char fullNameTmp[MAX_LETTER] ;
-    const char *passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
-    const char *retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
+    passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
+    retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
      userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
 
     fflush(stdin);
    // printf(" Full name : ");
     //scanf("%[^\n]", &fullNameTmp);
-     const char *fullNameTmp = gtk_entry_get_text(GTK_ENTRY(fullname_entry));
+    const char *fullNameTmp = gtk_entry_get_text(GTK_ENTRY(fullname_entry));
     //printf(" Username : ");
-    do
-    {
+  
+    
         if(checkUserName(userNameTmp) == 0)
-            {
-                //printf(" Username unavailable.");
-                //printf(" Please input username again : ");
-            }
-        else gtk_widget_show(register_dialog);
-    }
-    while(checkUserName(userNameTmp) == 0) ;
+           {
+                gtk_widget_hide(error_wrong_format_pass);
+                gtk_widget_show(error_username_available);
+                gtk_widget_hide(error_retype_incorrect);
+              }
+        else 
+          if(checkPassword(passwordTmp) == 0)
+              {
+                gtk_widget_show(error_wrong_format_pass);
+                gtk_widget_hide(error_username_available);
+                gtk_widget_hide(error_retype_incorrect);
+              }
+              else          
+                 if( strcasecmp(retypePassword, passwordTmp) == 0)
+                 {
+                  // printf(" Sign up successfully. \n"); 
+                   gtk_widget_show(success_signup);
+                   gtk_widget_hide(error_wrong_format_pass);
+                   gtk_widget_hide(error_username_available);
+                   gtk_widget_hide(error_retype_incorrect);
 
-   // printf("\n");
-   // printf(" Password : ");
+                 }
+                 else
+                  {
+                     gtk_widget_hide(error_wrong_format_pass);
+                     gtk_widget_hide(error_username_available);
+                     gtk_widget_show(error_retype_incorrect);
+                  }
 
-     do
-    {
-      
-        if(checkPassword(passwordTmp) == 0)
-            {
-               gtk_widget_show(register_dialog);
-            }
-        else
-        {
-            do
-            {
-                if( strcasecmp(retypePassword, passwordTmp) == 0)
-                {
-                     // printf(" Sign up successfully. \n"); 
-                  gtk_widget_show(success_signup);
-                }
-                else
-                   {
-                      gtk_widget_show(register_dialog);
-                      //  printf(" Please retype password again : ");
-                   }
-            }
-            while(strcasecmp(retypePassword, passwordTmp) != 0) ;
-
-
-        }
-    }
-    while (checkPassword(passwordTmp) == 0) ;
 
     strcpy(listUser[countUser][0], fullNameTmp) ; // gan cac fullname, username, password vao mang chinh
     strcpy(listUser[countUser][1], userNameTmp) ;
-    strcpy(listUser[countUser][2], passwordTmp) ;
-
-    file = fopen("acc2.txt","a");
+    strcpy(listUser[countUser][2], passwordTmp) ; 
+     file = fopen("acc2.txt","a");
         fprintf(file,"Fullname: %s\nName: %s\nPass: %s\n",fullNameTmp, userNameTmp, passwordTmp);
     fclose(file);
+
     creatFolder();
 
     countUser++;
@@ -858,7 +849,7 @@ void register_dialog_screen() { //màn hình register
   gtk_widget_set_name(error_username_available,"error_label"); 
   gtk_widget_set_name(error_retype_incorrect,"error_label"); 
   gtk_widget_set_name(error_wrong_format_pass,"error_label"); 
-  gtk_widget_set_name(success_signup,"error_label");
+  gtk_widget_set_name(success_signup,"success_label");
 
   gtk_entry_set_width_chars(GTK_ENTRY(username_entry),30);
   gtk_entry_set_width_chars(GTK_ENTRY(password_entry),30);
@@ -909,6 +900,7 @@ void register_dialog_screen() { //màn hình register
   gtk_widget_hide(error_wrong_format_pass);
   gtk_widget_hide(success_signup);
 
+
 }
 
 
@@ -951,11 +943,12 @@ int login(GtkButton *button, gpointer data)
     file = fopen("acc2.txt","r");
      userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
      passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
+
     while (fgets(line, sizeof(line), file))
     {
+        fscanf(file,"Fullame: %[^\n]", &fullNameFile); 
         fscanf(file,"Name: %s", &userNameFile);
         fscanf(file,"Pass: %s", &passwordFile);
-
         if(strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp,passwordFile) == 0)
         {
             check = 1;
@@ -964,12 +957,12 @@ int login(GtkButton *button, gpointer data)
     fclose(file);
 
     if (check == 1) {
-       main_calendar();
+        main_calendar();
         gtk_widget_hide(login_dialog);
     }
     else
     {
-         gtk_widget_show(data);
+        gtk_widget_show(data);
     }
            
 

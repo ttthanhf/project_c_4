@@ -131,6 +131,10 @@ window {
     color: red;
 }
 
+#success_label {
+    color: green;
+    font-weight: bold;
+}
 #box_info {
     border: 0.1px solid #8f8a75;
     box-shadow: none;
