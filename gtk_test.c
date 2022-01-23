@@ -911,9 +911,9 @@ void register_dialog_screen()
   gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_label, 160, 382);
   gtk_fixed_put(GTK_FIXED(fixed_register), retypePassword_entry, 160, 410);
   gtk_fixed_put(GTK_FIXED(fixed_register), register_label, 200, 50);
-  gtk_fixed_put(GTK_FIXED(fixed_register), error_username_available, 160, 282);
-  gtk_fixed_put(GTK_FIXED(fixed_register), error_retype_incorrect, 160, 444);
-  gtk_fixed_put(GTK_FIXED(fixed_register), error_wrong_format_pass, 160, 364);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_username_available, 120, 282);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_retype_incorrect, 153, 444);
+  gtk_fixed_put(GTK_FIXED(fixed_register), error_wrong_format_pass, 50, 364);
   gtk_fixed_put(GTK_FIXED(fixed_register), login_button, 325, 545);
   gtk_fixed_put(GTK_FIXED(fixed_register), login_label, 160, 550);
   gtk_fixed_put(GTK_FIXED(fixed_register), success_signup, 223, 470);
@@ -1049,7 +1049,8 @@ void login_dialog_screen()
   username_label = gtk_label_new("Username");
   password_label = gtk_label_new("Password");
   register_label = gtk_label_new("Don't have an account ?");
-  login_error_label = gtk_label_new("The user name or password that you have entered is incorrect.");
+  // login_error_label = gtk_label_new("The user name or password that you have entered is incorrect.");
+  login_error_label = gtk_label_new("Invaild Username or Password ! Try again !");
 
   username_login_entry = gtk_entry_new();
   password_login_entry = gtk_entry_new();
