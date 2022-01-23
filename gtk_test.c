@@ -803,10 +803,6 @@ void login_callback()
 
 int signUp(GtkButton *button, gpointer data) 
 {
-  // char userNameTmp[MAX_LETTER] ; // cac mang tam
-  // char retypePassword[MAX_LETTER] ;
-  // char passwordTmp[MAX_LETTER] ;
-  // char fullNameTmp[MAX_LETTER] ;
   passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
   retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
   userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
@@ -946,33 +942,8 @@ void register_dialog_screen()
   gtk_widget_hide(success_signup);
 }
 
-/*void check_user(GtkButton *button, gpointer data) {
-  username = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
-  const char *password = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
-  char *test_username = "admin";
-  char *test_password = "root";
-
-  if(strcmp(username,test_username) == 0) {
-    if(strcmp(password, test_password) == 0) {
-      main_calendar();
-      gtk_widget_hide(login_dialog);
-    }
-    else {
-      gtk_widget_show(data);
-    }
-  }
-  else {
-    gtk_widget_show(data);
-  }
-}
-*/
-
 int login(GtkButton *button, gpointer data)
 {
-  // char userNameTmp[MAX_LETTER] ;
-  // char passwordTmp[MAX_LETTER] ;
-  // char userNameFile[MAX_LETTER] ;
-  // char passwordFile[MAX_LETTER] ;
   userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_login_entry));
   const char *passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_login_entry));
   char userNameFile[MAX_LETTER];
