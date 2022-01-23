@@ -857,7 +857,7 @@ void register_dialog_screen() { //màn hình register
   gtk_window_set_default_size(GTK_WINDOW(register_dialog),580,620); 
   gtk_window_set_resizable(GTK_WINDOW(register_dialog),FALSE); 
 
-  // g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(gtk_main_quit),NULL); //khi dùng widget_destroy thì sẽ nhận luôn cái hàm phá hủy main làm app tắt
+  g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(login_callback),NULL); //khi dùng widget_destroy thì sẽ nhận luôn cái hàm phá hủy main làm app tắt
 
   g_signal_connect(login_button,"clicked",G_CALLBACK(login_callback),NULL);
   g_signal_connect(button_submit,"clicked",G_CALLBACK(signUp),NULL);
