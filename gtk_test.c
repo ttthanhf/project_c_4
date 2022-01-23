@@ -626,9 +626,10 @@ void main_calendar()
   GtkWidget *button_goto_day, *button_today;
   GtkWidget *time_label;
   GtkWidget *today_label, *choose_label;
-  GtkWidget *box_info, *box_event_header, *box_event_main;
+  GtkWidget *box_info, *box_event_header, *box_event_main, *box_note;
   GtkWidget *event_show;
   GtkWidget *hello_label;
+  GtkWidget *name_note;
 
   // set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); // cho app ở quyền cao nhất
@@ -661,12 +662,14 @@ void main_calendar()
   box_info = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   box_event_header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   box_event_main = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+  box_note = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
   // tạo label
   time_label = gtk_label_new("");
   today_label = gtk_label_new("");
   choose_label = gtk_label_new("");
   hello_label = gtk_label_new("");
+  name_note = gtk_label_new("NOTE");
 
   //-----set label show show today--------//
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_today, &month_today, &day_today);
@@ -695,6 +698,8 @@ void main_calendar()
   gtk_fixed_put(GTK_FIXED(fixed), today_label, 20, 90);
   gtk_fixed_put(GTK_FIXED(fixed), choose_label, 380, 695);
   gtk_fixed_put(GTK_FIXED(fixed), hello_label, 1300, 100);
+  gtk_fixed_put(GTK_FIXED(fixed), box_note, 10, 180);
+  gtk_fixed_put(GTK_FIXED(fixed), name_note, 120, 190);
 
   // set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit, "button_menu");
@@ -714,6 +719,9 @@ void main_calendar()
   gtk_widget_set_name(box_info, "box_info");
   gtk_widget_set_name(box_event_header, "box_event_header");
   gtk_widget_set_name(box_event_main, "box_event_main");
+  gtk_widget_set_name(box_note, "box_note");
+  gtk_widget_set_name(name_note, "name_note");
+  
 
   gtk_widget_set_name(show_month, "show_month");
   gtk_widget_set_name(show_year, "show_year");
