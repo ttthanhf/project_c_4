@@ -26,7 +26,8 @@ GtkWidget *success_signup;
 const char *userNameTmp, *passwordTmp, *retypePassword; // in function check_user
 char fullNameFile[100];
 const char *fullNameTmp;
-int indexOfUser;                                                                                                                                    // dùng để lưu lại số thứ tự user                                                                                                                         // in function signUp
+int indexOfUser;        
+int stop_loop_Main = 0; //0=false, 1 = true                                                                                                                        // dùng để lưu lại số thứ tự user                                                                                                                         // in function signUp
 char *monthList[] = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}; // loại bỏ vị trí 0
 
 guint year_today, month_today, day_today; // in function main
@@ -116,7 +117,10 @@ gboolean update_time(gpointer label)
   gchar *display = g_strdup_printf("Clock:\t\t%02d : %02d : %02d (hh/mm/ss)", tm.tm_hour, tm.tm_min, tm.tm_sec);
   gtk_label_set_text(GTK_LABEL(label), display);
 
-  // return G_SOURCE_CONTINUE;
+  if (stop_loop_Main == 0) {
+    return TRUE;
+  }
+  else return FALSE;
 }
 
 void update_today(gpointer label)
@@ -131,8 +135,14 @@ gboolean update_choose(gpointer label)
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select); // chọn ngày đã được chọn lưu vào []_select
   gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1, year_select);
   gtk_label_set_text(GTK_LABEL(label), display);
+  if (stop_loop_Main == 0) {
+    return TRUE;
+  }
+  else return FALSE;
 }
-
+void destroy_all() {
+  gtk_main_quit();
+}
 void destroy(gpointer *data, GtkWidget *widget)
 {
   gtk_widget_destroy(widget);
@@ -611,10 +621,39 @@ void exit_screen()
   }
 }
 
-void logout_process()
-{
-  gtk_widget_hide(window);
-  gtk_widget_show(login_dialog);
+void logout_show() {
+  GtkWidget *logout_dialog, *container_logout;
+  GtkWidget *label_ask;
+
+  logout_dialog = gtk_dialog_new();
+
+  label_ask = gtk_label_new("Are you want to Logout?");
+
+  gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog),"Yes",1,"No",2,NULL); // yes = 1 , no = 2
+
+  gtk_window_set_position(GTK_WINDOW(logout_dialog),GTK_WIN_POS_CENTER);
+  gtk_container_set_border_width(GTK_CONTAINER(logout_dialog),10);
+
+  container_logout = gtk_dialog_get_content_area(GTK_DIALOG(logout_dialog));
+
+  gtk_container_add(GTK_CONTAINER(container_logout),label_ask);
+
+  gtk_widget_show_all(logout_dialog);
+
+  stop_loop_Main = 1;
+
+  gint response = gtk_dialog_run(GTK_DIALOG(logout_dialog)); //add gia tri khi bam button
+
+  switch (response) { //thuc hien ham khi gia tri = nhau
+    case 1:
+      gtk_widget_destroy(GTK_WIDGET(window));
+      gtk_widget_show(login_dialog);
+      break;
+    case 2:
+      stop_loop_Main = 0;
+      gtk_widget_destroy(GTK_WIDGET(logout_dialog));
+      break;
+  }
 }
 
 void main_calendar()
@@ -728,7 +767,7 @@ void main_calendar()
   gtk_widget_set_name(calendar, "calendar");
 
   // gọi hàm khi nhấn button
-  g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL); // tắt app
+  // g_signal_connect(window, "destroy", G_CALLBACK(destroy_all), NULL); // tắt app
   g_signal_connect(button_exit, "clicked", G_CALLBACK(exit_screen), NULL);
 
   g_signal_connect(show_month, "clicked", G_CALLBACK(month_show), NULL);
@@ -740,7 +779,7 @@ void main_calendar()
   g_signal_connect(button_previous_year, "clicked", G_CALLBACK(minus_one_year), NULL);
   g_signal_connect(button_goto_day, "clicked", G_CALLBACK(goto_day_show), NULL);
   g_signal_connect(button_today, "clicked", G_CALLBACK(today_set), NULL);
-  g_signal_connect(button_logout, "clicked", G_CALLBACK(logout_process), NULL);
+  g_signal_connect(button_logout, "clicked", G_CALLBACK(logout_show), NULL);
 
   g_signal_connect(calendar, "day_selected_double_click", G_CALLBACK(addEvent_show_double_click), NULL); // when double click on day
 
@@ -857,6 +896,7 @@ int signUp(GtkButton *button, gpointer data)
     gtk_widget_show(error_retype_incorrect);
   }
 }
+
 void register_dialog_screen()
 { // màn hình register
 
@@ -930,7 +970,7 @@ void register_dialog_screen()
   gtk_window_set_default_size(GTK_WINDOW(register_dialog), 580, 620);
   gtk_window_set_resizable(GTK_WINDOW(register_dialog), FALSE);
 
-  g_signal_connect(GTK_DIALOG(register_dialog), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+  g_signal_connect(GTK_DIALOG(register_dialog), "destroy", G_CALLBACK(destroy_all), NULL);
 
   g_signal_connect(login_button, "clicked", G_CALLBACK(login_callback), NULL);
   g_signal_connect(button_submit, "clicked", G_CALLBACK(signUp), register_dialog);
@@ -1067,7 +1107,7 @@ void login_dialog_screen()
 
   gtk_entry_set_visibility(GTK_ENTRY(password_login_entry), FALSE); // che lại khi nhập mật khẩu
 
-  g_signal_connect(GTK_DIALOG(login_dialog), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+  g_signal_connect(GTK_DIALOG(login_dialog), "destroy", G_CALLBACK(destroy_all), NULL);
 
   g_signal_connect(register_button, "clicked", G_CALLBACK(register_dialog_screen), NULL);
   g_signal_connect(button_submit, "clicked", G_CALLBACK(login), login_error_label);
