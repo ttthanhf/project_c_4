@@ -951,6 +951,7 @@ int login(GtkButton *button, gpointer data)
   char line[256];
   int check = 0;
   countUser = 0; // reset lại bắt đầu đọc file để gán không bị lệch
+  FILE *file;
   file = fopen("acc2.txt", "r");
   
   int count = 0; // đếm dòng 
