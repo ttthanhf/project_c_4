@@ -26,8 +26,8 @@ GtkWidget *success_signup;
 const char *userNameTmp, *passwordTmp, *retypePassword; // in function check_user
 char fullNameFile[100];
 const char *fullNameTmp;
-int indexOfUser;        
-int stop_loop_Main = 0; //0=false, 1 = true                                                                                                                        // dùng để lưu lại số thứ tự user                                                                                                                         // in function signUp
+int indexOfUser;
+int stop_loop_Main = 0;                                                                                                                             // 0=false, 1 = true                                                                                                                        // dùng để lưu lại số thứ tự user                                                                                                                         // in function signUp
 char *monthList[] = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}; // loại bỏ vị trí 0
 
 guint year_today, month_today, day_today; // in function main
@@ -117,10 +117,12 @@ gboolean update_time(gpointer label)
   gchar *display = g_strdup_printf("Clock:\t\t%02d : %02d : %02d (hh/mm/ss)", tm.tm_hour, tm.tm_min, tm.tm_sec);
   gtk_label_set_text(GTK_LABEL(label), display);
 
-  if (stop_loop_Main == 0) {
+  if (stop_loop_Main == 0)
+  {
     return TRUE;
   }
-  else return FALSE;
+  else
+    return FALSE;
 }
 
 void update_today(gpointer label)
@@ -135,12 +137,15 @@ gboolean update_choose(gpointer label)
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select); // chọn ngày đã được chọn lưu vào []_select
   gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1, year_select);
   gtk_label_set_text(GTK_LABEL(label), display);
-  if (stop_loop_Main == 0) {
+  if (stop_loop_Main == 0)
+  {
     return TRUE;
   }
-  else return FALSE;
+  else
+    return FALSE;
 }
-void destroy_all() {
+void destroy_all()
+{
   gtk_main_quit();
 }
 void destroy(gpointer *data, GtkWidget *widget)
@@ -621,7 +626,8 @@ void exit_screen()
   }
 }
 
-void logout_show() {
+void logout_show()
+{
   GtkWidget *logout_dialog, *container_logout;
   GtkWidget *label_ask;
 
@@ -629,30 +635,31 @@ void logout_show() {
 
   label_ask = gtk_label_new("Are you want to Logout?");
 
-  gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog),"Yes",1,"No",2,NULL); // yes = 1 , no = 2
+  gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog), "Yes", 1, "No", 2, NULL); // yes = 1 , no = 2
 
-  gtk_window_set_position(GTK_WINDOW(logout_dialog),GTK_WIN_POS_CENTER);
-  gtk_container_set_border_width(GTK_CONTAINER(logout_dialog),10);
+  gtk_window_set_position(GTK_WINDOW(logout_dialog), GTK_WIN_POS_CENTER);
+  gtk_container_set_border_width(GTK_CONTAINER(logout_dialog), 10);
 
   container_logout = gtk_dialog_get_content_area(GTK_DIALOG(logout_dialog));
 
-  gtk_container_add(GTK_CONTAINER(container_logout),label_ask);
+  gtk_container_add(GTK_CONTAINER(container_logout), label_ask);
 
   gtk_widget_show_all(logout_dialog);
 
   stop_loop_Main = 1;
 
-  gint response = gtk_dialog_run(GTK_DIALOG(logout_dialog)); //add gia tri khi bam button
+  gint response = gtk_dialog_run(GTK_DIALOG(logout_dialog)); // add gia tri khi bam button
 
-  switch (response) { //thuc hien ham khi gia tri = nhau
-    case 1:
-      gtk_widget_destroy(GTK_WIDGET(window));
-      gtk_widget_show(login_dialog);
-      break;
-    case 2:
-      stop_loop_Main = 0;
-      gtk_widget_destroy(GTK_WIDGET(logout_dialog));
-      break;
+  switch (response)
+  { // thuc hien ham khi gia tri = nhau
+  case 1:
+    gtk_widget_destroy(GTK_WIDGET(window));
+    gtk_widget_show(login_dialog);
+    break;
+  case 2:
+    stop_loop_Main = 0;
+    gtk_widget_destroy(GTK_WIDGET(logout_dialog));
+    break;
   }
 }
 
@@ -760,7 +767,6 @@ void main_calendar()
   gtk_widget_set_name(box_event_main, "box_event_main");
   gtk_widget_set_name(box_note, "box_note");
   gtk_widget_set_name(name_note, "name_note");
-  
 
   gtk_widget_set_name(show_month, "show_month");
   gtk_widget_set_name(show_year, "show_year");
@@ -808,7 +814,8 @@ int checkUserName(const gchar userNameTmp[])
 {
   char userNameFile[MAX_LETTER];
   char line[256];
-  file = fopen("acc2.txt", "r"); 
+  int len = strlen(userNameTmp);
+  file = fopen("acc2.txt", "r");
 
   while (fgets(line, sizeof(line), file))
   {
@@ -816,6 +823,8 @@ int checkUserName(const gchar userNameTmp[])
     if (strcmp(userNameTmp, userNameFile) == 0)
       return 0;
   }
+  if (strcasecmp(userNameTmp, "") == 0)
+    return 0;
 
   return 1;
 }
@@ -848,12 +857,12 @@ void login_callback()
   gtk_widget_hide(login_error_label);
 }
 
-int signUp(GtkButton *button, gpointer data) 
+int signUp(GtkButton *button, gpointer data)
 {
   passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
   retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
   userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
-
+  printf("%s", userNameTmp);
   fflush(stdin);
   // printf(" Full name : ");
   // scanf("%[^\n]", &fullNameTmp);
@@ -1001,26 +1010,27 @@ int login(GtkButton *button, gpointer data)
   countUser = 0; // reset lại bắt đầu đọc file để gán không bị lệch
   FILE *file;
   file = fopen("acc2.txt", "r");
-  
-  int count = 0; // đếm dòng 
+
+  int count = 0; // đếm dòng
   do
   {
     if (count % 3 == 0) // dòng 1
-     { fscanf(file, "Fullname: %[^\n]", &fullNameFile);
-      //printf("%s", fullNameFile); // dùng để check xem đọc file đúng chưa
-     } 
+    {
+      fscanf(file, "Fullname: %[^\n]", &fullNameFile);
+      // printf("%s", fullNameFile); // dùng để check xem đọc file đúng chưa
+    }
     if (count % 3 == 1) // dòng 2
-     {
-        fscanf(file, "Name: %s", &userNameFile);
-        printf("%s", userNameFile);
-     }
+    {
+      fscanf(file, "Name: %s", &userNameFile);
+      printf("%s", userNameFile);
+    }
     if (count % 3 == 2) // dòng 3
-    { 
-      fscanf(file, "Pass: %s", &passwordFile); 
-      //printf("%s", passwordFile); 
+    {
+      fscanf(file, "Pass: %s", &passwordFile);
+      // printf("%s", passwordFile);
       if (strcmp(userNameTmp, userNameFile) == 0 && strcmp(passwordTmp, passwordFile) == 0)
       {
-        check = 1; 
+        check = 1;
       }
       strcpy(listUser[countUser][0], fullNameFile); // gan cac fullname, username, password vao mang chinh
       strcpy(listUser[countUser][1], userNameFile); // cập nhật vào mảng
@@ -1028,8 +1038,7 @@ int login(GtkButton *button, gpointer data)
       countUser++; // cập nhật số user
     }
     count++;
-  }
-  while (fgets(line, sizeof(line), file));
+  } while (fgets(line, sizeof(line), file));
   fclose(file);
 
   if (check == 1)
@@ -1045,7 +1054,7 @@ int login(GtkButton *button, gpointer data)
   }
   else
   {
-    gtk_widget_show(data); 
+    gtk_widget_show(data);
   }
 }
 
