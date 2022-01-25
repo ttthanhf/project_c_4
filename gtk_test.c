@@ -9,6 +9,8 @@
 //---Hân--//
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
+#include <conio.h>
 
 // khai biến ở đây để tất cả các function đều truy cập được
 GtkWidget *entry_year, *entry_month;                                                    // in function month_show and next from year_show
@@ -78,29 +80,232 @@ void creatFolder()
   // fprintf(file,"da ghi");
   fclose(file);
 }
-/*int loginPage() // ham in ra cac lua chon
-{
-    int choice ;
-    printf("\n1 - Sign up ");
-    printf("\n2 - Login ");
-    printf("\nChoose : ") ;
-    scanf("%d", &choice ) ;
-    return choice ;
-}
-int calendarPage()
-{
-    int choice ;
-    printf("\nlich thieu nang") ;
-    printf("\n1. Add note");
-    printf("\n2. Delete ");
-    printf("\n3. Logout ");
-    printf("\nChoose : ");
-    scanf("%d", &choice ) ;
-    return choice ;
+// chuyen doi day
 
+int jdFromDate(int dd, int mm, int yy) // lay ngay julius
+{
+  int a = (14 - mm) / 12;
+  int y = yy + 4800 - a;
+  int m = mm + 12 * a - 3;
+  int jd = dd + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
+  if (jd < 2299161)
+    jd = dd + (153 * m + 2) / 5 + 365 * y + y / 4 - 32083;
+  return jd;
 }
-*/
 
+int jdToDate(int jd) // chuyen ngay julius qua day thuong
+{
+  int a, b, c;
+  if (jd > 2299160)
+  { // After 5/10/1582, Gregorian calendar
+    a = (int)(jd + 32044);
+    b = (int)((4 * a + 3) / 146097);
+    c = (int)(a - (b * 146097) / 4);
+  }
+  else
+  {
+    b = 0;
+    c = jd + 32082;
+  }
+  int d = (int)((4 * c + 3) / 1461);
+  int e = (int)(c - (1461 * d) / 4);
+  int m = (int)((5 * e + 2) / 153);
+  int day = e - (int)((153 * m + 2) / 5) + 1;
+  int month = m + 3 - 12 * (int)(m / 10);
+  int year = b * 100 + d - 4800 + (int)(m / 10);
+}
+
+double getSunLongitude(int jdn) // toa do mat troi
+{
+  double timeZone = 7.0;
+  double PI = 3.14;
+  double T, T2, dr, M, L0, DL, L;
+  T = (jdn - 2451545.0) / 36525; // Time in Julian centuries from 2000-01-01 12:00:00 GMT
+  T2 = T * T;
+  dr = PI / 180;                                                          // degree to radian
+  M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2; // mean anomaly, degree
+  L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;                      // mean longitude, degree
+  DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * sin(dr * M);
+  DL = DL + (0.019993 - 0.000101 * T) * sin(dr * 2 * M) + 0.000290 * sin(dr * 3 * M);
+  L = L0 + DL; // true longitude, degree
+  L = L * dr;
+  L = L - PI * 2 * (int)(L / (PI * 2)); // Normalize to (0,2*PI)
+  return (int)(L / PI * 6);
+}
+
+double getNewMoonDay(int k)
+{
+  double PI = 3.14;
+  double T, T2, T3, dr, Jd1, M, Mpr, F, C1;
+  double timeZone = 7.0;
+  T = k / 1236.85; // Time in Julian centuries from 1900 January 0.5
+  T2 = T * T;
+  T3 = T2 * T;
+  dr = PI / 180;
+  Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+  Jd1 = Jd1 + 0.00033 * sin((166.56 + 132.87 * T - 0.009173 * T2) * dr); // Mean new moon
+  M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;     // Sun's mean anomaly
+  Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;  // Moon's mean anomaly
+  F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;     // Moon's argument of latitude
+  C1 = (0.1734 - 0.000393 * T) * sin(M * dr) + 0.0021 * sin(2 * dr * M);
+  C1 = C1 - 0.4068 * sin(Mpr * dr) + 0.0161 * sin(dr * 2 * Mpr);
+  C1 = C1 - 0.0004 * sin(dr * 3 * Mpr);
+  C1 = C1 + 0.0104 * sin(dr * 2 * F) - 0.0051 * sin(dr * (M + Mpr));
+  C1 = C1 - 0.0074 * sin(dr * (M - Mpr)) + 0.0004 * sin(dr * (2 * F + M));
+  C1 = C1 - 0.0004 * sin(dr * (2 * F - M)) - 0.0006 * sin(dr * (2 * F + Mpr));
+  C1 = C1 + 0.0010 * sin(dr * (2 * F - Mpr)) + 0.0005 * sin(dr * (2 * Mpr + M));
+  double deltat;
+  if (T < -11)
+  {
+    deltat = 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3;
+  }
+  else
+  {
+    deltat = -0.000278 + 0.000265 * T + 0.000262 * T2;
+  };
+  double JdNew = Jd1 + C1 - deltat;
+  return (int)(JdNew + 0.5 + timeZone / 24);
+}
+
+int getLunarMonth11(int yy)
+{
+  double off, k, nm, sunLong;
+  off = jdFromDate(31, 12, yy) - 2415021.076998695;
+  k = (int)(off / 29.530588853);
+  nm = getNewMoonDay((int)k);
+  // sun longitude at local midnight
+  sunLong = getSunLongitude((int)nm);
+  if (sunLong >= 9)
+    nm = getNewMoonDay((int)k - 1);
+  return nm;
+}
+
+int getLeapMonthOffset(int a11) // xac dinh month nhuan
+{
+  double last, arc;
+  int k, i;
+  k = (int)(((a11 - 2415021.076998695) / 29.530588853) + 0.5);
+  last = 0; // Month 11 contains point of sun longutide 3*PI/2 (December solstice)
+  i = 1;    // We start with the month following lunar month 11
+  arc = getSunLongitude((int)getNewMoonDay((int)(k + i)));
+  do
+  {
+    last = arc;
+    i++;
+    arc = getSunLongitude((int)getNewMoonDay((int)(k + i)));
+  } while (arc != last && i < 14);
+  return i - 1;
+}
+
+void convertSolar2Lunar(int dd, int mm, int yy)
+{
+  double dayNumber, monthStart, a11, b11, lunarDay, lunarMonth, lunarYear;
+  int k, diff, lunarLeap;
+  dayNumber = jdFromDate(dd, mm, yy);
+  k = (int)((dayNumber - 2415021.076998695) / 29.530588853);
+  monthStart = getNewMoonDay(k + 1);
+  if (monthStart > dayNumber)
+    monthStart = getNewMoonDay(k);
+  a11 = getLunarMonth11(yy);
+  b11 = a11;
+  if (a11 >= monthStart)
+  {
+    lunarYear = yy;
+    a11 = getLunarMonth11(yy - 1);
+  }
+  else
+  {
+    lunarYear = yy + 1;
+    b11 = getLunarMonth11(yy + 1);
+  }
+  lunarDay = dayNumber - monthStart + 1;
+  diff = (int)((monthStart - a11) / 29);
+  lunarLeap = 0;
+  lunarMonth = diff + 11;
+  if (b11 - a11 > 365)
+  {
+    int leapMonthDiff = getLeapMonthOffset(a11);
+    if (diff >= leapMonthDiff)
+    {
+      lunarMonth = diff + 10;
+      if (diff == leapMonthDiff)
+      {
+        lunarLeap = 1;
+      }
+    }
+  }
+  if (lunarMonth > 12)
+    lunarMonth = lunarMonth - 12;
+  if (lunarMonth >= 11 && diff < 4)
+    lunarYear -= 1;
+  int day = lunarDay;
+  int month = lunarMonth;
+  int nam = lunarYear;
+  if (day == 23 && month == 12)
+    printf("Kitchen guardians");
+  if (day == 1 && month == 1)
+    printf("Vietnamese New Year");
+  if (day == 2 && month == 1)
+    printf("Tet holiday");
+  if (day == 3 && month == 1)
+    printf("Tet holiday");
+  if (day == 4 && month == 1)
+    printf("Tet holiday");
+  if (day == 5 && month == 1)
+    printf("Tet holiday");
+  if (day == 15 && month == 8)
+    printf("Mid autumn festivals");
+  if (day == 10 && month == 3)
+    printf("Hung Kings Festival");
+}
+// ngày lễ ở lịch âm
+void add_lunar_event(gpointer label)
+{
+  guint year_select, month_select, day_select;
+  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
+  convertSolar2Lunar(day_select, month_select, year_select);
+}
+
+void mark_solar_event()
+{
+  FILE *f;
+  f = fopen("SolarEvent.txt", "r");
+  int day, month, year;
+  char data[100];
+  if(f != NULL)
+    while (fscanf(f, "%d %d %s", &day, &month, &data))
+    {
+    // gọi hàm đánh dấu ngày lễ lên giao diện tham sô (day, month)
+   }
+  fclose(f);
+}
+/*void read_day_note()
+{
+  FILE *f;
+  f = fopen("SolarEvent.txt", "r");
+  int day, month, year;
+  char data[100];
+  guint year_select, month_select, day_select;
+  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
+  if( f != NULL)
+    while (fscanf(f, "%d %d %s", &day, &month, &data) > 0)
+   {
+    
+     if (day == day_select && month == month_select);
+     
+    // in data vào khung event
+   }
+  fclose(f);
+  f = fopen("./abc/abcData.txt", "r");
+  while (f != NULL)
+  {
+    fscanf(f, "%d %d %d %s", &day, &month, &year, &data);
+    if (day == day_select && month == month_select && year == year_select)
+    // in data vào khung note
+     printf("%d %d % %s", day, month, year, data);
+  }
+  fclose(f);
+}*/
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
 
 //--------------------------------//
@@ -505,6 +710,41 @@ void addEvent_show_double_click()
 
 void eventList_show()
 {
+  GtkWidget *container_eventList_dialog;
+  GtkWidget *label_listEvent , *button_enter ;
+  GtkWidget *eventList_label;
+  GtkWidget *fixed_eventList;
+  GtkWidget *eventList_dialog;
+  gchar *display_eventList_update;
+
+
+  guint year_select, month_select, day_select;
+  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
+
+  eventList_dialog = gtk_dialog_new();
+  fixed_eventList = gtk_fixed_new();
+
+  eventList_label = gtk_label_new("");
+
+  display_eventList_update = g_strdup_printf("List event of %d ", year_select);
+
+  gtk_label_set_text(GTK_LABEL(eventList_label), display_eventList_update);
+
+  gtk_fixed_put(GTK_FIXED(fixed_eventList), eventList_label, 600, 30 );
+
+  gtk_widget_set_name(eventList_label, "show_eventList");
+
+
+  gtk_window_set_position(GTK_WINDOW(eventList_dialog), GTK_WIN_POS_CENTER); // canh app khi mở sẽ ở giữa màn hình
+  gtk_window_set_default_size(GTK_WINDOW(eventList_dialog), 1300, 800);    
+  gtk_window_set_resizable(GTK_WINDOW(eventList_dialog), FALSE);
+  gtk_container_set_border_width(GTK_CONTAINER(eventList_dialog), 10);
+
+  container_eventList_dialog = gtk_dialog_get_content_area(GTK_DIALOG(eventList_dialog));
+
+  gtk_container_add(GTK_CONTAINER(container_eventList_dialog), fixed_eventList);
+
+  gtk_widget_show_all(eventList_dialog);
 }
 
 void month_show()
@@ -779,6 +1019,7 @@ void main_calendar()
   g_signal_connect(button_goto_day, "clicked", G_CALLBACK(goto_day_show), NULL);
   g_signal_connect(button_today, "clicked", G_CALLBACK(today_set), NULL);
   g_signal_connect(button_logout, "clicked", G_CALLBACK(logout_show), NULL);
+  g_signal_connect(button_event_list, "clicked", G_CALLBACK(eventList_show), NULL);
 
   g_signal_connect(calendar, "day_selected_double_click", G_CALLBACK(addEvent_show_double_click), NULL); // when double click on day
 
@@ -809,13 +1050,13 @@ int checkUserName(const gchar userNameTmp[])
   char line[256];
   int len = strlen(userNameTmp);
   file = fopen("acc2.txt", "r");
-
-  while (fgets(line, sizeof(line), file))
+  do
   {
     fscanf(file, "Name: %s", &userNameFile);
     if (strcmp(userNameTmp, userNameFile) == 0)
       return 0;
   }
+  while (fgets(line, sizeof(line), file));
   if (strcasecmp(userNameTmp, "") == 0)
     return 0;
 
