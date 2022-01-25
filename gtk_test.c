@@ -44,13 +44,14 @@ guint year_today, month_today, day_today; // in function main
 char listUser[MAX_USER][3][MAX_LETTER]; // listUser[STT][full name/user name/password][số kí tự]
 int countUser;                          //                    0  /     1   /   2
 
-FILE *file;
+
 char fileTmp[] = "Data.txt";
 char fileTmp2[] = "Log.txt";
 char tmpAddress[256];
 
 void creatFolder()
 {
+  FILE *file;
   char name[10];
   char cmmnd[] = {"md "};
   char address[256];
@@ -1046,6 +1047,7 @@ void main_calendar()
 
 int checkUserName(const gchar userNameTmp[])
 {
+  FILE *file;
   char userNameFile[MAX_LETTER];
   char line[256];
   int len = strlen(userNameTmp);
@@ -1121,7 +1123,7 @@ int signUp(GtkButton *button, gpointer data)
   retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
   userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
   printf("%s", userNameTmp);
-  fflush(stdin);
+  // fflush(stdin);
   // printf(" Full name : ");
   // scanf("%[^\n]", &fullNameTmp);
   const char *fullNameTmp = gtk_entry_get_text(GTK_ENTRY(fullname_entry));
@@ -1146,6 +1148,7 @@ int signUp(GtkButton *button, gpointer data)
     gtk_widget_hide(error_wrong_format_pass);
     gtk_widget_hide(error_username_available);
     gtk_widget_hide(error_retype_incorrect);
+    FILE *file;
     file = fopen("acc2.txt", "a");
     fprintf(file, "Fullname: %s\nName: %s\nPass: %s\n", fullNameTmp, userNameTmp, passwordTmp);
     fclose(file);
@@ -1267,7 +1270,7 @@ int login(GtkButton *button, gpointer data)
   int check = 0;
   countUser = 0; // reset lại bắt đầu đọc file để gán không bị lệch
   FILE *file;
-  file = fopen("acc2.txt", "r");
+  file = fopen("acc2.txt","r");
 
   int count = 0; // đếm dòng
   do
