@@ -1048,7 +1048,7 @@ int login(GtkButton *button, gpointer data)
     if (count % 3 == 1) // dòng 2
      {
         fscanf(file, "Name: %s", &userNameFile);
-        // printf("%s", userNameFile);
+       //  printf("%s", userNameFile);
      }
     if (count % 3 == 2) // dòng 3
     {
