@@ -27,13 +27,8 @@ GtkWidget *popup_register;
 const char *userNameTmp, *passwordTmp, *retypePassword; // in function check_user
 char fullNameFile[100];
 const char *fullNameTmp;
-<<<<<<< HEAD
-int indexOfUser;
-int stop_loop_Main = 0;                                                                                                                             // 0=false, 1 = true                                                                                                                        // dùng để lưu lại số thứ tự user                                                                                                                         // in function signUp
-=======
 int indexOfUser;        
 int stop_loop_Main = 0; //0=false, 1 = true                                                                                                                        // dùng để lưu lại số thứ tự user                                                                                                                         // in function signUp
->>>>>>> master
 char *monthList[] = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}; // loại bỏ vị trí 0
 
 guint year_today, month_today, day_today; // in function main
