@@ -855,8 +855,10 @@ void register_success() {
 
     popup_register = gtk_dialog_new();
 
-    label = gtk_label_new("Sign Up Success");
+    label = gtk_label_new("Sign Up Successfully");
     button = gtk_button_new_with_label("OK");
+
+    gtk_widget_set_name(label, "success_label");
 
     gtk_window_set_position(GTK_WINDOW(popup_register),GTK_WIN_POS_CENTER); 
 
