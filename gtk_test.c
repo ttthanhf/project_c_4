@@ -61,7 +61,7 @@ void creatFolder()
   strcat(address, "\\");
   strcat(address, listUser[countUser][1]);
   int ck = chdir(address);
-  // printf("%s", address);
+  printf("%s", address);
 
   strcat(tmpAddress, listUser[countUser][1]);
   strcat(tmpAddress, fileTmp);
