@@ -816,7 +816,8 @@ int checkUserName(const gchar userNameTmp[])
     if (strcmp(userNameTmp, userNameFile) == 0)
       return 0;
   }
-
+  if(strcmp(userNameTmp,"") == 0)
+    return 0;
   return 1;
 }
 
@@ -843,7 +844,7 @@ int checkPassword(const gchar *passwordTmp) // mat khau phai co tu 8 ki tu tro l
 
 void login_callback()
 {
-  gtk_widget_hide(register_dialog);
+  gtk_widget_destroy(GTK_WIDGET(register_dialog));
   gtk_widget_show(login_dialog);
   gtk_widget_hide(login_error_label);
 }
@@ -970,7 +971,7 @@ void register_dialog_screen()
   gtk_window_set_default_size(GTK_WINDOW(register_dialog), 580, 620);
   gtk_window_set_resizable(GTK_WINDOW(register_dialog), FALSE);
 
-  g_signal_connect(GTK_DIALOG(register_dialog), "destroy", G_CALLBACK(destroy_all), NULL);
+  g_signal_connect(GTK_DIALOG(register_dialog),"destroy",G_CALLBACK(login_callback),NULL);
 
   g_signal_connect(login_button, "clicked", G_CALLBACK(login_callback), NULL);
   g_signal_connect(button_submit, "clicked", G_CALLBACK(signUp), register_dialog);
