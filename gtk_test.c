@@ -32,10 +32,8 @@ int stop_loop_Main = 0; //0=false, 1 = true                                     
 char *monthList[] = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}; // loại bỏ vị trí 0
 
 guint year_today, month_today, day_today; // in function main
-//----------------------//
 
-//------------------------------------------Hân---------Authentication---------------------------------------------//
-
+//-----------------------------------------//
 #define MAX_USER 100
 #define MAX_LETTER 100
 
@@ -102,9 +100,6 @@ int calendarPage()
 }
 */
 
-//-------------------------------------Thành-------GTK-----------------------------------------------------//
-
-//--------------------------------//
 static void load_css()
 {
   GtkCssProvider *cssProvider = gtk_css_provider_new();
@@ -142,9 +137,10 @@ gboolean update_choose(gpointer label)
   }
   else return FALSE;
 }
-void destroy(gpointer *data, GtkWidget *widget)
+
+void destroy_widget(gpointer *data)
 {
-  gtk_widget_destroy(widget);
+  gtk_widget_destroy(GTK_WIDGET(data));
 }
 
 void update_hello(GtkWidget *label)
@@ -430,6 +426,8 @@ void goto_day_show()
   gtk_window_set_position(GTK_WINDOW(goto_dialog), GTK_WIN_POS_CENTER);
   gtk_container_set_border_width(GTK_CONTAINER(goto_dialog), 10);
 
+  g_signal_connect(goto_dialog, "delete-event", G_CALLBACK(destroy_widget), NULL);
+
   g_signal_connect(button, "clicked", G_CALLBACK(goto_activate), error_label);
 
   container = gtk_dialog_get_content_area(GTK_DIALOG(goto_dialog));
@@ -596,6 +594,8 @@ void exit_screen()
 
   gtk_dialog_add_buttons(GTK_DIALOG(exit_dialog), "Yes", 1, "No", 2, NULL); // yes = 1 , no = 2
 
+  g_signal_connect(exit_dialog,"delete-event",G_CALLBACK(destroy_widget),NULL);
+
   gtk_window_set_position(GTK_WINDOW(exit_dialog), GTK_WIN_POS_CENTER);
   gtk_container_set_border_width(GTK_CONTAINER(exit_dialog), 10);
 
@@ -629,6 +629,8 @@ void logout_show() {
   label_ask = gtk_label_new("Are you want to Logout?");
 
   gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog),"Yes",1,"No",2,NULL); // yes = 1 , no = 2
+
+  g_signal_connect(logout_dialog,"delete-event",G_CALLBACK(destroy_widget),NULL);
 
   gtk_window_set_position(GTK_WINDOW(logout_dialog),GTK_WIN_POS_CENTER);
   gtk_container_set_border_width(GTK_CONTAINER(logout_dialog),10);
@@ -866,6 +868,8 @@ void register_success() {
 
     gtk_window_set_position(GTK_WINDOW(popup_register),GTK_WIN_POS_CENTER); 
 
+    g_signal_connect(popup_register,"delete-event",G_CALLBACK(destroy_widget),NULL);
+
     g_signal_connect(button,"clicked",G_CALLBACK(login_callback),NULL);
 
     container = gtk_dialog_get_content_area(GTK_DIALOG(popup_register));
@@ -881,7 +885,7 @@ int signUp(GtkButton *button, gpointer data)
   passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
   retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
   userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
-  printf("%s", userNameTmp);
+  // printf("%s", userNameTmp);
   // fflush(stdin);
   // printf(" Full name : ");
   // scanf("%[^\n]", &fullNameTmp);
@@ -910,13 +914,13 @@ int signUp(GtkButton *button, gpointer data)
     FILE *file;
     file = fopen("acc2.txt", "a");
     fprintf(file, "Fullname: %s\nName: %s\nPass: %s\n", fullNameTmp, userNameTmp, passwordTmp);
-    fclose(file);
     strcpy(listUser[countUser][0], fullNameTmp); // gan cac fullname, username, password vao mang chinh
     strcpy(listUser[countUser][1], userNameTmp);
     strcpy(listUser[countUser][2], passwordTmp);
     register_success();
     creatFolder();
     countUser++;
+    fclose(file);
   }
   else
   {
@@ -1028,6 +1032,7 @@ int login(GtkButton *button, gpointer data)
   char line[256];
   int check = 0;
   countUser = 0; // reset lại bắt đầu đọc file để gán không bị lệch
+
   FILE *file;
   file = fopen("acc2.txt","r");
 
