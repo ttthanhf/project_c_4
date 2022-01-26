@@ -60,7 +60,7 @@ void creatFolder()
   strcat(address, "\\");
   strcat(address, listUser[countUser][1]);
   int ck = chdir(address);
-  printf("%s", address);
+  // printf("%s", address);
 
   strcat(tmpAddress, listUser[countUser][1]);
   strcat(tmpAddress, fileTmp);
@@ -651,7 +651,7 @@ void logout_show() {
       gtk_widget_destroy(GTK_WIDGET(logout_dialog));
       break;
     case 2:
-      stop_loop_Main -= 1;
+      stop_loop_Main = 0;
       gtk_widget_destroy(GTK_WIDGET(logout_dialog));
       break;
   }
@@ -921,6 +921,7 @@ int signUp(GtkButton *button, gpointer data)
     register_success();
     creatFolder();
     countUser++;
+    fclose(file);
   }
   else
   {
@@ -928,7 +929,6 @@ int signUp(GtkButton *button, gpointer data)
     gtk_widget_hide(error_username_available);
     gtk_widget_show(error_retype_incorrect);
   }
-  fclose(file);
 }
 
 void register_dialog_screen()
