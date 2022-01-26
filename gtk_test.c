@@ -1,12 +1,12 @@
 
 
-//--------------------Thành------------------------//
+
 #include <gtk/gtk.h>
 // #include <windows.h>
 // #include <stdio.h>
 #include <stdlib.h>
 // #include <time.h>
-//---Hân--//
+
 #include <string.h>
 #include <unistd.h>
 
@@ -722,21 +722,21 @@ void main_calendar()
   gtk_fixed_put(GTK_FIXED(fixed), button_add_event, 1300, 250);
   gtk_fixed_put(GTK_FIXED(fixed), button_delete_event, 1300, 300);
   gtk_fixed_put(GTK_FIXED(fixed), button_event_list, 1300, 350);
-  gtk_fixed_put(GTK_FIXED(fixed), button_previous_month, 440, 150);
-  gtk_fixed_put(GTK_FIXED(fixed), button_next_month, 850, 150);
-  gtk_fixed_put(GTK_FIXED(fixed), button_previous_year, 440, 65);
-  gtk_fixed_put(GTK_FIXED(fixed), button_next_year, 850, 65);
-  gtk_fixed_put(GTK_FIXED(fixed), button_goto_day, 337, 175);
-  gtk_fixed_put(GTK_FIXED(fixed), button_today, 337, 135);
-  gtk_fixed_put(GTK_FIXED(fixed), show_month, 600, 135);
-  gtk_fixed_put(GTK_FIXED(fixed), show_year, 600, 30);
-  gtk_fixed_put(GTK_FIXED(fixed), calendar, 270, 210);
-  gtk_fixed_put(GTK_FIXED(fixed), box_event_header, 330, 690);
-  gtk_fixed_put(GTK_FIXED(fixed), box_event_main, 330, 720);
+  gtk_fixed_put(GTK_FIXED(fixed), button_previous_month, 520, 150); // 30
+  gtk_fixed_put(GTK_FIXED(fixed), button_next_month, 930, 150); //
+  gtk_fixed_put(GTK_FIXED(fixed), button_previous_year, 520, 65); //
+  gtk_fixed_put(GTK_FIXED(fixed), button_next_year, 930, 65); //
+  gtk_fixed_put(GTK_FIXED(fixed), button_goto_day, 417, 175); //
+  gtk_fixed_put(GTK_FIXED(fixed), button_today, 417, 135); //
+  gtk_fixed_put(GTK_FIXED(fixed), show_month, 680, 135); //
+  gtk_fixed_put(GTK_FIXED(fixed), show_year, 680, 30); //
+  gtk_fixed_put(GTK_FIXED(fixed), calendar, 350, 210); //
+  gtk_fixed_put(GTK_FIXED(fixed), box_event_header, 420, 690); //
+  gtk_fixed_put(GTK_FIXED(fixed), box_event_main, 420, 720); //
   gtk_fixed_put(GTK_FIXED(fixed), box_info, 10, 50);
   gtk_fixed_put(GTK_FIXED(fixed), time_label, 20, 60);
   gtk_fixed_put(GTK_FIXED(fixed), today_label, 20, 90);
-  gtk_fixed_put(GTK_FIXED(fixed), choose_label, 380, 695);
+  gtk_fixed_put(GTK_FIXED(fixed), choose_label, 450, 695);
   gtk_fixed_put(GTK_FIXED(fixed), hello_label, 1300, 100);
   gtk_fixed_put(GTK_FIXED(fixed), box_note, 10, 180);
   gtk_fixed_put(GTK_FIXED(fixed), name_note, 120, 190);
