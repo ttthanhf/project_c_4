@@ -142,7 +142,14 @@ window {
     min-width: 100px;
     min-height: 25px;   
     font-size: 45px;
-    background: #f5f2e7;
+    background: #e4ddc7;
+}
+#eventList_label {
+    border: 0.1px solid #8f8a75;
+    box-shadow: none;
+    background: #f7f7f7;
+    min-width: 100px;
+    min-height: 25px;
 }
 #box_info {
     border: 0.1px solid #8f8a75;

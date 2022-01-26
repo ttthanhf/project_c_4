@@ -362,11 +362,10 @@ void read_solarEvent()
   if (f != NULL)
     for (int i = 0; i < 16; i++)
     {
-      fscanf(f, "%d %d %[^\n]", &day, &month, &data);
+      fscanf(f, "%d/%d %[^\n]", &day, &month, &data);
       dayOfEvent[countEvent] = day;
       monthOfEvent[countEvent] = month;
       strcpy(nameOfEvent[countEvent], data);
-      printf("%d %d %[^/n]", dayOfEvent[countEvent], monthOfEvent[countEvent], nameOfEvent[countEvent]);
       countEvent++;
       // if (day == day_select && month == month_select);
       // in data vào khung event
@@ -405,20 +404,9 @@ void printfAscending()
           strcpy(nameOfEvent[j + 1], nameOfEvent[j]);
           strcpy(nameOfEvent[j], k);
         }
+ 
 }
-void show_event(GtkWidget *label)
-{
-   guint year_select, month_select, day_select;
-    gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
-   findEventDay(year_select);
-    read_solarEvent();
-    printfAscending();
-  for (int i = 0; i <= 24; i++)
-  {
-    gchar *display = g_strdup_printf("%d/%d %s", dayOfEvent[i], monthOfEvent[i], nameOfEvent[i]);
-    gtk_label_set_text(GTK_LABEL(label), display);
-  }
-}
+
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
 
 //--------------------------------//
@@ -834,7 +822,7 @@ void eventList_show()
   GtkWidget *eventList_dialog;
   GtkWidget *show_event_label;
   GtkWidget *box_event;
-  
+
   gchar *display_eventList_update;
   int space = 0;
   guint year_select, month_select, day_select;
@@ -842,15 +830,6 @@ void eventList_show()
 
   eventList_dialog = gtk_dialog_new();
   fixed_eventList = gtk_fixed_new();
-
-  for (int i = 0; i < 24; i++)
-  {
-    
-    event[i] = gtk_label_new("");
-    gtk_fixed_put(GTK_FIXED(fixed_eventList), event[i], 10, 40 + space);
-    space += 10;
-    show_event(event[i]);
-  }
 
   eventList_label = gtk_label_new("");
   show_event_label = gtk_label_new("");
@@ -860,10 +839,23 @@ void eventList_show()
 
   gtk_label_set_text(GTK_LABEL(eventList_label), display_eventList_update);
 
-  gtk_fixed_put(GTK_FIXED(fixed_eventList), eventList_label, 200, 20);
   gtk_fixed_put(GTK_FIXED(fixed_eventList), box_event, 6, 80);
+  gtk_fixed_put(GTK_FIXED(fixed_eventList), eventList_label, 200, 20);
+    findEventDay(year_select);
+    read_solarEvent();
+    printfAscending();
+  for (int i = 0; i < 24; i++)
+  {
+    event[i] = gtk_label_new("");
+    gtk_fixed_put(GTK_FIXED(fixed_eventList), event[i], 10, 100 + space);
+    space += 30;
+   // gtk_widget_set_name(event[i], "show_eventList");
+    gchar *display = g_strdup_printf("%d/%d %s", dayOfEvent[i], monthOfEvent[i], nameOfEvent[i]);
+    gtk_label_set_text(GTK_LABEL(event[i]), display);
+  }
 
   gtk_widget_set_name(eventList_label, "show_eventList");
+
   gtk_widget_set_name(box_event, "box_event_show");
 
   gtk_window_set_position(GTK_WINDOW(eventList_dialog), GTK_WIN_POS_CENTER); // canh app khi mở sẽ ở giữa màn hình
@@ -876,7 +868,6 @@ void eventList_show()
   gtk_container_add(GTK_CONTAINER(container_eventList_dialog), fixed_eventList);
 
   gtk_widget_show_all(eventList_dialog);
-  //show_event(show_event_label);
 }
 
 void month_show()
