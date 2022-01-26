@@ -25,6 +25,7 @@ GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_forma
 GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_entry;
 GtkWidget *success_signup;
 GtkWidget *note[100];
+GtkWidget *dialog_double_click;
 const char *userNameTmp, *passwordTmp, *retypePassword; // in function check_user
 char fullNameFile[100];
 const char *fullNameTmp;
@@ -35,7 +36,7 @@ char *monthList[] = {"", "January", "February", "March", "April", "May", "June",
 guint year_today, month_today, day_today;// in function main
 
 int day=27,month=11,year=2022;
-char date[100];const char *add_info;char *note_content[100];
+char date[100];const char *add_info, *delete_info;
 char add_day[10],add_month[10],add_year[10];
 int num=0;
 char save[21][50];
@@ -93,28 +94,6 @@ void creatFolder()
   // fprintf(file,"da ghi");
   fclose(file);
 }
-/*int loginPage() // ham in ra cac lua chon
-{
-    int choice ;
-    printf("\n1 - Sign up ");
-    printf("\n2 - Login ");
-    printf("\nChoose : ") ;
-    scanf("%d", &choice ) ;
-    return choice ;
-}
-int calendarPage()
-{
-    int choice ;
-    printf("\nlich thieu nang") ;
-    printf("\n1. Add note");
-    printf("\n2. Delete ");
-    printf("\n3. Logout ");
-    printf("\nChoose : ");
-    scanf("%d", &choice ) ;
-    return choice ;
-
-}
-*/
 
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
 
@@ -138,7 +117,15 @@ gboolean update_time(gpointer label)
   }
   else return FALSE;
 }
-
+void take_today()
+{
+  time_t rawtime;
+  time(&rawtime);
+  struct tm tm = *localtime(&rawtime);
+  day_today=tm.tm_mday;
+  month_today=tm.tm_mon+1;
+  year_today=tm.tm_year+1900;
+}
 void update_today(gpointer label)
 {
   gchar *display = g_strdup_printf("Today:\t\t%02d/%02d/%d (dd/mm/yyyy)", day_today, month_today + 1, year_today);
@@ -462,6 +449,32 @@ void addEvent_show()
 {
 }
 
+
+void copy_today()
+{
+   num=0;
+   char try[200];
+   itoa(day_today,add_day,10);itoa(month_today,add_month,10);itoa(year_today,add_year,10);
+   sprintf(date,"%s-%s-%s.txt",add_day,add_month,add_year);
+   file=fopen(date,"a");
+   fclose(file);
+   file=fopen(date,"r");
+   while(fgets(try,200,file)!=NULL)
+   {
+      num++;
+      strcpy(save[num],try);
+      int c=strlen(save[num]);
+      if(save[num][c-1]=='\n')save[num][c-1]='\0';
+   }
+   fclose(file);
+}
+void hide_note()
+{
+  for(int i=1;i<=num;i++)
+  {
+    gtk_widget_destroy(note[i]);
+  }
+}
 void copy()
 {
    num=0;
@@ -503,7 +516,7 @@ void delete_note()
    int x=0;
    for(int i=1;i<=num;i++)
    {
-       if(strcmp(save[i],add_info)==0)
+       if(strcmp(save[i],delete_info)==0)
        {
           x=i;break;
        }
@@ -515,24 +528,76 @@ void delete_note()
     num--;
     print_to_file();
 }
-void show_note_list()
+void delete_dialog(gpointer* data)
 {
-  copy();
+  GtkWidget *dialog, *container;
+  GtkWidget *label,*label1,*button;
+  dialog = gtk_dialog_new();
+
+  label=gtk_label_new("Do you want do delete?");
+  label1=gtk_label_new("");
+
+  gtk_dialog_add_buttons(GTK_DIALOG(dialog), "Yes", 1, "No", 2, NULL);
+
+  gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+  gtk_window_set_title(GTK_WINDOW(dialog), "Delete note");
+  gtk_container_set_border_width(GTK_CONTAINER(dialog), 10);
+
+  container = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+
+  gtk_container_add(GTK_CONTAINER(container),label);
+  gtk_container_add(GTK_CONTAINER(container),label1);
+
+  gtk_widget_show_all(dialog);
+  int response=gtk_dialog_run(GTK_DIALOG(dialog));
+  switch (response)
+  {
+    case 1:
+    gtk_widget_destroy(dialog);
+    delete_info=gtk_button_get_label(GTK_BUTTON(data));
+    hide_note();
+    delete_note();
+    copy();
+    int a=0;
+    for(int i=1;i<=num;i++)
+    {
+      
+      note[i]=gtk_button_new_with_label("");
+      gtk_button_set_label(GTK_BUTTON(note[i]),save[i]);
+      gtk_fixed_put(GTK_FIXED(fixed_window), note[i], 10, 220+a);
+      a+=50;
+      g_signal_connect(note[i],"clicked",G_CALLBACK(delete_dialog),NULL);
+    }
+    gtk_widget_show_all(window);
+    break;
+    case 2:
+    gtk_widget_destroy(dialog);
+  }
+}
+void connect_note()
+{
   int a=0;
   for(int i=1;i<=num;i++)
   {
     
     note[i]=gtk_button_new_with_label("");
     gtk_button_set_label(GTK_BUTTON(note[i]),save[i]);
-    gtk_fixed_put(GTK_FIXED(fixed_window), note[i], 10, 210+a);
+    gtk_fixed_put(GTK_FIXED(fixed_window), note[i], 10, 220+a);
     a+=50;
+    g_signal_connect(note[i],"clicked",G_CALLBACK(delete_dialog),NULL);
   }
-  gtk_container_add(GTK_CONTAINER(window), fixed_window);
+  
+}
+void show_note_list()
+{
+  hide_note();
+  copy();
+  connect_note();
   gtk_widget_show_all(window);
 }
 void addEvent_show_double_click()
 {
-  GtkWidget *dialog, *container;
+  GtkWidget *container;
   GtkWidget *name_event_entry, *note_event_entry;
   GtkWidget *name_event_label, *note_event_label;
   GtkWidget *fixed;
@@ -543,7 +608,7 @@ void addEvent_show_double_click()
   guint year_select, month_select, day_select;
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select); // chọn ngày đã được chọn lưu vào []_select
 
-  dialog = gtk_dialog_new();
+  dialog_double_click = gtk_dialog_new();
   fixed = gtk_fixed_new();
 
   /* name_event_entry = gtk_entry_new(); */
@@ -558,7 +623,7 @@ void addEvent_show_double_click()
 
   gtk_label_set_text(GTK_LABEL(show_day_label), display_update);
 
-  gtk_dialog_add_buttons(GTK_DIALOG(dialog), "Ok", 1, "Cancel", 2, NULL); // ok = 1 vs cancel = 2
+  gtk_dialog_add_buttons(GTK_DIALOG(dialog_double_click), "Ok", 1, "Cancel", 2, NULL); // ok = 1 vs cancel = 2
 
    /* gtk_fixed_put(GTK_FIXED(fixed), name_event_entry, 70, 45);  */
    gtk_fixed_put(GTK_FIXED(fixed), note_event_entry, 70, 50); 
@@ -568,32 +633,33 @@ void addEvent_show_double_click()
 
   gtk_widget_set_name(note_event_entry, "note_event_entry");
 
-  gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
-  gtk_window_set_title(GTK_WINDOW(dialog), "Add event");
-  gtk_container_set_border_width(GTK_CONTAINER(dialog), 10);
+  gtk_window_set_position(GTK_WINDOW(dialog_double_click), GTK_WIN_POS_CENTER);
+  gtk_window_set_title(GTK_WINDOW(dialog_double_click), "Add event");
+  gtk_container_set_border_width(GTK_CONTAINER(dialog_double_click), 10);
 
-  container = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+  container = gtk_dialog_get_content_area(GTK_DIALOG(dialog_double_click));
 
   gtk_container_add(GTK_CONTAINER(container), fixed);
 
-  gtk_widget_show_all(dialog);
+  gtk_widget_show_all(dialog_double_click);
 
-  gint response = gtk_dialog_run(GTK_DIALOG(dialog));// add gia tri khi bam button
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog_double_click));// add gia tri khi bam button
   add_info=gtk_entry_get_text(GTK_ENTRY(note_event_entry)); 
   switch (response)
   { // thuc hien ham khi gia tri = nhau
   case 1:
     
-    if(add_info=="")gtk_widget_destroy(GTK_WIDGET(dialog));
+    if(add_info=="")gtk_widget_destroy(GTK_WIDGET(dialog_double_click));
     else
     {
         copy();
         add_note();
-        gtk_widget_destroy(GTK_WIDGET(dialog));
+        gtk_widget_destroy(GTK_WIDGET(dialog_double_click));
+        show_note_list();
     }
     break;
   case 2:
-    gtk_widget_destroy(GTK_WIDGET(dialog));
+    gtk_widget_destroy(GTK_WIDGET(dialog_double_click));
     break;
   }
 } 
@@ -773,6 +839,7 @@ void main_calendar()
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);             // false sẽ làm cho app ko zoom out or in được
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);       // tạo khoảng cách giữa độ rộng tối đa của app và các thành phần bên trong
 
+
   // tạo button
   button_exit = gtk_button_new_with_label("Exit");
   button_logout = gtk_button_new_with_label("Logout");
@@ -806,7 +873,9 @@ void main_calendar()
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_today, &month_today, &day_today);
   update_month(month_today + 1);
   update_year(year_today);
-
+  
+  
+  
   // tạo khả năng fixed cho từng thành phần và mặc định vị trí
   gtk_fixed_put(GTK_FIXED(fixed_window), button_exit, 1300, 760);
   gtk_fixed_put(GTK_FIXED(fixed_window), button_logout, 1300, 150);
@@ -831,7 +900,7 @@ void main_calendar()
   gtk_fixed_put(GTK_FIXED(fixed_window), hello_label, 1300, 100);
   gtk_fixed_put(GTK_FIXED(fixed_window), box_note, 10, 180);
   gtk_fixed_put(GTK_FIXED(fixed_window), name_note, 120, 190);
-
+  
   // set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit, "button_menu");
   gtk_widget_set_name(button_logout, "button_menu");
@@ -875,7 +944,8 @@ void main_calendar()
 
   g_signal_connect(calendar, "day_selected_double_click", G_CALLBACK(addEvent_show_double_click), NULL);// when double click on day
   g_signal_connect(calendar,"day_selected",G_CALLBACK(show_note_list),NULL);
-   
+  connect_note();
+  
 
   gtk_calendar_set_display_options(GTK_CALENDAR(calendar), 2); // 2 = calendar header (in there have year and month) and this function use to hide year and month
 
@@ -1122,9 +1192,7 @@ int login(GtkButton *button, gpointer data)
       countUser++; // cập nhật số user
     }
     count++;
-    strcpy(address_replace,address_file_Users);
-    strcat(address_file_Users,userNameFile);
-    chdir(address_replace);
+    
   }
   while (fgets(line, sizeof(line), file));
   fclose(file);
@@ -1136,7 +1204,11 @@ int login(GtkButton *button, gpointer data)
       if (strcmp(userNameTmp, listUser[i][1]) == 0)
         indexOfUser = i;
     }
-
+    strcpy(address_replace,address_file_Users);
+    strcat(address_replace,listUser[indexOfUser][1]);
+    chdir(address_replace);
+    take_today();
+    copy_today();
     main_calendar();
     gtk_widget_hide(login_dialog);
   }
