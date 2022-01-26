@@ -366,6 +366,7 @@ void read_solarEvent()
       dayOfEvent[countEvent] = day;
       monthOfEvent[countEvent] = month;
       strcpy(nameOfEvent[countEvent], data);
+      printf("%d %d %[^/n]", dayOfEvent[countEvent], monthOfEvent[countEvent], nameOfEvent[countEvent]);
       countEvent++;
       // if (day == day_select && month == month_select);
       // in data vào khung event
