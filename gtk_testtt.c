@@ -25,7 +25,7 @@ GtkWidget *error_username_available, *error_retype_incorrect, *error_wrong_forma
 GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_entry;
 GtkWidget *success_signup;
 GtkWidget *note[100];
-GtkWidget *dialog_double_click;
+GtkWidget *dialog_double_click,*deleteDialog;
 const char *userNameTmp, *passwordTmp, *retypePassword; // in function check_user
 char fullNameFile[100];
 const char *fullNameTmp;
@@ -472,7 +472,7 @@ void hide_note()
 {
   for(int i=1;i<=num;i++)
   {
-    gtk_widget_destroy(note[i]);
+    gtk_widget_hide(GTK_WIDGET(note[i]));
   }
 }
 void copy()
@@ -530,30 +530,30 @@ void delete_note()
 }
 void delete_dialog(gpointer* data)
 {
-  GtkWidget *dialog, *container;
+  GtkWidget  *container;
   GtkWidget *label,*label1,*button;
-  dialog = gtk_dialog_new();
+  deleteDialog = gtk_dialog_new();
 
   label=gtk_label_new("Do you want do delete?");
   label1=gtk_label_new("");
 
-  gtk_dialog_add_buttons(GTK_DIALOG(dialog), "Yes", 1, "No", 2, NULL);
+  gtk_dialog_add_buttons(GTK_DIALOG(deleteDialog), "Yes", 1, "No", 2, NULL);
 
-  gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
-  gtk_window_set_title(GTK_WINDOW(dialog), "Delete note");
-  gtk_container_set_border_width(GTK_CONTAINER(dialog), 10);
+  gtk_window_set_position(GTK_WINDOW(deleteDialog), GTK_WIN_POS_CENTER);
+  gtk_window_set_title(GTK_WINDOW(deleteDialog), "Delete note");
+  gtk_container_set_border_width(GTK_CONTAINER(deleteDialog), 10);
 
-  container = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+  container = gtk_dialog_get_content_area(GTK_DIALOG(deleteDialog));
 
   gtk_container_add(GTK_CONTAINER(container),label);
   gtk_container_add(GTK_CONTAINER(container),label1);
 
-  gtk_widget_show_all(dialog);
-  int response=gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_show_all(deleteDialog);
+  int response=gtk_dialog_run(GTK_DIALOG(deleteDialog));
   switch (response)
   {
     case 1:
-    gtk_widget_destroy(dialog);
+    gtk_widget_destroy(GTK_WIDGET(deleteDialog));
     delete_info=gtk_button_get_label(GTK_BUTTON(data));
     hide_note();
     delete_note();
@@ -567,11 +567,13 @@ void delete_dialog(gpointer* data)
       gtk_fixed_put(GTK_FIXED(fixed_window), note[i], 10, 220+a);
       a+=50;
       g_signal_connect(note[i],"clicked",G_CALLBACK(delete_dialog),NULL);
+      gtk_widget_show(note[i]);
     }
-    gtk_widget_show_all(window);
+    
     break;
     case 2:
-    gtk_widget_destroy(dialog);
+    gtk_widget_destroy(GTK_WIDGET(deleteDialog));
+    break;
   }
 }
 void connect_note()
@@ -585,6 +587,7 @@ void connect_note()
     gtk_fixed_put(GTK_FIXED(fixed_window), note[i], 10, 220+a);
     a+=50;
     g_signal_connect(note[i],"clicked",G_CALLBACK(delete_dialog),NULL);
+    gtk_widget_show(note[i]);
   }
   
 }
@@ -593,7 +596,7 @@ void show_note_list()
   hide_note();
   copy();
   connect_note();
-  gtk_widget_show_all(window);
+  /* gtk_widget_show_all(window); */
 }
 void addEvent_show_double_click()
 {
