@@ -141,7 +141,7 @@ window {
     box-shadow: none;
     min-width: 100px;
     min-height: 25px;   
-    font-size: 78px;
+    font-size: 45px;
     background: #f5f2e7;
 }
 #box_info {
@@ -181,7 +181,13 @@ window {
     min-width: 800px;
     min-height: 100px;
 }
- 
+ #box_event_show {
+    border: 0.1px solid #5f4331;
+    box-shadow: none;
+    background: #E8D0C0;
+    min-width: 760px;
+    min-height: 750px;
+ }
 #calendar {
     padding: 15px 30px 10px 30px; /*top right bottom left*/
     font-size: 28px;
