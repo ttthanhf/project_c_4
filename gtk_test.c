@@ -65,7 +65,6 @@ void creatFolder()
   strcat(tmpAddress, listUser[countUser][1]);
   strcat(tmpAddress, fileTmp);
   file = fopen(tmpAddress, "w");
-  fclose(file);
 
   int len = strlen(tmpAddress);
   for (int i = 0; i <= len; i++)
@@ -824,6 +823,8 @@ int checkUserName(const gchar userNameTmp[])
     return 0;
 
   return 1;
+
+  fclose(file);
 }
 
 int checkPassword(const gchar *passwordTmp) // mat khau phai co tu 8 ki tu tro len va co chu hoa va chu thuong
@@ -920,7 +921,6 @@ int signUp(GtkButton *button, gpointer data)
     register_success();
     creatFolder();
     countUser++;
-    fclose(file);
   }
   else
   {
@@ -928,6 +928,7 @@ int signUp(GtkButton *button, gpointer data)
     gtk_widget_hide(error_username_available);
     gtk_widget_show(error_retype_incorrect);
   }
+  fclose(file);
 }
 
 void register_dialog_screen()
@@ -1082,6 +1083,7 @@ int login(GtkButton *button, gpointer data)
   {
     gtk_widget_show(data);
   }
+  fclose(file);
 }
 
 void login_dialog_screen()
