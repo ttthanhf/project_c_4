@@ -859,7 +859,7 @@ void eventList_show()
   gtk_widget_set_name(box_event, "box_event_show");
 
   gtk_window_set_position(GTK_WINDOW(eventList_dialog), GTK_WIN_POS_CENTER); // canh app khi mở sẽ ở giữa màn hình
-  gtk_window_set_default_size(GTK_WINDOW(eventList_dialog), 800, 800);
+  gtk_window_set_default_size(GTK_WINDOW(eventList_dialog), 400, 400);
   gtk_window_set_resizable(GTK_WINDOW(eventList_dialog), FALSE);
   gtk_container_set_border_width(GTK_CONTAINER(eventList_dialog), 10);
 
@@ -995,15 +995,10 @@ void logout_show()
 
   gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog), "Yes", 1, "No", 2, NULL); // yes = 1 , no = 2
 
-<<<<<<< HEAD
   g_signal_connect(logout_dialog,"delete-event",G_CALLBACK(destroy_widget),NULL);
 
   gtk_window_set_position(GTK_WINDOW(logout_dialog),GTK_WIN_POS_CENTER);
   gtk_container_set_border_width(GTK_CONTAINER(logout_dialog),10);
-=======
-  gtk_window_set_position(GTK_WINDOW(logout_dialog), GTK_WIN_POS_CENTER);
-  gtk_container_set_border_width(GTK_CONTAINER(logout_dialog), 10);
->>>>>>> event
 
   container_logout = gtk_dialog_get_content_area(GTK_DIALOG(logout_dialog));
 
@@ -1015,7 +1010,6 @@ void logout_show()
 
   gint response = gtk_dialog_run(GTK_DIALOG(logout_dialog)); // add gia tri khi bam button
 
-<<<<<<< HEAD
   switch (response) { //thuc hien ham khi gia tri = nhau
     case 1:
       gtk_widget_destroy(GTK_WIDGET(window));
@@ -1026,19 +1020,6 @@ void logout_show()
       stop_loop_Main = 0;
       gtk_widget_destroy(GTK_WIDGET(logout_dialog));
       break;
-=======
-  switch (response)
-  { // thuc hien ham khi gia tri = nhau
-  case 1:
-    gtk_widget_destroy(GTK_WIDGET(window));
-    gtk_widget_show(login_dialog);
-    gtk_widget_destroy(GTK_WIDGET(logout_dialog));
-    break;
-  case 2:
-    stop_loop_Main -= 1;
-    gtk_widget_destroy(GTK_WIDGET(logout_dialog));
-    break;
->>>>>>> event
   }
 }
 
@@ -1253,13 +1234,9 @@ void register_success()
 
   gtk_window_set_position(GTK_WINDOW(popup_register), GTK_WIN_POS_CENTER);
 
-<<<<<<< HEAD
     g_signal_connect(popup_register,"delete-event",G_CALLBACK(destroy_widget),NULL);
 
     g_signal_connect(button,"clicked",G_CALLBACK(login_callback),NULL);
-=======
-  g_signal_connect(button, "clicked", G_CALLBACK(login_callback), NULL);
->>>>>>> event
 
   container = gtk_dialog_get_content_area(GTK_DIALOG(popup_register));
 
@@ -1274,13 +1251,8 @@ int signUp(GtkButton *button, gpointer data)
   passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
   retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
   userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
-<<<<<<< HEAD
   // printf("%s", userNameTmp);
   // fflush(stdin);
-=======
-  printf("%s", userNameTmp);
-  fflush(stdin);
->>>>>>> event
   // printf(" Full name : ");
   // scanf("%[^\n]", &fullNameTmp);
   const char *fullNameTmp = gtk_entry_get_text(GTK_ENTRY(fullname_entry));
@@ -1438,17 +1410,10 @@ int login(GtkButton *button, gpointer data)
       // printf("%s", fullNameFile); // dùng để check xem đọc file đúng chưa
     }
     if (count % 3 == 1) // dòng 2
-<<<<<<< HEAD
      {
         fscanf(file, "Name: %s", &userNameFile);
        //  printf("%s", userNameFile);
      }
-=======
-    {
-      fscanf(file, "Name: %s", &userNameFile);
-      //  printf("%s", userNameFile);
-    }
->>>>>>> event
     if (count % 3 == 2) // dòng 3
     {
       fscanf(file, "Pass: %s", &passwordFile);
