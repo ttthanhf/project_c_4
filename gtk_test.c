@@ -404,7 +404,10 @@ void printfAscending()
           strcpy(nameOfEvent[j + 1], nameOfEvent[j]);
           strcpy(nameOfEvent[j], k);
         }
- 
+ for(int i = 0; i <24 ; i++)
+    {
+        printf("%d/%d %s\n", dayOfEvent[i], monthOfEvent[i], nameOfEvent[i]);
+    }
 }
 
 //-------------------------------------Thành-------GTK-----------------------------------------------------//
@@ -840,7 +843,7 @@ void eventList_show()
   gtk_label_set_text(GTK_LABEL(eventList_label), display_eventList_update);
 
   gtk_fixed_put(GTK_FIXED(fixed_eventList), box_event, 6, 80);
-  gtk_fixed_put(GTK_FIXED(fixed_eventList), eventList_label, 200, 20);
+  gtk_fixed_put(GTK_FIXED(fixed_eventList), eventList_label, 200, 10);
     findEventDay(year_select);
     read_solarEvent();
     printfAscending();
@@ -849,11 +852,11 @@ void eventList_show()
     event[i] = gtk_label_new("");
     gtk_fixed_put(GTK_FIXED(fixed_eventList), event[i], 10, 100 + space);
     space += 30;
-   // gtk_widget_set_name(event[i], "show_eventList");
+    gtk_widget_set_name(event[i], "eventList_label");
     gchar *display = g_strdup_printf("%d/%d %s", dayOfEvent[i], monthOfEvent[i], nameOfEvent[i]);
     gtk_label_set_text(GTK_LABEL(event[i]), display);
   }
-
+  countEvent = 0;
   gtk_widget_set_name(eventList_label, "show_eventList");
 
   gtk_widget_set_name(box_event, "box_event_show");
