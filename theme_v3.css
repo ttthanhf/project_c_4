@@ -151,6 +151,14 @@ window {
     font-size: 23px;
     color: #5f4331;
 }
+#eventName_in_box {
+    border: none;
+    box-shadow: none;
+    min-width: 50px;
+    min-height: 25px;
+    font-size: 25px;
+    color: #5f4331;
+}
 #box_info {
     border: 0.1px solid #8f8a75;
     box-shadow: none;

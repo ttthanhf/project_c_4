@@ -309,35 +309,9 @@ int convertSolar2Lunar(int dd, int mm, int yy)
     return 1;
   }
   return 0;
-  // printf("%d", countEvent);
+ 
 }
-// ngày lễ ở lịch âm
-/*void find_lunar_event_day()
-{
-  guint year_select, month_select, day_select;
-  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
-  convertSolar2Lunar(day_select, month_select, year_select);
-}
-/*void add_lunar_event(gpointer label)
-{
-  guint year_select, month_select, day_select;
-  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
-  convertSolar2Lunar(day_select, month_select, year_select);
-} */
 
-/*void mark_solar_event()
-{
-  FILE *f;
-  f = fopen("SolarEvent.txt", "r");
-  int day, month, year;
-  char data[100];
-  if (f != NULL)
-    while (fscanf(f, "%d %d %s", &day, &month, &data))
-    {
-      // gọi hàm đánh dấu ngày lễ lên giao diện tham sô (day, month)
-    }
-  fclose(f);
-} */
 void findEventDay(int year)
 {
   if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
@@ -401,10 +375,10 @@ void printfAscending()
           strcpy(nameOfEvent[j + 1], nameOfEvent[j]);
           strcpy(nameOfEvent[j], k);
         }
- for(int i = 0; i <24 ; i++)
-    {
-        printf("%d/%d %s\n", dayOfEvent[i], monthOfEvent[i], nameOfEvent[i]);
-    }
+//  for(int i = 0; i <24 ; i++)
+//     {
+//         printf("%d/%d %s\n", dayOfEvent[i], monthOfEvent[i], nameOfEvent[i]);
+//     }
 }
 
 static void load_css()
@@ -750,8 +724,40 @@ void goto_day_show()
   gtk_widget_hide(error_label);
 }
 
-void addEvent_show()
+gboolean update_event(gpointer label)
 {
+  int check = 0;
+  guint year_select, month_select, day_select;
+  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select); 
+
+  findEventDay(year_select);
+  read_solarEvent();
+  printfAscending();
+
+  countEvent = 0;
+
+  for (int i = 0; i < 24; i++)
+  {
+    if((day_select == dayOfEvent[i]) && ((month_select + 1) == monthOfEvent[i]) )
+    {
+       gchar *display = g_strdup_printf("%s", nameOfEvent[i]);
+       gtk_label_set_text(GTK_LABEL(label), display);
+       check = 1;
+       break ;
+    }
+    if(check == 0)
+    {
+      gchar *display = g_strdup_printf("No events");
+       gtk_label_set_text(GTK_LABEL(label), display);
+    }
+  }
+   if (stop_loop_Main == 0)
+  {
+    return TRUE;
+  }
+  else
+    return FALSE;
+  
 }
 
 void addEvent_show_double_click()
@@ -1036,6 +1042,7 @@ void main_calendar()
   GtkWidget *event_show;
   GtkWidget *hello_label;
   GtkWidget *name_note;
+  GtkWidget *event_on_specific_date;
 
   // set biến
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL); // cho app ở quyền cao nhất
@@ -1076,6 +1083,7 @@ void main_calendar()
   choose_label = gtk_label_new("");
   hello_label = gtk_label_new("");
   name_note = gtk_label_new("NOTE");
+  event_on_specific_date = gtk_label_new("");
 
   //-----set label show show today--------//
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_today, &month_today, &day_today);
@@ -1106,6 +1114,8 @@ void main_calendar()
   gtk_fixed_put(GTK_FIXED(fixed), hello_label, 1300, 100);
   gtk_fixed_put(GTK_FIXED(fixed), box_note, 10, 180);
   gtk_fixed_put(GTK_FIXED(fixed), name_note, 120, 190);
+  gtk_fixed_put(GTK_FIXED(fixed), event_on_specific_date, 450, 750);
+
 
   // set biến thành id name để css có thể nhận dạng
   gtk_widget_set_name(button_exit, "button_menu");
@@ -1127,6 +1137,8 @@ void main_calendar()
   gtk_widget_set_name(box_event_main, "box_event_main");
   gtk_widget_set_name(box_note, "box_note");
   gtk_widget_set_name(name_note, "name_note");
+  gtk_widget_set_name(event_on_specific_date, "eventName_in_box");
+
 
   gtk_widget_set_name(show_month, "show_month");
   gtk_widget_set_name(show_year, "show_year");
@@ -1166,9 +1178,15 @@ void main_calendar()
 
   update_hello(hello_label);
 
+  update_event(event_on_specific_date);
+
+
   //-----------loop-----------//
   g_timeout_add(100, update_time, time_label);
   g_timeout_add(100, update_choose, choose_label);
+  g_timeout_add(100, update_event, event_on_specific_date);
+
+
 }
 
 int checkUserName(const gchar userNameTmp[])
