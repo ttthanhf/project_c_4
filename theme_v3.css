@@ -135,6 +135,22 @@ window {
     color: green;
     font-weight: bold;
 }
+
+#show_eventList {
+    border: none;
+    box-shadow: none;
+    min-width: 100px;
+    min-height: 25px;   
+    font-size: 45px;
+}
+#eventList_label {
+    border: none;
+    box-shadow: none;
+    min-width: 50px;
+    min-height: 25px;
+    font-size: 23px;
+    color: #5f4331;
+}
 #box_info {
     border: 0.1px solid #8f8a75;
     box-shadow: none;
@@ -172,7 +188,13 @@ window {
     min-width: 800px;
     min-height: 100px;
 }
- 
+ #box_event_show {
+    border: 0.1px solid #5f4331;
+    box-shadow: none;
+    background: #E8D0C0;
+    min-width: 760px;
+    min-height: 750px;
+ }
 #calendar {
     padding: 15px 30px 10px 30px; /*top right bottom left*/
     font-size: 28px;
