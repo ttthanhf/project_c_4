@@ -1659,16 +1659,15 @@ int signUp(GtkButton *button, gpointer data)
     gtk_widget_hide(error_wrong_format_pass);
     gtk_widget_hide(error_username_available);
     gtk_widget_hide(error_retype_incorrect);
-    file_sign = fopen("acc2.txt", "a");
+    char path[200];
+    sprintf(path,"%s\\acc2.txt",address_file_app);
+    file_sign = fopen(path, "a");
     fprintf(file_sign, "Fullname: %s\nName: %s\nPass: %s\n", fullNameTmp, userNameTmp, passwordTmp);
     fclose(file_sign);
     strcpy(listUser[countUser][0], fullNameTmp); // gan cac fullname, username, password vao mang chinh
     strcpy(listUser[countUser][1], userNameTmp);
     strcpy(listUser[countUser][2], passwordTmp);
     creatFolder();
-    getcwd(address,100);
-    chdir("..");
-    chdir("..");
     countUser++;
     printf("%s\n", getcwd(address, 100));
     
@@ -1785,7 +1784,9 @@ int login(GtkButton *button, gpointer data)
   countUser = 0; // reset lại bắt đầu đọc file để gán không bị lệch
 
   FILE *file_login;
-  file_login = fopen("acc2.txt", "r");
+  char path[200];
+  sprintf(path,"%s\\acc2.txt",address_file_app);
+  file_login = fopen(path, "r");
 
   int count = 0; // đếm dòng
   do
