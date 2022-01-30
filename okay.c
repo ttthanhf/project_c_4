@@ -10,6 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#include <conio.h>
 
 // khai biến ở đây để tất cả các function đều truy cập được
 GtkWidget *fixed_window;
@@ -27,7 +28,7 @@ GtkWidget *username_entry, *password_entry, *retypePassword_entry, *fullname_ent
 GtkWidget *success_signup;
 GtkWidget *popup_register;
 GtkWidget *event[24];
-GtkWidget *note[100],*mark_note_day[43],*zodiac[13];
+GtkWidget *note[100],*mark_note_day[43],*zodiac[13],*mark_event_day[43];
 GtkWidget *dialog_double_click,*deleteDialog;
 GtkWidget *test_error;
 const char *userNameTmp, *passwordTmp, *retypePassword; // in function check_user
@@ -49,7 +50,7 @@ char save[21][50];
 char address_file_Users[256];
 char address_replace[256];
 char address_file_app[256];
-char *image[200]={"hoi.jpg","chuot.jpg","suu.jpg","dan.jpg","mao.jpg","thin.png","ti.jpg","ngo.jpg","mui.jpg","than.jpeg","dau.jpg","tuat.png"};
+char *image[200]={"hoi.png","chuot.png","suu.png","dan.png","mao.png","thin.png","ti.png","ngo.png","mui.png","than.png","dau.png","tuat.png"};
 time_t rawtime;
 struct tm *tm1;
 FILE*file;
@@ -375,7 +376,9 @@ void findEventDay(int year)
 void read_solarEvent()
 {
   FILE *f;
-  f = fopen("SolarEvent.txt", "r");
+  char path[200];
+  sprintf(path,"%s\\SolarEvent.txt",address_file_app);
+  f = fopen(path, "r");
   int day, month, year;
   char data[100];
   // guint year_select, month_select, day_select;
@@ -461,23 +464,9 @@ void update_today(gpointer label)
   gtk_label_set_text(GTK_LABEL(label), display);
 }
 
-gboolean update_choose(gpointer label)
+void destroy_widget(gpointer *data)
 {
-  guint year_select, month_select, day_select;
-  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select); // chọn ngày đã được chọn lưu vào []_select
-  gchar *display = g_strdup_printf("You choose:\t%02d/%02d/%d (dd/mm/yyyy)", day_select, month_select + 1, year_select);
-  gtk_label_set_text(GTK_LABEL(label), display);
-  if (stop_loop_Main == 0) {
-    return TRUE;
-  }
-  else return FALSE;
-}
-void destroy_all() {
-  gtk_main_quit();
-}
-void destroy(gpointer *data, GtkWidget *widget)
-{
-  gtk_widget_destroy(widget);
+  gtk_widget_destroy(GTK_WIDGET(data));
 }
 void update_hello(GtkWidget *label)
 {
@@ -974,9 +963,11 @@ void create_mark_day()
 {
   int width=0,height=0;
   for(int i=1;i<=42;i++)
-  {
+  {  
+    mark_event_day[i]=gtk_label_new(".");
     mark_note_day[i]=gtk_label_new(".");
     gtk_fixed_put(GTK_FIXED(fixed_window), mark_note_day[i],385+width, 265+height);
+    gtk_fixed_put(GTK_FIXED(fixed_window), mark_event_day[i],385+width, 280+height);
     width+=117;
     if(i%7==0)
     {
@@ -1010,16 +1001,64 @@ gboolean show_image()
   return FALSE;
 }
 
+gboolean show_event_mark_day()
+{
+  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year, &month, &day); 
+  tm1->tm_mday=1;
+  tm1->tm_mon=month;
+  tm1->tm_year=year-1900;
+  mktime(tm1);
+  int number=tm1->tm_wday;
+  if(number==0)number=7;
+  int x=-1,y=-1,count_day=0;
+  for(int i=0;i<24;i++)
+  {
+     if(monthOfEvent[i]==(month+1))
+     {
+        x=i; break;
+     }
+  }
+   if(x!=-1)
+    {
+      for(int i=x+1;i<24;i++)
+      {
+      if(monthOfEvent[i]>(month+1)) y=i-1;
+      }
+      for(int i=1+number;i<=42;i++)
+      {
+         count_day++;
+         if(count_day==dayOfEvent[x]) 
+         {
+            gtk_widget_show(mark_event_day[i]);
+            x++;
+         }
+         else
+         {
+            gtk_widget_hide(mark_event_day[i]);
+         }
+         if(x==y)
+         {
+            for(int j=x+1;j<=42;j++) gtk_widget_hide(mark_event_day[j]);
+            break;
+         }
+
+      }
+   }
+    if (stop_loop_Main == 0)
+  {
+    return TRUE;
+  }
+  else
+    return FALSE;
+}
 gboolean update_event(gpointer label)
 {
-  int check = 0;
   guint year_select, month_select, day_select;
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
-
+  int check = 0;
   findEventDay(year_select);
   read_solarEvent();
   printfAscending();
-
   countEvent = 0;
 
   for (int i = 0; i < 24; i++)
@@ -1112,6 +1151,7 @@ void addEvent_show_double_click()
     break;
   }
 } 
+
 void eventList_show()
 {
   GtkWidget *container_eventList_dialog;
@@ -1175,81 +1215,7 @@ void eventList_show()
 
   gtk_widget_show_all(eventList_dialog);
 }
-gboolean show_mark_day()
-{
-  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year, &month, &day);
-  time(&rawtime);
-  /* tm1 = localtime(&rawtime); */
-  tm1->tm_mday=1;
-  tm1->tm_mon=month;
-  tm1->tm_year=year-1900;
-  mktime(tm1);
-  int number=tm1->tm_wday;
-  if(number==0)number=7;
-  dayOfMonth[2]=28;
-  if((year%4==0&&year%100!=0)||year%400==0)dayOfMonth[2]=29;
-  char file_name[100],try[200];
-  int count_day_of_month=0;
-  for(int i=1+number;i<=42;i++)
-  {
-    count_day_of_month++;
-    
-    itoa(count_day_of_month,add_day,10);itoa(month+1,add_month,10);itoa(year,add_year,10);
-    sprintf(file_name,"%s-%s-%s.txt",add_day,add_month,add_year);
-    file=fopen(file_name,"r");
-    if(file!=NULL)
-    {
-      if(fgets(try,200,file)!=NULL)gtk_widget_show(mark_note_day[i]);
-      else gtk_widget_hide(mark_note_day[i]);
-    }
-    else gtk_widget_hide(mark_note_day[i]);
-    fclose(file);
-  }
-  if (stop_loop_Main == 0) {
-    return TRUE;
-  }
-  return FALSE;
-  
-}
-void create_mark_day()
-{
-  int width=0,height=0;
-  for(int i=1;i<=42;i++)
-  {
-    mark_note_day[i]=gtk_label_new(".");
-    gtk_fixed_put(GTK_FIXED(fixed_window), mark_note_day[i],385+width, 265+height);
-    width+=117;
-    if(i%7==0)
-    {
-      width=0;   height+=64;
-    }
-  }
-}
-void create_image()
-{
-  for(int i=0;i<=11;i++)
-  {
-  char path[200];
-  sprintf(path,"%s\\%s",address_file_app,image[i]);
-  zodiac[i]=gtk_image_new_from_file (path);
-  gtk_fixed_put(GTK_FIXED(fixed_window), GTK_WIDGET(zodiac[i]), 1200,300);
-  }
-  
-}
-gboolean show_image()
-{
-  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year, &month, &day);
-  if(year!=year_choose)
-  {
-  gtk_widget_show(zodiac[abs(year+9)%12]);
-  gtk_widget_hide(zodiac[abs(year_choose+9)%12]);
-  year_choose=year;
-  }
-  if (stop_loop_Main == 0) {
-    return TRUE;
-  }
-  return FALSE;
-}
+
 void month_show()
 {
   GtkWidget *container_month;
@@ -1438,6 +1404,7 @@ void main_calendar()
   button_next_year = gtk_button_new_with_label(">>");
   button_goto_day = gtk_button_new_with_label("Choose");
   button_today = gtk_button_new_with_label("Today");
+
   show_month = gtk_button_new_with_label("");
   show_year = gtk_button_new_with_label("");
   
@@ -1453,6 +1420,7 @@ void main_calendar()
   choose_label = gtk_label_new("");
   hello_label = gtk_label_new("");
   name_note = gtk_label_new("NOTE");
+  event_on_specific_date = gtk_label_new("");
 
   //-----set label show show today--------//
   gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_today, &month_today, &day_today);
@@ -1491,7 +1459,11 @@ void main_calendar()
   create_mark_day();
   
   // set biến thành id name để css có thể nhận dạng
-  for(int i=1;i<=42;i++)gtk_widget_set_name(mark_note_day[i], "mark_note_day");
+  for(int i=1;i<=42;i++)
+  {
+     gtk_widget_set_name(mark_note_day[i], "mark_note_day");
+     gtk_widget_set_name(mark_event_day[i], "mark_event_day");
+  }  
   gtk_widget_set_name(button_exit, "button_menu");
   gtk_widget_set_name(button_logout, "button_menu");
   gtk_widget_set_name(button_event_list, "button_menu");
@@ -1518,7 +1490,7 @@ void main_calendar()
  
 
   // gọi hàm khi nhấn button
-  // g_signal_connect(window, "destroy", G_CALLBACK(destroy_all), NULL); // tắt app
+  g_signal_connect(window, "delete-event", G_CALLBACK(exit_screen), NULL); // tắt app
   g_signal_connect(button_exit, "clicked", G_CALLBACK(exit_screen), NULL);
 
   g_signal_connect(show_month, "clicked", G_CALLBACK(month_show), NULL);
@@ -1531,6 +1503,7 @@ void main_calendar()
   g_signal_connect(button_goto_day, "clicked", G_CALLBACK(goto_day_show), NULL);
   g_signal_connect(button_today, "clicked", G_CALLBACK(today_set), NULL);
   g_signal_connect(button_logout, "clicked", G_CALLBACK(logout_show), NULL);
+  g_signal_connect(button_event_list, "clicked", G_CALLBACK(eventList_show), NULL);
 
   g_signal_connect(calendar, "day_selected_double_click", G_CALLBACK(addEvent_show_double_click), NULL);// when double click on day
   g_signal_connect(calendar,"day_selected",G_CALLBACK(show_note_list),NULL);
@@ -1542,12 +1515,12 @@ void main_calendar()
   gtk_container_add(GTK_CONTAINER(window), fixed_window);
 
   gtk_widget_show_all(window);
-  for(int i=1;i<=42;i++)gtk_widget_hide(mark_note_day[i]);
-  for(int i=0;i<=11;i++)gtk_widget_hide(zodiac[i]);
-  year_choose=year_today;
-  gtk_widget_show(zodiac[abs(year_choose+9)%12]);
 
-  for(int i=1;i<=42;i++)gtk_widget_hide(mark_note_day[i]);
+  for(int i=1;i<=42;i++)
+  {
+   gtk_widget_hide(mark_note_day[i]);
+   gtk_widget_hide(mark_event_day[i]);
+  }
 
   for(int i=0;i<=11;i++)gtk_widget_hide(zodiac[i]);
 
@@ -1569,6 +1542,7 @@ void main_calendar()
 
   show_mark_day();
   show_image();
+  show_event_mark_day();
 
   //-----------loop-----------//
   g_timeout_add(100, update_time, time_label);
@@ -1576,7 +1550,9 @@ void main_calendar()
   g_timeout_add(100, update_event, event_on_specific_date);
   g_timeout_add(100,show_mark_day,NULL);
   g_timeout_add(100,show_image,NULL);
+  g_timeout_add(100,show_event_mark_day,NULL);
 }
+
 
 int checkUserName(const gchar userNameTmp[])
 {
@@ -1629,9 +1605,10 @@ int checkPassword(const gchar *passwordTmp) // mat khau phai co tu 8 ki tu tro l
 
 void login_callback()
 {
-  gtk_widget_hide(register_dialog);
+  gtk_widget_destroy(register_dialog);
   gtk_widget_show(login_dialog);
   gtk_widget_hide(login_error_label);
+  gtk_widget_destroy(popup_register);
 }
 
 void register_success()
@@ -1783,7 +1760,7 @@ void register_dialog_screen()
   gtk_window_set_default_size(GTK_WINDOW(register_dialog), 580, 620);
   gtk_window_set_resizable(GTK_WINDOW(register_dialog), FALSE);
 
-  g_signal_connect(GTK_DIALOG(register_dialog), "destroy", G_CALLBACK(destroy_all), NULL);
+  g_signal_connect(GTK_DIALOG(register_dialog), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
   g_signal_connect(login_button, "clicked", G_CALLBACK(login_callback), NULL);
   g_signal_connect(button_submit, "clicked", G_CALLBACK(signUp), register_dialog);
@@ -1859,6 +1836,7 @@ int login(GtkButton *button, gpointer data)
     copy_today();
     main_calendar();
     gtk_widget_hide(login_dialog);
+    stop_loop_Main = 0;
   }
   else
   {
@@ -1925,7 +1903,7 @@ void login_dialog_screen()
 
   gtk_entry_set_visibility(GTK_ENTRY(password_login_entry), FALSE); // che lại khi nhập mật khẩu
 
-  g_signal_connect(GTK_DIALOG(login_dialog), "destroy", G_CALLBACK(destroy_all), NULL);
+  g_signal_connect(GTK_DIALOG(login_dialog), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
   g_signal_connect(register_button, "clicked", G_CALLBACK(register_dialog_screen), NULL);
   g_signal_connect(button_submit, "clicked", G_CALLBACK(login), login_error_label);
@@ -1955,5 +1933,5 @@ int main(int argc, char *argv[])
 
 // mở app msys2 64 bit
 // nhớ cd /c/thư mục chứ file
-// gcc `pkg-config --cflags gtk+-3.0` -o app gtk_test.c `pkg-config --libs gtk+-3.0`
+// gcc `pkg-config --cflags gtk+-3.0` -o app m.c `pkg-config --libs gtk+-3.0`
 // ./app

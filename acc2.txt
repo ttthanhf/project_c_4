@@ -1,3 +1,3 @@
-Fullname: Ngọc Hân
-Name: Han
+Fullname: Hân
+Name: han
 Pass: Ha123456

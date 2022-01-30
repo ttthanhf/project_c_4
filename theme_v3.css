@@ -222,3 +222,23 @@ window {
 #calendar.highlight { /*day list label*/
     color: black;
 }
+#note_content{
+    min-width: 240px;
+    background: #fff2a1;
+    color:#a18b02;
+    font-weight:bold;
+    padding:8px 8px 8px 8px;
+    
+ }
+ #mark_note_day
+ {
+     font-size: 40px;
+     color:red;
+ }
+#mark_event_day
+{
+    font-size: 40px;
+    color:#00cf18;
+}
+
+ 
