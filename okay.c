@@ -94,19 +94,19 @@ void creatFolder()
   strcat(address, "\\");
   strcat(address, listUser[countUser][1]);
   int ck = chdir(address);
-  strcat(tmpAddress, listUser[countUser][1]);
-  strcat(tmpAddress, fileTmp);
-  file_folder = fopen(tmpAddress, "w");
+  // strcat(tmpAddress, listUser[countUser][1]);
+  // strcat(tmpAddress, fileTmp);
+  // file_folder = fopen(tmpAddress, "w");
 
-  int len = strlen(tmpAddress);
-  for (int i = 0; i <= len; i++)
-    tmpAddress[i] = '\0';
+  // int len = strlen(tmpAddress);
+  // for (int i = 0; i <= len; i++)
+  //   tmpAddress[i] = '\0';
 
-  strcat(tmpAddress, listUser[countUser][1]);
-  strcat(tmpAddress, fileTmp2);
-  file_folder = fopen(tmpAddress, "w");
-  // fprintf(file,"da ghi");
-  fclose(file_folder);
+  // strcat(tmpAddress, listUser[countUser][1]);
+  // strcat(tmpAddress, fileTmp2);
+  // file_folder = fopen(tmpAddress, "w");
+  // // fprintf(file,"da ghi");
+  // fclose(file_folder);
 }
 
 int jdFromDate(int dd, int mm, int yy) // lay ngay julius
@@ -391,7 +391,7 @@ void read_solarEvent()
       monthOfEvent[countEvent] = month;
       strcpy(nameOfEvent[countEvent], data);
       countEvent++;
-      printf("%d/ %d %s", day, month, data);
+     // printf("%d/ %d %s", day, month, data);
       // if (day == day_select && month == month_select);
       // in data vào khung event
     }
@@ -1188,11 +1188,6 @@ void eventList_show()
     gtk_label_set_text(GTK_LABEL(event[i]), display);
   }
 
-  
-  for (int i = 0; i < 24; i++)
-  {
-    printf("%d/%d %s\n", dayOfEvent[i], monthOfEvent[i], nameOfEvent[i]);
-  }
   countEvent = 0;
 
   gtk_widget_set_name(eventList_label, "show_eventList");
@@ -1554,19 +1549,21 @@ int checkUserName(const gchar userNameTmp[])
   char passwordFile[MAX_LETTER];
   char line[256];
   int len = strlen(userNameTmp);
+  int count = 0;
   file_username = fopen("acc2.txt", "r");
   do
   {
-    fscanf(file_username, "Fullname: %[^\n]", &fullNameFile);
-    printf("%s", fullNameFile); // dùng để check xem đọc file đúng chưa
-    fscanf(file_username, "Name: %s", &userNameFile);
-    printf("%s", userNameFile);
-    fscanf(file_username, "Pass: %s", &passwordFile);
-    printf("%s", passwordFile);
 
+    if (count % 3 == 1) // dòng 2
+     {
+        fscanf(file_username, "Name: %s", &userNameFile);
+       //  printf("%s", userNameFile);
+     }
     if (strcmp(userNameTmp, userNameFile) == 0)
       return 0;
-  } while (fgets(line, sizeof(line), file_username));
+      count++;
+  } 
+  while (fgets(line, sizeof(line), file_username));
   if (strcasecmp(userNameTmp, "") == 0)
     return 0;
 
@@ -1635,7 +1632,7 @@ int signUp(GtkButton *button, gpointer data)
   passwordTmp = gtk_entry_get_text(GTK_ENTRY(password_entry));
   retypePassword = gtk_entry_get_text(GTK_ENTRY(retypePassword_entry));
   userNameTmp = gtk_entry_get_text(GTK_ENTRY(username_entry));
-
+  char address[100];
   fflush(stdin);
   // printf(" Full name : ");
   // scanf("%[^\n]", &fullNameTmp);
@@ -1669,7 +1666,11 @@ int signUp(GtkButton *button, gpointer data)
     strcpy(listUser[countUser][1], userNameTmp);
     strcpy(listUser[countUser][2], passwordTmp);
     creatFolder();
+    getcwd(address,100);
+    chdir("..");
+    chdir("..");
     countUser++;
+    printf("%s\n", getcwd(address, 100));
     
   }
   else
