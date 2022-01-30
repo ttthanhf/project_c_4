@@ -1681,6 +1681,7 @@ int signUp(GtkButton *button, gpointer data)
     creatFolder();
     countUser++;
     printf("%s\n", getcwd(address, 100));
+    register_success();
     
   }
   else
