@@ -938,6 +938,7 @@ gboolean show_mark_day()
   if((year%4==0&&year%100!=0)||year%400==0)dayOfMonth[2]=29;
   char file_name[100],try[200];
   int count_day_of_month=0;
+  for(int i=1;i<1+number;i++)gtk_widget_hide(mark_note_day[i]);
   for(int i=1+number;i<=42;i++)
   {
     count_day_of_month++;
@@ -1000,29 +1001,33 @@ gboolean show_image()
   }
   return FALSE;
 }
-
-gboolean show_event_mark_day()
+gboolean update_event(gpointer label)
 {
-  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year, &month, &day); 
+  guint year_select, month_select, day_select;
+  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
   tm1->tm_mday=1;
-  tm1->tm_mon=month;
-  tm1->tm_year=year-1900;
+  tm1->tm_mon=month_select;
+  tm1->tm_year=year_select-1900;
   mktime(tm1);
   int number=tm1->tm_wday;
   if(number==0)number=7;
-  int x=-1,y=-1,count_day=0;
+  int x=-1,y=23,count_day=0;
+  for(int i=1;i<1+number;i++) gtk_widget_hide(mark_event_day[i]);
   for(int i=0;i<24;i++)
   {
-     if(monthOfEvent[i]==(month+1))
+     if(monthOfEvent[i]==(month_select+1))
      {
         x=i; break;
      }
   }
-   if(x!=-1)
+  if(x!=-1)
     {
       for(int i=x+1;i<24;i++)
       {
-      if(monthOfEvent[i]>(month+1)) y=i-1;
+      if(monthOfEvent[i]>(month+1)) 
+        {
+          y=i-1;break;
+        }
       }
       for(int i=1+number;i<=42;i++)
       {
@@ -1036,25 +1041,14 @@ gboolean show_event_mark_day()
          {
             gtk_widget_hide(mark_event_day[i]);
          }
-         if(x==y)
+         if(x>y)
          {
-            for(int j=x+1;j<=42;j++) gtk_widget_hide(mark_event_day[j]);
+            for(int j=dayOfEvent[x-1]+number+1;j<=42;j++) gtk_widget_hide(mark_event_day[j]);
             break;
          }
 
       }
    }
-    if (stop_loop_Main == 0)
-  {
-    return TRUE;
-  }
-  else
-    return FALSE;
-}
-gboolean update_event(gpointer label)
-{
-  guint year_select, month_select, day_select;
-  gtk_calendar_get_date(GTK_CALENDAR(calendar), &year_select, &month_select, &day_select);
   int check = 0;
   findEventDay(year_select);
   read_solarEvent();
@@ -1542,15 +1536,13 @@ void main_calendar()
 
   show_mark_day();
   show_image();
-  show_event_mark_day();
 
   //-----------loop-----------//
   g_timeout_add(100, update_time, time_label);
   g_timeout_add(100, update_choose, choose_label);
-  g_timeout_add(100, update_event, event_on_specific_date);
+  g_timeout_add(50, update_event, event_on_specific_date);
   g_timeout_add(100,show_mark_day,NULL);
   g_timeout_add(100,show_image,NULL);
-  g_timeout_add(100,show_event_mark_day,NULL);
 }
 
 
@@ -1933,5 +1925,5 @@ int main(int argc, char *argv[])
 
 // mở app msys2 64 bit
 // nhớ cd /c/thư mục chứ file
-// gcc `pkg-config --cflags gtk+-3.0` -o app m.c `pkg-config --libs gtk+-3.0`
+// gcc `pkg-config --cflags gtk+-3.0` -o app okay.c `pkg-config --libs gtk+-3.0`
 // ./app
