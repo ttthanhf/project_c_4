@@ -87,13 +87,18 @@ void creatFolder()
   char address[256];
   getcwd(address, 256); // hàm lấy path hiện tại
   int status;
+  strcpy(address,address_file_app);
   strcat(address, "\\User");
-  int ch = chdir(address);
-  strcat(cmmnd, listUser[countUser][1]);
-  status = system(cmmnd); // hàm tạo folder
+  mkdir(address);
+  chdir(address);
   strcat(address, "\\");
   strcat(address, listUser[countUser][1]);
-  int ck = chdir(address);
+  mkdir(address);
+  chdir(address);
+  /* status = system(cmmnd); // hàm tạo folder
+  strcat(address, "\\");
+  strcat(address, listUser[countUser][1]);
+  int ck = chdir(address); */
   // strcat(tmpAddress, listUser[countUser][1]);
   // strcat(tmpAddress, fileTmp);
   // file_folder = fopen(tmpAddress, "w");

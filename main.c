@@ -87,13 +87,18 @@ void creatFolder()
   char address[256];
   getcwd(address, 256); // hàm lấy path hiện tại
   int status;
+  strcpy(address,address_file_app);
   strcat(address, "\\User");
-  int ch = chdir(address);
-  strcat(cmmnd, listUser[countUser][1]);
-  status = system(cmmnd); // hàm tạo folder
+  mkdir(address);
+  chdir(address);
   strcat(address, "\\");
   strcat(address, listUser[countUser][1]);
-  int ck = chdir(address);
+  mkdir(address);
+  chdir(address);
+  /* status = system(cmmnd); // hàm tạo folder
+  strcat(address, "\\");
+  strcat(address, listUser[countUser][1]);
+  int ck = chdir(address); */
   // strcat(tmpAddress, listUser[countUser][1]);
   // strcat(tmpAddress, fileTmp);
   // file_folder = fopen(tmpAddress, "w");
@@ -435,7 +440,7 @@ void printfAscending()
 static void load_css()
 {
   GtkCssProvider *cssProvider = gtk_css_provider_new();
-  gtk_css_provider_load_from_path(cssProvider, "theme_default.css", NULL); // đọc file css
+  gtk_css_provider_load_from_path(cssProvider, "theme_v3.css", NULL); // đọc file css
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(cssProvider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
@@ -1556,7 +1561,7 @@ int checkUserName(const gchar userNameTmp[])
   char line[256];
   int len = strlen(userNameTmp);
   int count = 0;
-  file_username = fopen("account.txt", "r");
+  file_username = fopen("acc2.txt", "r");
   do
   {
 
@@ -1666,7 +1671,7 @@ int signUp(GtkButton *button, gpointer data)
     gtk_widget_hide(error_username_available);
     gtk_widget_hide(error_retype_incorrect);
     char path[200];
-    sprintf(path,"%s\\account.txt",address_file_app);
+    sprintf(path,"%s\\acc2.txt",address_file_app);
     file_sign = fopen(path, "a");
     fprintf(file_sign, "Fullname: %s\nName: %s\nPass: %s\n", fullNameTmp, userNameTmp, passwordTmp);
     fclose(file_sign);
@@ -1676,7 +1681,7 @@ int signUp(GtkButton *button, gpointer data)
     creatFolder();
     countUser++;
     printf("%s\n", getcwd(address, 100));
-    register_success();
+    
   }
   else
   {
@@ -1791,7 +1796,7 @@ int login(GtkButton *button, gpointer data)
 
   FILE *file_login;
   char path[200];
-  sprintf(path,"%s\\account.txt",address_file_app);
+  sprintf(path,"%s\\acc2.txt",address_file_app);
   file_login = fopen(path, "r");
 
   int count = 0; // đếm dòng
