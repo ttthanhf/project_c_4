@@ -440,7 +440,7 @@ void printfAscending()
 static void load_css()
 {
   GtkCssProvider *cssProvider = gtk_css_provider_new();
-  gtk_css_provider_load_from_path(cssProvider, "theme_v3.css", NULL); // đọc file css
+  gtk_css_provider_load_from_path(cssProvider, "theme_default.css", NULL); // đọc file css
   gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(cssProvider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
@@ -1561,7 +1561,7 @@ int checkUserName(const gchar userNameTmp[])
   char line[256];
   int len = strlen(userNameTmp);
   int count = 0;
-  file_username = fopen("acc2.txt", "r");
+  file_username = fopen("account.txt", "r");
   do
   {
 
@@ -1671,7 +1671,7 @@ int signUp(GtkButton *button, gpointer data)
     gtk_widget_hide(error_username_available);
     gtk_widget_hide(error_retype_incorrect);
     char path[200];
-    sprintf(path,"%s\\acc2.txt",address_file_app);
+    sprintf(path,"%s\\account.txt",address_file_app);
     file_sign = fopen(path, "a");
     fprintf(file_sign, "Fullname: %s\nName: %s\nPass: %s\n", fullNameTmp, userNameTmp, passwordTmp);
     fclose(file_sign);
@@ -1796,7 +1796,7 @@ int login(GtkButton *button, gpointer data)
 
   FILE *file_login;
   char path[200];
-  sprintf(path,"%s\\acc2.txt",address_file_app);
+  sprintf(path,"%s\\account.txt",address_file_app);
   file_login = fopen(path, "r");
 
   int count = 0; // đếm dòng
@@ -1966,5 +1966,5 @@ int main(int argc, char *argv[])
 
 // mở app msys2 64 bit
 // nhớ cd /c/thư mục chứ file
-// gcc `pkg-config --cflags gtk+-3.0` -o app okay.c `pkg-config --libs gtk+-3.0`
+// gcc `pkg-config --cflags gtk+-3.0` -o app main.c `pkg-config --libs gtk+-3.0`
 // ./app
