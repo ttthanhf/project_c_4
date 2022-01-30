@@ -465,9 +465,10 @@ void update_today(gpointer label)
   gtk_label_set_text(GTK_LABEL(label), display);
 }
 
-void destroy_widget(gpointer *data)
+void destroy_widget(gpointer *data, gpointer *data2)
 {
   gtk_widget_destroy(GTK_WIDGET(data));
+  gtk_widget_destroy(GTK_WIDGET(data2));
 }
 void update_hello(GtkWidget *label)
 {
@@ -868,6 +869,8 @@ void delete_dialog(gpointer* data)
   gtk_window_set_title(GTK_WINDOW(deleteDialog), "Delete note");
   gtk_container_set_border_width(GTK_CONTAINER(deleteDialog), 10);
 
+  g_signal_connect(deleteDialog, "delete-event", G_CALLBACK(destroy_widget), NULL);
+
   container = gtk_dialog_get_content_area(GTK_DIALOG(deleteDialog));
 
   gtk_container_add(GTK_CONTAINER(container),label);
@@ -968,8 +971,8 @@ void create_mark_day()
   {  
     mark_event_day[i]=gtk_label_new(".");
     mark_note_day[i]=gtk_label_new(".");
-    gtk_fixed_put(GTK_FIXED(fixed_window), mark_note_day[i],385+width, 265+height);
-    gtk_fixed_put(GTK_FIXED(fixed_window), mark_event_day[i],385+width, 280+height);
+    gtk_fixed_put(GTK_FIXED(fixed_window), mark_note_day[i],435+width, 265+height);
+    gtk_fixed_put(GTK_FIXED(fixed_window), mark_event_day[i],435+width, 280+height);
     width+=117;
     if(i%7==0)
     {
@@ -1120,6 +1123,8 @@ void addEvent_show_double_click()
   gtk_window_set_title(GTK_WINDOW(dialog_double_click), "Add event");
   gtk_container_set_border_width(GTK_CONTAINER(dialog_double_click), 10);
 
+  g_signal_connect(dialog_double_click, "delete-event", G_CALLBACK(destroy_widget), NULL);
+
   container = gtk_dialog_get_content_area(GTK_DIALOG(dialog_double_click));
 
   gtk_container_add(GTK_CONTAINER(container), fixed);
@@ -1198,6 +1203,7 @@ void eventList_show()
   gtk_window_set_default_size(GTK_WINDOW(eventList_dialog), 400, 400);
   gtk_window_set_resizable(GTK_WINDOW(eventList_dialog), FALSE);
   gtk_container_set_border_width(GTK_CONTAINER(eventList_dialog), 10);
+  gtk_window_set_title(GTK_WINDOW(eventList_dialog), "Event list");
 
   container_eventList_dialog = gtk_dialog_get_content_area(GTK_DIALOG(eventList_dialog));
 
@@ -1290,7 +1296,7 @@ void exit_screen()
 
   exit_dialog = gtk_dialog_new();
 
-  label_ask = gtk_label_new("Are you want to Quit?");
+  label_ask = gtk_label_new("Are you want to Quit?\n");
 
   gtk_dialog_add_buttons(GTK_DIALOG(exit_dialog), "Yes", 1, "No", 2, NULL); // yes = 1 , no = 2
 
@@ -1326,7 +1332,7 @@ void logout_show() {
 
   logout_dialog = gtk_dialog_new();
 
-  label_ask = gtk_label_new("Are you want to Logout?");
+  label_ask = gtk_label_new("Are you want to Logout?\n");
 
   gtk_dialog_add_buttons(GTK_DIALOG(logout_dialog), "Yes", 1, "No", 2, NULL); // yes = 1 , no = 2
 
@@ -1423,17 +1429,17 @@ void main_calendar()
   gtk_fixed_put(GTK_FIXED(fixed_window), button_exit, 1300, 760);
   gtk_fixed_put(GTK_FIXED(fixed_window), button_logout, 1300, 150);
   gtk_fixed_put(GTK_FIXED(fixed_window), button_event_list, 1300, 200);
-  gtk_fixed_put(GTK_FIXED(fixed_window), button_previous_month, 440, 150);
-  gtk_fixed_put(GTK_FIXED(fixed_window), button_next_month, 850, 150);
-  gtk_fixed_put(GTK_FIXED(fixed_window), button_previous_year, 440, 65);
-  gtk_fixed_put(GTK_FIXED(fixed_window), button_next_year, 850, 65);
-  gtk_fixed_put(GTK_FIXED(fixed_window), button_goto_day, 337, 175);
-  gtk_fixed_put(GTK_FIXED(fixed_window), button_today, 337, 135);
-  gtk_fixed_put(GTK_FIXED(fixed_window), show_month, 600, 135);
-  gtk_fixed_put(GTK_FIXED(fixed_window), show_year, 600, 30);
-  gtk_fixed_put(GTK_FIXED(fixed_window), calendar, 270, 210);
-  gtk_fixed_put(GTK_FIXED(fixed_window), box_event_header, 330, 690);
-  gtk_fixed_put(GTK_FIXED(fixed_window), box_event_main, 330, 720);
+  gtk_fixed_put(GTK_FIXED(fixed_window), button_previous_month, 520, 150); //50
+  gtk_fixed_put(GTK_FIXED(fixed_window), button_next_month, 930, 150);
+  gtk_fixed_put(GTK_FIXED(fixed_window), button_previous_year, 520, 65);
+  gtk_fixed_put(GTK_FIXED(fixed_window), button_next_year, 930, 65);
+  gtk_fixed_put(GTK_FIXED(fixed_window), button_goto_day, 387, 175);
+  gtk_fixed_put(GTK_FIXED(fixed_window), button_today, 387, 135);
+  gtk_fixed_put(GTK_FIXED(fixed_window), show_month, 680, 135);
+  gtk_fixed_put(GTK_FIXED(fixed_window), show_year, 680, 30);
+  gtk_fixed_put(GTK_FIXED(fixed_window), calendar, 320, 210);
+  gtk_fixed_put(GTK_FIXED(fixed_window), box_event_header, 350, 690);
+  gtk_fixed_put(GTK_FIXED(fixed_window), box_event_main, 350, 720);
   gtk_fixed_put(GTK_FIXED(fixed_window), box_info, 10, 50);
   gtk_fixed_put(GTK_FIXED(fixed_window), time_label, 20, 60);
   gtk_fixed_put(GTK_FIXED(fixed_window), today_label, 20, 90);
@@ -1840,6 +1846,32 @@ int login(GtkButton *button, gpointer data)
   fclose(file_login);
 }
 
+void forgot_pass() {
+  GtkWidget *dialog;
+  GtkWidget *label, *button;
+  GtkWidget *container;
+
+  dialog = gtk_dialog_new();
+
+  label = gtk_label_new("\n Relax and try to remember ! \n");
+  button = gtk_button_new_with_label("Nice :)");
+
+  gtk_widget_set_name(label, "success_label");
+
+  gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+
+  g_signal_connect(dialog, "delete-event", G_CALLBACK(destroy_widget), NULL);
+
+  g_signal_connect(button, "clicked", G_CALLBACK(destroy_widget), dialog);
+
+  container = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+
+  gtk_container_add(GTK_CONTAINER(container), label);
+  gtk_container_add(GTK_CONTAINER(container), button);
+
+  gtk_widget_show_all(dialog);
+}
+
 void login_dialog_screen()
 { // màn hình login
   GtkWidget *container_login_dialog;
@@ -1902,7 +1934,8 @@ void login_dialog_screen()
 
   g_signal_connect(register_button, "clicked", G_CALLBACK(register_dialog_screen), NULL);
   g_signal_connect(button_submit, "clicked", G_CALLBACK(login), login_error_label);
-
+  g_signal_connect(forgot_button, "clicked", G_CALLBACK(forgot_pass), NULL);
+  
   container_login_dialog = gtk_dialog_get_content_area(GTK_DIALOG(login_dialog));
 
   gtk_container_add(GTK_CONTAINER(container_login_dialog), fixed_login);
