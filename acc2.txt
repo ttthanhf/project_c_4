@@ -1,3 +1,6 @@
+<<<<<<< HEAD
 Fullname: Hân
 Name: han
 Pass: Ha123456
+=======
+>>>>>>> 2fc3aa0 (test)
